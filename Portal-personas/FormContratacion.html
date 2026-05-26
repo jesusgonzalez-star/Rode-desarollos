@@ -148,11 +148,11 @@
               <input type="text" name="cont_planSalud" id="cont_planSalud" class="input-field upper flex-1"
                 placeholder="NOMBRE PLAN (SI APLICA)">
             </div>
-            <div id="containerCertSalud" class="hidden mt-2 p-3 border border-blue-100 bg-blue-50 rounded">
-              <label class="text-[10px] text-blue-600 font-bold mb-1 block">Certificado de Salud (opcional)</label>
+            <div id="containerCertSalud" class="hidden mt-2 p-3 border border-red-200 bg-red-50 rounded">
+              <label id="labelCertSalud" class="text-[10px] text-red-700 font-bold mb-1 block">Certificado de Salud (obligatorio)</label>
               <input type="file" id="fileCertSalud" accept=".pdf,.jpg,.jpeg,.png"
                 class="input-field cursor-pointer !h-10 py-1 bg-white">
-              <p class="text-[8px] text-slate-400 mt-1 uppercase italic">PDF o imagen.</p>
+              <p class="text-[8px] text-red-600 mt-1 uppercase italic">PDF o imagen. Adjunto requerido.</p>
             </div>
           </div>
         </div>
@@ -384,7 +384,12 @@
     function handleSaludCont(v) {
       togglePlanSalud(v);
       const c = document.getElementById('containerCertSalud');
-      if (c) c.classList.toggle('hidden', v !== 'ISAPRE' && v !== 'FONASA');
+      const f = document.getElementById('fileCertSalud');
+      const l = document.getElementById('labelCertSalud');
+      const aplica = (v === 'ISAPRE' || v === 'FONASA');
+      if (c) c.classList.toggle('hidden', !aplica);
+      if (f) { if (aplica) f.setAttribute('required', 'required'); else f.removeAttribute('required'); }
+      if (l) l.textContent = v === 'ISAPRE' ? 'Plan de Salud Isapre (obligatorio)' : v === 'FONASA' ? 'Certificado de Salud Fonasa (obligatorio)' : 'Certificado de Salud (obligatorio)';
     }
     function toggleCertDiscapacidad(v) {
       const c = document.getElementById('containerCertDiscapacidad');
