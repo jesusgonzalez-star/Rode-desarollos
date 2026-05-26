@@ -265,7 +265,7 @@
 
             <div class="flex gap-4 mb-20 mt-6">
                 <button type="button"
-                    onclick="document.getElementById('formModificacion').reset(); handleMotivoMod(''); updateProgress();"
+                    onclick="document.getElementById('formModificacion').reset(); handleMotivoMod(''); if (typeof toggleAutorizSueldo === 'function') toggleAutorizSueldo(); updateProgress();"
                     class="flex-1 bg-slate-200 py-4 text-[11px] font-bold uppercase transition-all hover:bg-slate-300">Limpiar</button>
                 <button type="button" id="btnFinalMod"
                     onclick="abrirModal('formModificacion', 'MODIFICACIÓN DE CONDICIONES')"

@@ -608,8 +608,10 @@
 
         // ── IAS ───────────────────────────────────────────────────────
         // Art. 163 CT: fraccion superior a 6 meses se cuenta como año completo
+        // Art. 163 CT: tope legal de 11 años (330 dias) de indemnizacion
         const tieneIAS     = getCausalIAS();
-        const aniosIAS     = anios + (mesSobrantes >= 6 ? 1 : 0);
+        const aniosIASBruto = anios + (mesSobrantes >= 6 ? 1 : 0);
+        const aniosIAS     = Math.min(aniosIASBruto, 11);
         const habIndemnizacion = tieneIAS ? aniosIAS * baseIASConTope : 0;
         const topeIASLegal = uf > 0 ? Math.round(aniosIAS * 90 * uf) : habIndemnizacion;
 
@@ -664,7 +666,7 @@
         const { factor, rebaja, iut } = calcularIUT(baseTributable, utm);
 
         // ── ACTUALIZAR CAMPOS CALCULADOS ──────────────────────────────
-        g('fin_aniosServicio').value  = `${anios} AÑOS ${mesSobrantes} MESES — IAS: ${aniosIAS} AÑOS`;
+        g('fin_aniosServicio').value  = `${anios} AÑOS ${mesSobrantes} MESES — IAS: ${aniosIAS} AÑOS` + (aniosIASBruto > 11 ? ' (tope legal 11)' : '');
         g('fin_vacAcumuladas').value  = vacAcumuladas.toFixed(2);
         g('fin_baseVacaciones').value  = fmtNum(baseTotal);
         g('fin_calculoDiario').value   = fmtNum(calculoDiario);
