@@ -113,7 +113,7 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
                     <div>
-                        <label>Motivo cambio cargo</label>
+                        <label>Motivo del cambio</label>
                         <select name="mod_motivo" id="mod_motivo" class="input-field upper" required
                             onchange="handleMotivoMod(this.value)">
                             <option value="">SELECCIONE MOTIVO...</option>
@@ -327,6 +327,17 @@
                     fill('mod_ccAnterior', d.ccs);
                     fill('mod_ccNuevo', d.ccs);
                     fill('mod_motivo', d.motivosMod);
+                    (function asegurarCambioSueldo() {
+                        const sel = document.getElementById('mod_motivo');
+                        if (!sel) return;
+                        const existe = Array.from(sel.options).some(o => o.value.toUpperCase().includes('CAMBIO SUELDO'));
+                        if (!existe) {
+                            const opt = document.createElement('option');
+                            opt.value = 'CAMBIO SUELDO';
+                            opt.textContent = 'CAMBIO SUELDO';
+                            sel.appendChild(opt);
+                        }
+                    })();
                     fill('mod_jornadaAnterior', d.horarios);
                     fill('mod_jornadaNuevo', d.horarios);
                     fill('mod_jefeDirecto', d.jefaturas);
