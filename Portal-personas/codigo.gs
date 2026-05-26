@@ -374,6 +374,26 @@ function actualizarUsuarioRol(vEmail, nEmail, nRol) {
   return { success: true };
 }
 
+// Obtiene UF del último día del mes anterior desde mindicador.cl (open-source, sin auth)
+function obtenerUFMesAnterior() {
+  try {
+    var hoy = new Date();
+    var ultimoDiaMesAnterior = new Date(hoy.getFullYear(), hoy.getMonth(), 0);
+    var yyyy = ultimoDiaMesAnterior.getFullYear();
+    var mm = ('0' + (ultimoDiaMesAnterior.getMonth() + 1)).slice(-2);
+    var dd = ('0' + ultimoDiaMesAnterior.getDate()).slice(-2);
+    var url = 'https://mindicador.cl/api/uf/' + dd + '-' + mm + '-' + yyyy;
+    var r = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
+    if (r.getResponseCode() !== 200) return { error: 'API UF no disponible' };
+    var j = JSON.parse(r.getContentText());
+    var valor = (j && j.serie && j.serie[0]) ? j.serie[0].valor : null;
+    if (!valor) return { error: 'Sin datos UF para ' + dd + '-' + mm + '-' + yyyy };
+    return { uf: valor, fecha: dd + '-' + mm + '-' + yyyy };
+  } catch (e) {
+    return { error: e.toString() };
+  }
+}
+
 // Obtiene feriados Chile desde date.nager.at (open-source, sin auth)
 function obtenerFeriadosAPI(años) {
   var opts = { muteHttpExceptions: true };

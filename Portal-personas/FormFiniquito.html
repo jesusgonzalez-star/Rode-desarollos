@@ -755,6 +755,16 @@
         }).withFailureHandler(err => {
             document.getElementById('loadingOverlay').innerHTML = '<div style="background:white;padding:32px;border-radius:12px;text-align:center;"><p style="color:red;font-family:monospace;font-size:12px;">' + err.message + '</p><button onclick="location.reload()" style="margin-top:12px;background:#0D7DAF;color:white;padding:8px 20px;border:none;cursor:pointer;font-family:monospace;">Reintentar</button></div>';
         }).obtenerDatosDesdeDB();
+
+        // Cargar UF del mes anterior automaticamente desde mindicador.cl
+        google.script.run.withSuccessHandler(r => {
+            const inp = document.getElementById('fin_uf');
+            if (!inp || !r || !r.uf) return;
+            inp.value = r.uf.toLocaleString('es-CL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            inp.setAttribute('data-fecha-uf', r.fecha || '');
+            inp.setAttribute('title', 'UF cargada automaticamente al ' + (r.fecha || 'mes anterior'));
+            if (typeof calcularFiniquito === 'function') calcularFiniquito();
+        }).obtenerUFMesAnterior();
     };
     </script>
 
