@@ -183,11 +183,11 @@
               <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="cont_certDiscapacidad"
                   value="NO" onchange="toggleCertDiscapacidad(this.value)"> NO</label>
             </div>
-            <div id="containerCertDiscapacidad" class="hidden mt-2 p-3 border border-blue-100 bg-blue-50 rounded">
-              <label class="text-[10px] text-blue-600 font-bold mb-1 block">Certificado de Discapacidad (opcional)</label>
+            <div id="containerCertDiscapacidad" class="hidden mt-2 p-3 border border-red-200 bg-red-50 rounded">
+              <label class="text-[10px] text-red-700 font-bold mb-1 block">Certificado de Discapacidad (obligatorio)</label>
               <input type="file" id="fileCertDiscapacidad" accept=".pdf,.jpg,.jpeg,.png"
                 class="input-field cursor-pointer !h-10 py-1 bg-white">
-              <p class="text-[8px] text-slate-400 mt-1 uppercase italic">PDF o imagen.</p>
+              <p class="text-[8px] text-red-600 mt-1 uppercase italic">PDF o imagen. Adjunto requerido para continuar.</p>
             </div>
           </div>
           <div>
@@ -388,7 +388,9 @@
     }
     function toggleCertDiscapacidad(v) {
       const c = document.getElementById('containerCertDiscapacidad');
+      const f = document.getElementById('fileCertDiscapacidad');
       if (c) c.classList.toggle('hidden', v !== 'SI');
+      if (f) { if (v === 'SI') f.setAttribute('required', 'required'); else f.removeAttribute('required'); }
     }
     function toggleEquipos(v) {
       const c = document.getElementById('containerEquipos');
