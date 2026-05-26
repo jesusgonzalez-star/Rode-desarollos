@@ -157,6 +157,26 @@
                     <div id="contMotivosPermisos" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <!-- Cargado dinámicamente -->
                     </div>
+
+                    <div id="wrapper_perm_autorizGoce" class="hidden mt-6 p-4 border border-amber-300 bg-amber-50 rounded">
+                        <p class="text-[10px] font-bold text-amber-800 uppercase mb-1">Permiso con Goce de Sueldo — Caso Excepcional</p>
+                        <p class="text-[9px] text-amber-700 uppercase mb-3">Requiere autorización del Jefe Directo y del Gerente del Área.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-[10px]">
+                            <div>
+                                <label class="text-[10px] font-bold text-slate-500 uppercase">Fecha Firma Jefe Directo</label>
+                                <input type="date" name="perm_fechaFirmaJefe" id="perm_fechaFirmaJefe" class="input-field">
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-bold text-slate-500 uppercase">Gerente del Área</label>
+                                <input type="text" name="perm_gerente" id="perm_gerente" class="input-field upper" placeholder="NOMBRE GERENTE">
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-bold text-slate-500 uppercase">Fecha Firma Gerente</label>
+                                <input type="date" name="perm_fechaFirmaGerente" id="perm_fechaFirmaGerente" class="input-field">
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="mt-6">
                         <label class="text-[10px] font-bold text-slate-500 uppercase">Observaciones / Otros
                             Detalle:</label>
@@ -243,6 +263,17 @@
     <?!= include('SharedJS'); ?>
     <script>verificarSesion('permisos');</script>
     <script>
+        function togglePermisoGoce() {
+            const sel = document.querySelector('input[name="perm_motivo"]:checked');
+            const w = document.getElementById('wrapper_perm_autorizGoce');
+            if (!w) return;
+            const aplica = sel && (sel.value || '').toUpperCase().includes('CON GOCE');
+            w.classList.toggle('hidden', !aplica);
+            const inputs = w.querySelectorAll('input');
+            inputs.forEach(i => { if (aplica) i.setAttribute('required', 'required'); else { i.removeAttribute('required'); i.value = ''; } });
+        }
+    </script>
+    <script>
         window.onload = () => {
             google.script.run.withSuccessHandler(d => {
                 fill('perm_cc', d.ccs);
@@ -268,6 +299,23 @@
                         cont.appendChild(div);
                     });
                 }
+
+                // Asegurar que 'PERMISO CON GOCE DE SUELDO' siempre exista
+                const existeGoce = Array.from(document.querySelectorAll('input[name="perm_motivo"]'))
+                    .some(r => (r.value || '').toUpperCase().includes('CON GOCE'));
+                if (!existeGoce) {
+                    const idx = cont.querySelectorAll('input[name="perm_motivo"]').length;
+                    const div = document.createElement('div');
+                    div.className = 'flex items-center gap-3 p-2 border border-slate-200 rounded bg-slate-50 hover:bg-slate-100 cursor-pointer';
+                    div.innerHTML = `<input type="radio" name="perm_motivo" id="perm_m_${idx}" value="PERMISO CON GOCE DE SUELDO" required class="w-4 h-4"><label for="perm_m_${idx}" class="text-[10px] font-bold uppercase cursor-pointer flex-1">PERMISO CON GOCE DE SUELDO</label>`;
+                    cont.appendChild(div);
+                }
+
+                // Listener para mostrar autorizacion Jefe+Gerente cuando es con goce
+                document.querySelectorAll('input[name="perm_motivo"]').forEach(r => {
+                    r.addEventListener('change', togglePermisoGoce);
+                });
+
                 document.getElementById('loadingOverlay').style.display = 'none';
             }).withFailureHandler(err => {
                 document.getElementById('loadingOverlay').innerHTML = '<div style="background:white;padding:32px;border-radius:12px;text-align:center;"><p style="color:red;font-family:monospace;font-size:12px;">' + err.message + '</p><button onclick="location.reload()" style="margin-top:12px;background:#0D7DAF;color:white;padding:8px 20px;border:none;cursor:pointer;font-family:monospace;">Reintentar</button></div>';
