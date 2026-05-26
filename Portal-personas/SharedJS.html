@@ -472,7 +472,11 @@
                     modNuevoCargo: getValue('mod_nuevoCargo'), modSueldoNuev: getValue('mod_sueldoNuevo'),
                     modCcNuev: f.elements['mod_ccNuevo'] ? f.elements['mod_ccNuevo'].value : "N/A",
                     modJornadaNuevo: (f.elements['mod_jornadaNuevo'] ? f.elements['mod_jornadaNuevo'].value : "N/A") + (f.querySelector('input[name="mod_diasTeleNuev"]:checked') ? " (Teletrabajo: " + Array.from(f.querySelectorAll('input[name="mod_diasTeleNuev"]:checked')).map(c => c.value).join('-') + ")" : ""),
-                    modJefe: getValue('mod_jefeDirecto'), modFJefe: "N/A", modSuper: "N/A", modFSuper: "N/A", modGerente: "N/A", modFGerente: "N/A",
+                    modJefe: getValue('mod_jefeDirecto'),
+                    modFJefe: f.elements['mod_fechaFirmaJefe'] ? f.elements['mod_fechaFirmaJefe'].value : "N/A",
+                    modSuper: "N/A", modFSuper: "N/A",
+                    modGerente: getValue('mod_gerente') || "N/A",
+                    modFGerente: f.elements['mod_fechaFirmaGerente'] ? f.elements['mod_fechaFirmaGerente'].value : "N/A",
                     modObservaciones: getValue('mod_observaciones') || "N/A"
                 });
             }
@@ -483,7 +487,10 @@
                     permCc: getValue('perm_cc'), permCargo: getValue('perm_cargo'), permJefe: getValue('perm_jefe'),
                     permFechaInicio: f.elements['perm_fechaInicio'] ? f.elements['perm_fechaInicio'].value : "N/A",
                     permFechaFin: f.elements['perm_fechaFin'] ? f.elements['perm_fechaFin'].value : "N/A",
-                    permMotivo: getRad('perm_motivo'), permObservacion: getValue('perm_observacion')
+                    permMotivo: getRad('perm_motivo'), permObservacion: getValue('perm_observacion'),
+                    permFechaFirmaJefe: f.elements['perm_fechaFirmaJefe'] ? f.elements['perm_fechaFirmaJefe'].value : "N/A",
+                    permGerente: getValue('perm_gerente') || "N/A",
+                    permFechaFirmaGerente: f.elements['perm_fechaFirmaGerente'] ? f.elements['perm_fechaFirmaGerente'].value : "N/A"
                 });
             }
             else if (tipo === 'REVOCACIÓN CARTA DE AVISO') {

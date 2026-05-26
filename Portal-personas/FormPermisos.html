@@ -315,6 +315,7 @@
                 document.querySelectorAll('input[name="perm_motivo"]').forEach(r => {
                     r.addEventListener('change', togglePermisoGoce);
                 });
+                togglePermisoGoce();
 
                 document.getElementById('loadingOverlay').style.display = 'none';
             }).withFailureHandler(err => {
