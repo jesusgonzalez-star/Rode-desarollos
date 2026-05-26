@@ -234,6 +234,24 @@
                             <option value="">SELECCIONE JEFATURA...</option>
                         </select>
                     </div>
+                    <div id="wrapper_mod_fechaFirmaJefe" class="hidden">
+                        <label>Fecha Firma Jefatura</label>
+                        <input type="date" name="mod_fechaFirmaJefe" id="mod_fechaFirmaJefe" class="input-field">
+                    </div>
+                </div>
+
+                <div id="wrapper_mod_autorizSueldo" class="hidden mt-6 p-4 border border-amber-300 bg-amber-50 rounded">
+                    <p class="text-[10px] font-bold text-amber-800 uppercase mb-3">Autorización Adicional Cambio de Sueldo</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-[10px]">
+                        <div>
+                            <label>Gerente del Área</label>
+                            <input type="text" name="mod_gerente" id="mod_gerente" class="input-field upper" placeholder="NOMBRE GERENTE">
+                        </div>
+                        <div>
+                            <label>Fecha Firma Gerente</label>
+                            <input type="date" name="mod_fechaFirmaGerente" id="mod_fechaFirmaGerente" class="input-field">
+                        </div>
+                    </div>
                 </div>
             </section>
 
@@ -320,6 +338,23 @@
     <script>verificarSesion('modificacion');</script>
 
     <script>
+        function toggleAutorizSueldo() {
+            const sel = document.getElementById('mod_motivo');
+            const w = document.getElementById('wrapper_mod_autorizSueldo');
+            const wFJ = document.getElementById('wrapper_mod_fechaFirmaJefe');
+            if (!sel || !w) return;
+            const m = (sel.value || '').toUpperCase();
+            const aplica = m.includes('SUELDO') || m.includes('RENTA') || m.includes('SALARIO') || m.includes('REMUNERACIÓN');
+            w.classList.toggle('hidden', !aplica);
+            if (wFJ) wFJ.classList.toggle('hidden', !aplica);
+            const inputs = w.querySelectorAll('input');
+            inputs.forEach(i => { if (aplica) i.setAttribute('required', 'required'); else { i.removeAttribute('required'); i.value = ''; } });
+            const fj = document.getElementById('mod_fechaFirmaJefe');
+            if (fj) { if (aplica) fj.setAttribute('required', 'required'); else { fj.removeAttribute('required'); fj.value = ''; } }
+        }
+    </script>
+
+    <script>
         document.addEventListener('DOMContentLoaded', () => {
             google.script.run
                 .withSuccessHandler(d => {
@@ -337,6 +372,7 @@
                             opt.textContent = 'CAMBIO SUELDO';
                             sel.appendChild(opt);
                         }
+                        sel.addEventListener('change', toggleAutorizSueldo);
                     })();
                     fill('mod_jornadaAnterior', d.horarios);
                     fill('mod_jornadaNuevo', d.horarios);
