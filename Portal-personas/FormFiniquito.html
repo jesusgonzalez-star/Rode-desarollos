@@ -607,9 +607,11 @@
         const habVacaciones    = totalVacaciones * calculoDiario;
 
         // ── IAS ───────────────────────────────────────────────────────
+        // Art. 163 CT: fraccion superior a 6 meses se cuenta como año completo
         const tieneIAS     = getCausalIAS();
-        const habIndemnizacion = tieneIAS ? anios * baseIASConTope : 0;
-        const topeIASLegal = uf > 0 ? Math.round(anios * 90 * uf) : habIndemnizacion;
+        const aniosIAS     = anios + (mesSobrantes >= 6 ? 1 : 0);
+        const habIndemnizacion = tieneIAS ? aniosIAS * baseIASConTope : 0;
+        const topeIASLegal = uf > 0 ? Math.round(aniosIAS * 90 * uf) : habIndemnizacion;
 
         // ── ACUERDO MARCO ─────────────────────────────────────────────
         let habAcuerdo = 0;
@@ -662,7 +664,7 @@
         const { factor, rebaja, iut } = calcularIUT(baseTributable, utm);
 
         // ── ACTUALIZAR CAMPOS CALCULADOS ──────────────────────────────
-        g('fin_aniosServicio').value  = `${anios} AÑOS ${mesSobrantes} MESES (${mesTotales} MES TOT.)`;
+        g('fin_aniosServicio').value  = `${anios} AÑOS ${mesSobrantes} MESES — IAS: ${aniosIAS} AÑOS`;
         g('fin_vacAcumuladas').value  = vacAcumuladas.toFixed(2);
         g('fin_baseVacaciones').value  = fmtNum(baseTotal);
         g('fin_calculoDiario').value   = fmtNum(calculoDiario);
