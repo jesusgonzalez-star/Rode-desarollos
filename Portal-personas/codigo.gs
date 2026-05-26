@@ -511,8 +511,10 @@ function guardarSolicitud(d) {
   try {
     s.appendRow(fila);
 
-    // ── ENCUESTA DE SALIDA — se envía siempre al guardar evaluación ──────────
-    if (d.tipoFormulario === 'EVALUACIÓN DE PERSONAL A DESVINCULAR') {
+    // ── ENCUESTA DE SALIDA — solo se envía cuando el motivo es RENUNCIA ──────
+    const motivoEva = (d.evaMotivoLista || '').toString().toUpperCase();
+    const esRenuncia = motivoEva.includes('RENUNCIA');
+    if (d.tipoFormulario === 'EVALUACIÓN DE PERSONAL A DESVINCULAR' && esRenuncia) {
       const ENCUESTA_URL = CONFIG.ENCUESTA_URL;
       const emailEvaluado = (d.correoPersonal || '').toString().trim();
       if (emailEvaluado && emailEvaluado.includes('@')) {
