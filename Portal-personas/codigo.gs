@@ -196,6 +196,25 @@ function obtenerDatosDesdeDB() {
     }
   } catch(e) { jefaturas = []; }
 
+  // Extrae pares (motivo, ias) correlacionados — sin deduplicar IAS por separado
+  // para mantener correspondencia 1:1 entre motivosDesv[i] y causalesIAS[i]
+  const extraerParMotivosIAS = () => {
+    const idxM = headers.indexOf('MOTIV_DESV');
+    const idxI = headers.indexOf('IAS_DESV');
+    if (idxM === -1) return { motivos: [], ias: [] };
+    const mapa = {};
+    for (let r = 1; r < fullData.length; r++) {
+      const m = fullData[r][idxM] ? fullData[r][idxM].toString().trim() : '';
+      if (!m) continue;
+      const i = (idxI !== -1 && fullData[r][idxI]) ? fullData[r][idxI].toString().trim().toUpperCase() : '';
+      if (!(m in mapa)) mapa[m] = i;
+    }
+    const motivos = Object.keys(mapa).sort();
+    const ias = motivos.map(m => mapa[m]);
+    return { motivos, ias };
+  };
+  const parDesv = extraerParMotivosIAS();
+
   return {
     usuarioActual:    userEmail,
     nombreSolicitante: userEmail.split('@')[0].toUpperCase(),
@@ -208,8 +227,8 @@ function obtenerDatosDesdeDB() {
     estado:           extraerColumna('Estado Civil'),
     motivos:          extraerColumna('Motivo'),
     motivosMod:       extraerColumna('Motivos_Cont'),
-    motivosDesv:      extraerColumna('Motiv_Desv'),
-    causalesIAS:      extraerColumna('IAS_Desv'),
+    motivosDesv:      parDesv.motivos,
+    causalesIAS:      parDesv.ias,
     horarios:         extraerColumna('HORARIO'),
     afps:             extraerColumna('AFP').length > 0 ? extraerColumna('AFP') : ["CAPITAL","CUPRUM","HABITAT","MODELO","PLANVITAL","PROVIDA","UNO"]
   };
