@@ -935,17 +935,17 @@
                 <b style="font-size:16px">${d.finTotalPagar}</b>
             </div>
 
-            <div style="page-break-inside:avoid;margin-top:14px;padding:8px;border:1px dashed #94a3b8;background:#f8fafc;font-size:9px;text-align:center;">
-                <div style="border-top:1px solid #1e293b;margin:0 auto 4px;padding-top:4px;max-width:260px;"></div>
-                <b style="font-size:10px;">${d.nombreSolicitante || '—'}</b>
-                <span style="color:#64748b;text-transform:uppercase;letter-spacing:1px;"> · Firma Calculista</span>
-                <span style="color:#94a3b8;font-size:8px;"> · ${d.emailSolicitante || ''} · ${new Date().toLocaleDateString('es-CL')}</span>
-            </div>
-
-            <div class="firma-box" style="page-break-inside:avoid;margin-top:24px;">
-                <div><div class="linea"></div><span class="lbl">Firma Gte. Operaciones</span></div>
-                <div><div class="linea"></div><span class="lbl">Firma Gte. Administración</span></div>
-                <div><div class="linea"></div><span class="lbl">Firma Gte. General</span></div>
+            <div style="page-break-inside:avoid;break-inside:avoid;margin-top:12px;">
+                <div style="padding:6px 8px;border:1px dashed #94a3b8;background:#f8fafc;font-size:9px;text-align:center;">
+                    <b style="font-size:10px;">${d.nombreSolicitante || '—'}</b>
+                    <span style="color:#64748b;text-transform:uppercase;letter-spacing:1px;"> · Firma Calculista</span>
+                    <span style="color:#94a3b8;font-size:8px;"> · ${d.emailSolicitante || ''} · ${new Date().toLocaleDateString('es-CL')}</span>
+                </div>
+                <div class="firma-box" style="margin-top:18px;">
+                    <div><div class="linea"></div><span class="lbl">Firma Gte. Operaciones</span></div>
+                    <div><div class="linea"></div><span class="lbl">Firma Gte. Administración</span></div>
+                    <div><div class="linea"></div><span class="lbl">Firma Gte. General</span></div>
+                </div>
             </div>`;
         }
 
