@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <script>var SCRIPT_URL = "<?= scriptUrl ?>";</script>
+    <?!= include('Styles'); ?>
+</head>
+
+<body class="bg-slate-50">
+
+    <div id="progressBar" class="fixed top-0 left-0 h-1 bg-[#f89d31] transition-all z-[100]" style="width:0%"></div>
+
+    <header class="bg-[#0D7DAF] px-6 py-4 flex justify-between items-center shadow-md sticky top-0 z-50">
+        <div class="flex items-center gap-4 text-white">
+            <a href="#" onclick="navegar('landing'); return false;" class="flex items-center h-[24px] w-auto opacity-90 hover:opacity-100 transition-opacity">
+                <svg id="Capa_2" data-name="Capa 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 309.97 69.68"
+                    class="h-full w-auto">
+                    <g id="ReliX">
+                        <path
+                            d="M309.96,68.51h-70.83l-18.45-35.16c-.01-.21.99-2.09,1.17-2.45,4.89-9.72,9.83-19.45,14.87-29.09.13-.24.83-1.67.91-1.73s.13-.09.22-.08h34.72c19.81.75,36.16,14.48,37.4,34.7v33.8ZM280.45,59.54h-1.7c-.56,0-.52-.61-.49-1.02l.83-5.69h2.87s.45-2.71.45-2.71h-2.64l.6-3.39-3.53.84-.54,2.5c-.1.15-1.41-.08-1.56.12l-.71,2.71,1.81-.07c-.3,1.44-.62,2.89-.82,4.35-.26,1.91-.78,5.33,1.93,5.66.29.04,2.48.06,2.59-.01l.9-3.28ZM267.55,60.14v2.26h3.32c-.07-.69-.06-1.38-.08-2.07-.04-2.43.56-3.78,1.02-6.07.28-1.39.51-2.81.64-4.22-3.58-.65-7.75-.85-10.56,1.84-2.14,2.05-2.78,4.27-2.48,7.23.31,3.14,3.24,4.68,6.03,3.18,1.01-.55,1.33-1.17,1.94-2.05.05-.07-.01-.14.17-.1ZM300.08,52.23v-2.11h-3.02c-.38,4.14-1.25,8.2-1.96,12.28h3.77c.23-2.23.38-4.93,1.35-6.98.42-.9,1.56-2.06,2.62-2.06h1.4l.23-3.69c-1.79-.03-3.23,1.35-4.38,2.56ZM285.96,57.5c1.06.12,2.15.16,3.21.07,2.1-.17,4.45-.73,4.98-3.09.94-4.15-4.06-5.57-7.21-4.33-3.8,1.49-5.24,6.24-3.69,9.86,1.32,3.08,5.66,3.38,8.44,2.35.32-.12,1.01-.34.97-.73-.02-.21-.5-2-.59-2.06-2.21.69-5.58.81-6.12-2.06ZM242.79,62.33h3.66l3.66-8.06.56,8.07,3.58.06,5.6-12.16-.11-.11h-3.35s-3.56,9.19-3.56,9.19v-9.19h-3.43l-3.77,8.21.11-8.22h-3.93s.98,12.21.98,12.21Z"
+                            fill="#ffffff" />
+                    </g>
+                    <g id="RELIX">
+                        <path id="X"
+                            d="M187.89.68l8.87,22.38L205.93.68h20.72l-16.17,32.42-.06.24.06.24,17.53,34.91h-21.85l-9.28-23.96-9.4,23.96h-21.36c-.01-.08.01-.15.03-.23.18-.57.81-1.68,1.11-2.28,5.36-11.05,10.92-22.02,16.22-33.09L166.94.68h20.94Z"
+                            fill="#ffffff" />
+                        <g id="i">
+                            <rect x="138.87" y="21.48" width="17.43" height="47.02" fill="#ffffff" />
+                            <path
+                                d="M147.16.18c6.51-.3,11.42,6.37,8.1,12.31-3.15,5.65-11.62,5.86-15.11.44s.62-12.46,7.01-12.75Z"
+                                fill="#ffffff" />
+                        </g>
+                        <rect id="l" x="111.02" y=".68" width="17.43" height="67.82" fill="#ffffff" />
+                        <g id="e">
+                            <path
+                                d="M80.53,69.64c-12.68-.59-22.58-7.12-23.92-20.38-.93-9.18,1.59-18.81,9.33-24.36,6.67-4.78,17.38-6.3,24.88-2.72,9.31,4.45,13.03,16,11.96,25.71-.04.4-.49,3.06-.86,3.06h-28.64c.11,1.61,1.25,3.07,2.5,4.03,4.51,3.43,13.45,2.85,18.65,1.45,1.34-.36,2.62-.85,3.91-1.34l1.85,11.46c-4.74,1.89-9.85,2.77-14.95,3.01-.1,0-.17.08-.18.08-1.41.06-3.12.07-4.53,0ZM87.17,39.12c-.18-2.4-.94-4.89-2.87-6.44-1.63-1.31-4.16-1.59-6.15-1.11-3.51.85-5.01,4.22-5.24,7.55h14.26Z"
+                                fill="#ffffff" />
+                        </g>
+                        <g id="R">
+                            <path
+                                d="M0,4.9c2.51-.27,5-.66,7.51-.9,10.24-1.01,24.52-2.06,33.65,3.33,6.32,3.73,8.69,9.93,7.82,17.12-.67,5.49-3.25,9.28-7.85,12.21-.59.37-1.73.87-2.18,1.29-.73.68.43,1.04.83,1.27,3.24,1.86,4.11,4.26,5.28,7.61,1.84,5.26,3.09,10.7,4.72,16.01.58,1.88,1.36,3.71,1.77,5.65h-17.59c-1.08-4-2.34-7.95-3.37-11.97-.84-3.26-1.43-8.44-4.06-10.72-2.11-1.83-6.37-1.7-9.02-1.73v24.42H0V4.9ZM17.36,31.88c4.09-.2,8.66.84,12.11-1.89s3.66-9.08.11-11.79c-.87-.66-3.03-1.63-4.11-1.63h-8.11v15.3Z"
+                                fill="#ffffff" />
+                        </g>
+                    </g>
+                </svg>
+            </a>
+            <div class="h-4 w-[1px] bg-white/30"></div>
+            <span class="text-[9px] tracking-widest opacity-80 uppercase font-bold">Solicitud de Reclutamiento</span>
+        </div>
+        <a href="#" onclick="navegar('landing'); return false;"
+            class="flex items-center gap-1 text-white/70 hover:text-white text-[9px] uppercase font-bold tracking-wider transition-colors">
+            <span class="material-symbols-outlined text-[14px]">arrow_back</span> Portal
+        </a>
+    </header>
+
+    <main class="max-w-6xl mx-auto p-6 space-y-6">
+
+        <!-- FORMULARIO DE RECLUTAMIENTO -->
+        <form id="formTI" oninput="updateProgress()">
+
+            <section class="form-card">
+                <h3><span class="material-symbols-outlined">verified_user</span> 01. Información de Solicitud</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label>Nombre y Apellido del Solicitante</label>
+                        <input type="text" id="global_nombreSolicitante" name="global_nombreSolicitante"
+                            class="input-field upper" placeholder="EJ: JUAN PÉREZ" required>
+                    </div>
+                    <div>
+                        <label>Correo Electrónico</label>
+                        <input type="email" id="global_emailSolicitante" name="global_emailSolicitante"
+                            class="input-field" placeholder="correo@mail.com" required>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                    <div>
+                        <label>Cargo Solicitante</label>
+                        <select name="cargoSolicitante" id="cargoSolicitante" class="input-field upper"
+                            required></select>
+                    </div>
+                    <div>
+                        <label>C.C. Solicitante</label>
+                        <select name="ccSolicitante" id="ccSolicitante" class="input-field upper" required></select>
+                    </div>
+                </div>
+                <div class="mt-4 flex flex-col md:flex-row gap-8 md:items-center">
+                    <div>
+                        <label>Motivo de Contratación</label>
+                        <div class="flex flex-wrap gap-6 mt-2">
+                            <label class="flex items-center gap-2 cursor-pointer font-normal"><input type="radio"
+                                    name="tipoIngreso" value="REEMPLAZO" required
+                                    onchange="handleMotivoCargo(this.value)"> REEMPLAZO</label>
+                            <label class="flex items-center gap-2 cursor-pointer font-normal"><input type="radio"
+                                    name="tipoIngreso" value="NUEVO CARGO" required
+                                    onchange="handleMotivoCargo(this.value)"> NUEVO CARGO</label>
+                            <label class="flex items-center gap-2 cursor-pointer font-normal"><input type="radio"
+                                    name="tipoIngreso" value="CARGO POR CARGO" required
+                                    onchange="handleMotivoCargo(this.value)"> CARGO POR CARGO</label>
+                        </div>
+                    </div>
+                    <div class="w-40 border-l border-slate-200 pl-8 hidden md:block"></div>
+                    <div class="w-40">
+                        <label>Cantidad de Vacantes</label>
+                        <input type="number" name="cantidadVacantes" class="input-field text-center font-bold" min="1"
+                            value="1" required onchange="updateProgress()">
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-card">
+                <h3><span class="material-symbols-outlined">badge</span> 02. Perfil de Vacante</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                    <div>
+                        <label>Estudios o profesión de vacante</label>
+                        <input name="estudiosVacante" class="input-field upper" required>
+                    </div>
+                    <div>
+                        <label id="lblCargo">Cargo a cubrir</label>
+                        <div id="cargoWrapper">
+                            <select name="cargo" id="cargoSelect" class="input-field upper" required></select>
+                            <input type="text" id="cargoInput" name="cargo_manual" class="input-field upper hidden"
+                                placeholder="INGRESE NUEVO CARGO" onchange="updateProgress()">
+                        </div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                    <div>
+                        <label>Descriptor de cargo</label>
+                        <div class="flex gap-6 mt-2">
+                            <label class="flex items-center gap-2 cursor-pointer font-normal"><input type="radio"
+                                    name="descriptorCargo" value="SI" required
+                                    onchange="handleDescriptorCargo(this.value)"> SI</label>
+                            <label class="flex items-center gap-2 cursor-pointer font-normal"><input type="radio"
+                                    name="descriptorCargo" value="NO" required
+                                    onchange="handleDescriptorCargo(this.value)"> NO</label>
+                        </div>
+                        <div id="warnDescriptor" class="hidden mt-3 p-3 border border-amber-200 bg-amber-50 rounded">
+                            <p class="text-[10px] font-bold text-amber-800 uppercase">Sin Descriptor de Cargo</p>
+                            <p class="text-[10px] text-amber-700 mt-1">Para continuar, coordine el Descriptor de Cargo con la Encargada de DO, <b>Yenny Vargas</b>. Si ya coordinó, puede continuar.</p>
+                        </div>
+                        <div id="containerDescriptorFile"
+                            class="mt-4 hidden p-3 border border-blue-100 bg-blue-50 rounded">
+                            <label class="text-[10px] text-blue-600 font-bold mb-1">Adjuntar Descriptor (PDF)</label>
+                            <input type="file" id="fileDescriptor" accept=".pdf"
+                                class="input-field cursor-pointer !h-10 py-1 bg-white" onchange="updateProgress()">
+                            <p class="text-[8px] text-slate-400 mt-1 uppercase italic">Solo archivos PDF permitidos.</p>
+                        </div>
+                    </div>
+                    <div>
+                        <label>A quien Reporta (Jefatura Directa)</label>
+                        <select id="jefeAprobador" name="jefeAprobador" class="input-field upper" required></select>
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-card">
+                <h3><span class="material-symbols-outlined">payments</span> 03. Condiciones Económicas y Administrativas
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <label>Sueldo liquido pactado</label>
+                        <input name="sueldoLiquido" class="input-field" placeholder="$" required
+                            oninput="formatearPesos(this); calcularCostoEmpresa(); updateProgress()">
+                    </div>
+                    <div>
+                        <label>Costo Empresa (aproximado)</label>
+                        <input name="costoEmpresa" class="input-field bg-slate-100 readonly" placeholder="$"
+                            readonly>
+                    </div>
+                    <div>
+                        <label>Centro de Costo</label>
+                        <select id="cc" name="cc" class="input-field upper" required></select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4 text-[10px]">
+                    <div>
+                        <label>Tipo de Contrato</label>
+                        <div class="flex gap-4 mt-2">
+                            <label class="flex items-center gap-2 cursor-pointer font-normal"><input type="radio"
+                                    name="tipoContrato" value="PLAZO FIJO" required
+                                    onchange="toggleFechaTermino(this.value)"> PLAZO FIJO</label>
+                            <label class="flex items-center gap-2 cursor-pointer font-normal"><input type="radio"
+                                    name="tipoContrato" value="INDEFINIDO" required
+                                    onchange="toggleFechaTermino(this.value)"> INDEFINIDO</label>
+                        </div>
+                        <div id="containerFechaTermino" class="hidden mt-2">
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="text-[9px] text-[#0D7DAF]">Fecha Inicio</label>
+                                    <input type="date" name="fechaInicio" id="fechaInicio"
+                                        class="input-field h-7 !p-1 text-[10px]">
+                                </div>
+                                <div>
+                                    <label class="text-[9px] text-[#0D7DAF]">Fecha Término</label>
+                                    <input type="date" name="fechaTermino" id="fechaTermino"
+                                        class="input-field h-7 !p-1 text-[10px]">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <label>Presupuesto</label>
+                        <div class="flex gap-4 mt-2">
+                            <label class="flex items-center gap-2 cursor-pointer font-normal"><input type="radio"
+                                    name="presupuesto" value="SI" required> SI</label>
+                            <label class="flex items-center gap-2 cursor-pointer font-normal"><input type="radio"
+                                    name="presupuesto" value="NO" required> NO <span
+                                    class="text-[8px] text-slate-400 lowercase">(AUTORIZACIÓN GG.)</span></label>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="flex gap-4 mb-20">
+                <button type="button" onclick="document.getElementById('formTI').reset(); updateProgress();"
+                    class="flex-1 bg-slate-200 py-4 text-[11px] font-bold uppercase">Limpiar</button>
+                <button type="button" onclick="revisarReclutamiento()"
+                    class="flex-[3] bg-[#f89d31] text-white py-4 text-[11px] font-bold uppercase shadow-lg">Revisar
+                    Solicitud</button>
+            </div>
+
+        </form>
+    </main>
+
+    <footer>
+        <div class="flex flex-col md:flex-row md:gap-6 items-start md:items-center">
+            <span>© 2026 RELIX S.A.</span>
+            <span id="progressText" class="bg-white/20 px-3 py-1 rounded">0% COMPLETADO</span>
+        </div>
+    </footer>
+
+    <!-- MODAL -->
+    <div id="modalConfirm"
+        class="fixed inset-0 bg-black/80 hidden items-center justify-center z-[2000] p-4 backdrop-blur-sm">
+        <div class="bg-white max-w-2xl w-full border-t-8 border-[#f89d31] overflow-hidden" style="border-radius:4px;">
+            <div id="panelResumen" class="p-8">
+                <h2 class="text-[#0D7DAF] font-bold text-[13px] border-b pb-2 mb-4 uppercase">Resumen de Solicitud</h2>
+                <div id="resumen"
+                    class="grid grid-cols-2 gap-x-8 gap-y-2 text-[10px] uppercase overflow-y-auto max-h-[50vh]"></div>
+                <div class="flex gap-4 mt-8">
+                    <button onclick="cerrarModal()"
+                        class="flex-1 bg-slate-100 py-3 text-[10px] font-bold uppercase hover:bg-slate-200">Corregir</button>
+                    <button onclick="" id="btnFinal"
+                        class="flex-1 bg-[#0D7DAF] text-white py-3 text-[10px] font-bold uppercase hover:bg-[#0a6593]">Confirmar
+                        Envío</button>
+                </div>
+            </div>
+            <div id="panelExito" class="hidden p-10 flex flex-col items-center justify-center text-center"
+                style="min-height:320px;">
+                <div
+                    style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#22c55e,#16a34a);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="38" height="38" viewBox="0 0 24 24" fill="none"
+                        stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                </div>
+                <h3
+                    style="color:#15803d;font-size:18px;font-weight:900;letter-spacing:0.5px;margin-bottom:8px;text-transform:uppercase;">
+                    ¡Enviado con Éxito!</h3>
+                <p style="color:#374151;font-size:11px;font-weight:600;margin-bottom:6px;text-transform:uppercase;">La
+                    solicitud fue registrada correctamente.</p>
+                <div id="folioExito"
+                    style="background:#f0fdf4;border:2px solid #86efac;border-radius:8px;padding:10px 28px;margin:16px 0;display:inline-block;">
+                    <span
+                        style="color:#166534;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;">Folio
+                        N°</span>
+                    <div id="folioNumero" style="color:#15803d;font-size:26px;font-weight:900;line-height:1.2;">—</div>
+                </div>
+                <button onclick="cerrarModal()"
+                    style="background:#0D7DAF;color:white;padding:12px 40px;font-size:10px;font-weight:700;text-transform:uppercase;border:none;border-radius:4px;cursor:pointer;">Cerrar
+                    Ventana</button>
+            </div>
+        </div>
+    </div>
+
+    <datalist id="cargosList"></datalist>
+
+
+
+    <?!= include('SharedJS'); ?>
+    <script>verificarSesion('reclutamiento');</script>
+    <script>
+        function handleDescriptorCargo(v) {
+            toggleDescriptorFile(v);
+            const w = document.getElementById('warnDescriptor');
+            if (w) w.classList.toggle('hidden', v !== 'NO');
+        }
+
+        function revisarReclutamiento() {
+            const desc = document.querySelector('input[name="descriptorCargo"]:checked');
+            if (desc && desc.value === 'NO') {
+                const w = document.getElementById('warnDescriptor');
+                if (w) { w.classList.remove('hidden'); w.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+                return;
+            }
+            abrirModal('formTI', 'RECLUTAMIENTO');
+        }
+    </script>
+
+    <script>
+        window.onload = function () {
+            google.script.run
+                .withSuccessHandler(function (d) {
+                    try {
+                        fill('cargoSolicitante', d.cargosExistentes);
+                        fill('ccSolicitante', d.ccs);
+                        fill('cargoSelect', d.cargosExistentes);
+                        fill('cc', d.ccs);
+                        fill('jefeAprobador', d.jefaturas);
+                        dominiosRespaldo = d.dominios || [];
+                        var dl = document.getElementById('cargosList');
+                        if (dl && d.cargosExistentes) d.cargosExistentes.forEach(function (c) { var o = document.createElement('option'); o.value = c.toUpperCase(); dl.appendChild(o); });
+                    } catch (ex) { console.error('Error poblando:', ex); }
+                })
+                .withFailureHandler(function (err) {
+                    console.error('Error cargando datos:', err);
+                })
+                .obtenerDatosDesdeDB();
+        };
+    </script>
+
+</body>
+
+</html>

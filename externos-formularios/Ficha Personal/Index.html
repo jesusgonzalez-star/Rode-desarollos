@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <?!= include('Styles'); ?>
+</head>
+
+<body class="bg-slate-50">
+    <div id="progressBar" class="fixed top-0 left-0 h-1 bg-[#f89d31] transition-all z-[100]" style="width: 0%"></div>
+
+    <header class="bg-[#0D7DAF] px-6 py-4 flex justify-between items-center shadow-md sticky top-0 z-50">
+        <div class="flex items-center gap-4 text-white">
+            <span class="text-[12px] font-bold tracking-widest uppercase">RELIX WATER S.A.</span>
+            <div class="h-4 w-[1px] bg-white/30"></div>
+            <span class="text-[9px] tracking-widest opacity-80 uppercase font-bold">Ficha Personal del Trabajador</span>
+        </div>
+        </div>
+    </header>
+
+    <footer
+        class="flex justify-between items-center bg-[#f89d31] text-white p-4 font-bold text-[10px] fixed bottom-0 w-full z-[1000]">
+        <span>© 2026 RELIX WATER S.A.</span>
+        <span id="progressText">0% COMPLETADO</span>
+    </footer>
+
+    <main class="max-w-6xl mx-auto p-6 space-y-6">
+        <!-- NAVEGACIÓN DE PESTAÑAS -->
+        <div id="tab_contratacion" class="tab-content block">
+
+            <div id="tab_contratacion" class="tab-content block">
+                <form id="formContratacion">
+                    <section class="form-card">
+                        <h3><span class="material-symbols-outlined">account_circle</span> 01. ANTECEDENTES PERSONALES
+                        </h3>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4">
+                            <div class="space-y-4">
+                                <div>
+                                    <label>Nombres</label>
+                                    <input type="text" name="cont_nombres" class="input-field upper"
+                                        placeholder="EJ: JUAN IGNACIO" required>
+                                </div>
+                                <div>
+                                    <label>Apellidos</label>
+                                    <input type="text" name="cont_apellidos" class="input-field upper"
+                                        placeholder="EJ: PÉREZ SOTO" required>
+                                </div>
+                                <div>
+                                    <label>R.U.T.</label>
+                                    <input type="text" id="cont_rutInput" name="cont_rut" class="input-field"
+                                        placeholder="12.345.678-9" required maxlength="12" oninput="formatearRut(this)"
+                                        onblur="validarRut(this, 'cont_rutFeedback')">
+                                    <span id="cont_rutFeedback" class="text-[8px] font-bold mt-1 block h-2"></span>
+                                </div>
+                                <div>
+                                    <label>Estado Civil</label>
+                                    <select id="estado" name="cont_estadoCivil" class="input-field" required>
+                                        <option value="">SELECCIONE...</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label>Fecha de Nacimiento</label>
+                                    <input type="date" name="cont_fechaNacimiento" class="input-field" required>
+                                </div>
+                                <div>
+                                    <label>Sexo</label>
+                                    <div class="flex gap-4 h-[32px] items-center">
+                                        <label class="flex items-center gap-1 cursor-pointer font-normal mb-0"><input
+                                                type="radio" name="cont_sexo" value="MASCULINO" required>
+                                            MASCULINO</label>
+                                        <label class="flex items-center gap-1 cursor-pointer font-normal mb-0"><input
+                                                type="radio" name="cont_sexo" value="FEMENINO"> FEMENINO</label>
+                                        <label class="flex items-center gap-1 cursor-pointer font-normal mb-0"><input
+                                                type="radio" name="cont_sexo" value="OTRO"> OTRO/PREFIERO NO
+                                            DECIR</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="space-y-4">
+                                <div>
+                                    <label>Dirección</label>
+                                    <input type="text" name="cont_direccion" class="input-field upper"
+                                        placeholder="CALLE, NÚMERO, DEPTO" required>
+                                </div>
+                                <div>
+                                    <label>Comuna</label>
+                                    <input type="text" name="cont_comuna" class="input-field upper"
+                                        placeholder="EJ: PROVIDENCIA" required>
+                                </div>
+                                <div>
+                                    <label>Ciudad</label>
+                                    <input type="text" name="cont_ciudad" class="input-field upper"
+                                        placeholder="EJ: SANTIAGO" required>
+                                </div>
+                                <div>
+                                    <label>Email</label>
+                                    <input type="email" name="cont_correo" class="input-field upper"
+                                        placeholder="CORREO@MAIL.COM" required>
+                                </div>
+                                <div>
+                                    <label>Celular (569XXXXXXXX)</label>
+                                    <input type="text" name="cont_telefono" class="input-field"
+                                        placeholder="56912345678" maxlength="11" minlength="11" pattern="[0-9]{11}"
+                                        oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
+                                </div>
+                                <div>
+                                    <label>Nacionalidad</label>
+                                    <input type="text" name="cont_nacionalidad" class="input-field upper"
+                                        placeholder="EJ: CHILENA" required>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="form-card">
+                        <h3><span class="material-symbols-outlined">badge</span> 02. DATOS LABORALES Y PERSONALES</h3>
+
+                        <!-- Tallas -->
+                        <div
+                            class="grid grid-cols-1 md:grid-cols-3 gap-0 border border-slate-300 mb-6 font-bold text-center">
+                            <div class="border-r border-slate-300 p-0">
+                                <div class="bg-slate-50 py-2 border-b border-slate-300 text-[10px]">Talla Polera</div>
+                                <input type="text" name="cont_tallaPolera"
+                                    class="w-full h-10 text-center outline-none upper" placeholder="..." required>
+                            </div>
+                            <div class="border-r border-slate-300 p-0">
+                                <div class="bg-slate-50 py-2 border-b border-slate-300 text-[10px]">Talla Pantalón</div>
+                                <input type="text" name="cont_tallaPantalon"
+                                    class="w-full h-10 text-center outline-none upper" placeholder="..." required>
+                            </div>
+                            <div class="p-0">
+                                <div class="bg-slate-50 py-2 border-b border-slate-300 text-[10px]">Nº Calzado</div>
+                                <input type="text" name="cont_calzado"
+                                    class="w-full h-10 text-center outline-none upper" placeholder="..." required>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="form-card">
+                        <h3><span class="material-symbols-outlined">school</span> 03. FORMACIÓN EDUCACIONAL</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
+                            <div>
+                                <label>Estudios Medios</label>
+                                <input type="text" name="cont_estudiosMedios" class="input-field upper"
+                                    placeholder="COLEGIO / LICEO / INSTITUCIÓN">
+                            </div>
+                            <div>
+                                <label>Estudios Superiores</label>
+                                <input type="text" name="cont_estudiosSuperiores" class="input-field upper"
+                                    placeholder="UNIVERSIDAD / INSTITUTO / TÍTULO">
+                            </div>
+                            <div>
+                                <label>Otros Estudios</label>
+                                <input type="text" name="cont_estudiosOtros" class="input-field upper"
+                                    placeholder="CURSOS / DIPLOMADOS">
+                            </div>
+                            <div>
+                                <label>Certificaciones</label>
+                                <input type="text" name="cont_certificaciones" class="input-field upper"
+                                    placeholder="TÉCNICAS / IDIOMAS / OTROS">
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="form-card">
+                        <h3><span class="material-symbols-outlined">payments</span> 04. DATOS BANCARIOS</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
+                            <div>
+                                <label>Banco</label>
+                                <select id="banco" name="cont_banco" class="input-field" required>
+                                    <option value="">CARGANDO...</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label>Tipo de Cuenta</label>
+                                <select name="cont_tipoCuenta" class="input-field" required>
+                                    <option value="">SELECCIONE...</option>
+                                    <option value="CUENTA RUT">CUENTA RUT</option>
+                                    <option value="CUENTA CORRIENTE">CUENTA CORRIENTE</option>
+                                    <option value="CUENTA VISTA">CUENTA VISTA</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label>N° de Cuenta</label>
+                                <input type="text" name="cont_numeroCuenta" class="input-field"
+                                    placeholder="EJ: 1234567890" required>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="form-card">
+                        <h3><span class="material-symbols-outlined">health_and_safety</span> 05. SALUD Y PREVISIÓN</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
+                            <div>
+                                <label>Sistema de Salud</label>
+                                <select name="cont_salud" class="input-field" required>
+                                    <option value="">SELECCIONE...</option>
+                                    <option value="FONASA">FONASA</option>
+                                    <option value="ISAPRE">ISAPRE</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label>Cotización Pactada</label>
+                                <input type="text" name="cont_planSalud" class="input-field upper"
+                                    placeholder="7% / UF / PESOS">
+                            </div>
+                            <div>
+                                <label>AFP</label>
+                                <select id="afp" name="cont_afp" class="input-field" required>
+                                    <option value="">SELECCIONE...</option>
+                                </select>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="form-card overflow-x-auto">
+                        <h3><span class="material-symbols-outlined">family_restroom</span> 06. CARGAS FAMILIARES</h3>
+                        <table class="w-full border-collapse border border-slate-300 text-[10px]">
+                            <thead>
+                                <tr class="bg-slate-50 text-center font-bold">
+                                    <th class="border border-slate-300 p-2">Parentesco</th>
+                                    <th class="border border-slate-300 p-2">Nombre Completo</th>
+                                    <th class="border border-slate-300 p-2">RUT</th>
+                                    <th class="border border-slate-300 p-2">Fecha de Nacimiento</th>
+                                    <th class="border border-slate-300 p-2">Sexo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- 4 Filas -->
+                                <tr class="h-10">
+                                    <td class="border border-slate-300"><input type="text" name="cont_fam_parentesco_1"
+                                            class="w-full h-full px-2 outline-none upper"></td>
+                                    <td class="border border-slate-300"><input type="text" name="cont_fam_nombre_1"
+                                            class="w-full h-full px-2 outline-none upper"></td>
+                                    <td class="border border-slate-300"><input type="text" name="cont_fam_rut_1"
+                                            class="w-full h-full px-2 outline-none upper" placeholder="12.345.678-9"
+                                            oninput="formatearRut(this)" onblur="validarRut(this)"></td>
+                                    <td class="border border-slate-300"><input type="date" name="cont_fam_fecha_1"
+                                            class="w-full h-full px-2 outline-none"></td>
+                                    <td class="border border-slate-300">
+                                        <select name="cont_fam_sexo_1"
+                                            class="w-full h-full px-2 outline-none bg-transparent">
+                                            <option value=""></option>
+                                            <option value="M">M</option>
+                                            <option value="F">F</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr class="h-10">
+                                    <td class="border border-slate-300"><input type="text" name="cont_fam_parentesco_2"
+                                            class="w-full h-full px-2 outline-none upper"></td>
+                                    <td class="border border-slate-300"><input type="text" name="cont_fam_nombre_2"
+                                            class="w-full h-full px-2 outline-none upper"></td>
+                                    <td class="border border-slate-300"><input type="text" name="cont_fam_rut_2"
+                                            class="w-full h-full px-2 outline-none upper" placeholder="12.345.678-9"
+                                            oninput="formatearRut(this)" onblur="validarRut(this)"></td>
+                                    <td class="border border-slate-300"><input type="date" name="cont_fam_fecha_2"
+                                            class="w-full h-full px-2 outline-none"></td>
+                                    <td class="border border-slate-300">
+                                        <select name="cont_fam_sexo_2"
+                                            class="w-full h-full px-2 outline-none bg-transparent">
+                                            <option value=""></option>
+                                            <option value="M">M</option>
+                                            <option value="F">F</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr class="h-10">
+                                    <td class="border border-slate-300"><input type="text" name="cont_fam_parentesco_3"
+                                            class="w-full h-full px-2 outline-none upper"></td>
+                                    <td class="border border-slate-300"><input type="text" name="cont_fam_nombre_3"
+                                            class="w-full h-full px-2 outline-none upper"></td>
+                                    <td class="border border-slate-300"><input type="text" name="cont_fam_rut_3"
+                                            class="w-full h-full px-2 outline-none upper" placeholder="12.345.678-9"
+                                            oninput="formatearRut(this)" onblur="validarRut(this)"></td>
+                                    <td class="border border-slate-300"><input type="date" name="cont_fam_fecha_3"
+                                            class="w-full h-full px-2 outline-none"></td>
+                                    <td class="border border-slate-300">
+                                        <select name="cont_fam_sexo_3"
+                                            class="w-full h-full px-2 outline-none bg-transparent">
+                                            <option value=""></option>
+                                            <option value="M">M</option>
+                                            <option value="F">F</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="mt-4 p-4 bg-orange-50 border-l-4 border-[#f89d31] text-orange-900 text-[10px]">
+                            <p class="font-bold flex items-center gap-2 mb-1">
+                                <span class="material-symbols-outlined text-[14px]">info</span>
+                                INFORMACIÓN IMPORTANTE
+                            </p>
+                            <p class="mb-2 uppercase">
+                                En caso de tener más de 3 cargas familiares, favor detallarlas a continuación y
+                                contactarse
+                                con el departamento de Recursos Humanos.
+                            </p>
+                            <textarea name="cont_fam_observaciones"
+                                class="w-full p-2 border border-orange-200 rounded outline-none h-20 upper focus:border-[#f89d31]"
+                                placeholder="DETALLE AQUÍ: NOMBRE COMPLETO, RUT, PARENTESCO Y FECHA DE NACIMIENTO DE LAS CARGAS ADICIONALES..."></textarea>
+                        </div>
+                    </section>
+
+                    <section class="form-card">
+                        <h3><span class="material-symbols-outlined">emergency</span> 07. CONTACTO DE EMERGENCIA</h3>
+                        <table class="w-full border-collapse border border-slate-300 text-[10px] mb-6">
+                            <thead>
+                                <tr class="bg-slate-50 text-center font-bold">
+                                    <th class="border border-slate-300 p-2">Nombre</th>
+                                    <th class="border border-slate-300 p-2">Parentesco</th>
+                                    <th class="border border-slate-300 p-2">Teléfono</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="h-10">
+                                    <td class="border border-slate-300"><input type="text" name="cont_emg_nombre_1"
+                                            class="w-full h-full px-2 outline-none upper"></td>
+                                    <td class="border border-slate-300"><input type="text" name="cont_emg_parentesco_1"
+                                            class="w-full h-full px-2 outline-none upper"></td>
+                                    <td class="border border-slate-300"><input type="text" name="cont_emg_telefono_1"
+                                            class="w-full h-full px-2 outline-none" placeholder="56912345678"></td>
+                                </tr>
+                                <tr class="h-10">
+                                    <td class="border border-slate-300"><input type="text" name="cont_emg_nombre_2"
+                                            class="w-full h-full px-2 outline-none upper"></td>
+                                    <td class="border border-slate-300"><input type="text" name="cont_emg_parentesco_2"
+                                            class="w-full h-full px-2 outline-none upper"></td>
+                                    <td class="border border-slate-300"><input type="text" name="cont_emg_telefono_2"
+                                            class="w-full h-full px-2 outline-none" placeholder="56912345678"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label>Enfermedades Crónicas</label>
+                                <input type="text" name="cont_emergenciaEnfermedades" class="input-field upper">
+                            </div>
+                            <div>
+                                <label>Alergias</label>
+                                <input type="text" name="cont_emergenciaAlergias" class="input-field upper">
+                            </div>
+                            <div>
+                                <label>Tratamiento médico</label>
+                                <input type="text" name="cont_emergenciaTratamiento" class="input-field upper">
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="form-card">
+                        <h3><span class="material-symbols-outlined">gavel</span> 08. DECLARACIÓN</h3>
+                        <div class="space-y-4">
+                            <label class="block text-sm font-semibold text-slate-700 leading-relaxed">
+                                ¿Tiene algún vínculo directo o indirecto con algún trabajador vigente de la empresa? Si
+                                su
+                                respuesta es si, indicar su nombre.
+                            </label>
+                            <div class="flex flex-col md:flex-row gap-6 items-start md:items-center">
+                                <div class="flex gap-4 h-[40px] items-center">
+                                    <label class="flex items-center gap-2 cursor-pointer font-bold">
+                                        <input type="radio" name="cont_familiarEmpresa" value="SI" class="w-4 h-4" onchange="toggleFamiliarEmpresa()"> SI
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer font-bold">
+                                        <input type="radio" name="cont_familiarEmpresa" value="NO" checked
+                                            class="w-4 h-4" onchange="toggleFamiliarEmpresa()">
+                                        NO
+                                    </label>
+                                </div>
+                                <div class="flex-1 w-full">
+                                    <input type="text" name="cont_familiarNombre" id="cont_familiarNombre" class="input-field upper transition-colors"
+                                        placeholder="INDICAR NOMBRE COMPLETO SI CORRESPONDE">
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <div class="flex gap-4 mt-6">
+                        <button type="button"
+                            onclick="document.getElementById('formContratacion').reset(); toggleFamiliarEmpresa(); updateProgress();"
+                            class="flex-1 bg-slate-200 py-4 text-[11px] font-bold uppercase transition-colors hover:bg-slate-300">Limpiar</button>
+                        <button type="button" onclick="abrirModal('formContratacion', 'FICHA')"
+                            id="btnFinalContratacion"
+                            class="flex-[3] bg-[#0D7DAF] text-white py-4 text-[11px] font-bold uppercase shadow-lg transition-colors hover:bg-blue-900">Enviar
+                            Ficha Personal</button>
+                    </div>
+                </form>
+            </div>
+
+
+
+    </main>
+
+    <div id="modalConfirm"
+        class="fixed inset-0 bg-black/80 hidden items-center justify-center z-[2000] p-4 backdrop-blur-sm">
+        <div class="bg-white max-w-4xl w-full p-8 border-t-8 border-[#f89d31]">
+            <h2 class="text-[#0D7DAF] font-bold text-[13px] border-b pb-2 mb-4 uppercase">Resumen de Envío</h2>
+            <div id="resumen" class="grid grid-cols-3 gap-x-8 gap-y-2 text-[10px] uppercase max-h-[60vh] overflow-y-auto"></div>
+            <div class="flex gap-4 mt-8">
+                <button onclick="cerrarModal()"
+                    class="flex-1 bg-slate-100 py-3 text-[10px] font-bold uppercase">Corregir</button>
+                <button id="btnFinal"
+                    class="flex-1 bg-[#0D7DAF] text-white py-3 text-[10px] font-bold uppercase">Confirmar Envío</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function formatearRut(i) {
+            let v = i.value.replace(/[^0-9kK]/g, '').toUpperCase();
+            if (v.length > 9) v = v.slice(0, 9);
+            if (v.length < 2) { i.value = v; return; }
+            let cuerpo = v.slice(0, -1);
+            let dv = v.slice(-1);
+            i.value = cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g, ".") + "-" + dv;
+        }
+
+        function validarRut(i, feedbackId) {
+            let v = i.value.replace(/\./g, '').replace(/-/g, '');
+            if (v.length < 8) return;
+            let c = v.slice(0, -1), d = v.slice(-1).toUpperCase(), s = 0, m = 2;
+            for (let j = 1; j <= c.length; j++) { s += m * v.charAt(c.length - j); m = (m < 7) ? m + 1 : 2; }
+            let de = 11 - (s % 11); de = (de == 11) ? 0 : (de == 10) ? "K" : de;
+            const f = document.getElementById(feedbackId);
+            if (f) {
+                if (d != de) { i.style.borderColor = 'red'; f.innerText = "❌ RUT INVÁLIDO"; f.style.color = 'red'; }
+                else { i.style.borderColor = '#10b981'; f.innerText = "✅ RUT VÁLIDO"; f.style.color = '#10b981'; }
+            }
+        }
+
+        const fill = (id, l) => {
+            let s = document.getElementById(id); if (!s) return;
+            s.innerHTML = '<option value="">SELECCIONE...</option>';
+            if (l) l.forEach(i => s.innerHTML += '<option value="' + i + '">' + i.toUpperCase() + '</option>');
+        };
+
+        window.onload = () => {
+            google.script.run.withSuccessHandler(d => {
+                fill('estado', d.estado);
+                fill('afp', d.afp);
+                fill('banco', d.bancos);
+
+            }).obtenerDatosDesdeDB();
+        };
+
+        function abrirModal(tabId, tipo) {
+            const f = document.getElementById(tabId);
+            if (!f.checkValidity()) { f.reportValidity(); return; }
+            let h = "";
+            const allLabels = {
+                'FICHA': {
+                    cont_nombres: "NOMBRES",
+                    cont_apellidos: "APELLIDOS",
+                    cont_rut: "RUT",
+                    cont_fechaNacimiento: "FECHA NACIMIENTO",
+                    cont_sexo: "SEXO",
+                    cont_estadoCivil: "ESTADO CIVIL",
+                    cont_direccion: "DIRECCIÓN",
+                    cont_comuna: "COMUNA",
+                    cont_ciudad: "CIUDAD",
+                    cont_correo: "EMAIL",
+                    cont_telefono: "CELULAR",
+                    cont_nacionalidad: "NACIONALIDAD",
+                    cont_tallaPolera: "TALLA POLERA",
+                    cont_tallaPantalon: "TALLA PANTALÓN",
+                    cont_calzado: "CALZADO",
+                    cont_estudiosMedios: "ESTUDIOS MEDIOS",
+                    cont_estudiosSuperiores: "ESTUDIOS SUPERIORES",
+                    cont_estudiosOtros: "OTROS ESTUDIOS",
+                    cont_certificaciones: "CERTIFICACIONES",
+                    cont_banco: "BANCO",
+                    cont_tipoCuenta: "TIPO DE CUENTA",
+                    cont_numeroCuenta: "N° CUENTA",
+                    cont_salud: "SISTEMA SALUD",
+                    cont_planSalud: "PLAN SALUD",
+                    cont_afp: "AFP",
+                    cont_fam_nombre_1: "CARGA 1",
+                    cont_fam_nombre_2: "CARGA 2",
+                    cont_fam_nombre_3: "CARGA 3",
+                    cont_fam_observaciones: "OBSERVACIONES CARGAS",
+                    cont_emg_nombre_1: "EMERGENCIA 1",
+                    cont_emg_nombre_2: "EMERGENCIA 2",
+                    cont_emergenciaEnfermedades: "ENFERMEDADES",
+                    cont_emergenciaAlergias: "ALERGIAS",
+                    cont_emergenciaTratamiento: "TRATAMIENTO MÉDICO",
+                    cont_familiarEmpresa: "VÍNCULO EMPRESA",
+                    cont_familiarNombre: "NOMBRE VÍNCULO"
+                }
+            };
+
+            const labels = allLabels[tipo] || {};
+            const formData = new FormData(f);
+            formData.forEach((v, k) => {
+                if (v && labels[k]) {
+                    // FILTRO: No mostrar preguntas individuales en el resumen de EVALUACIÓN, solo promedios
+                    if (tipo === 'EVALUACIÓN' && /eva_(asp|prof|seg|cal)\d+/.test(k)) return;
+                    h += "<div><span class='text-slate-400 text-[8px]'>" + labels[k] + ":</span><br><b>" + v + "</b></div>";
+                }
+            });
+            document.getElementById('resumen').innerHTML = h;
+            document.getElementById('modalConfirm').style.display = 'flex';
+            document.getElementById('btnFinal').onclick = () => enviarSolicitud(tipo, tabId);
+        }
+
+
+        function cerrarModal() { document.getElementById('modalConfirm').style.display = 'none'; }
+
+        function enviarSolicitud(tipo, formId) {
+            const b = document.getElementById('btnFinal');
+            b.disabled = true; b.innerText = "PROCESANDO...";
+            const f = document.getElementById(formId);
+            const getChk = (nom) => f.elements[nom] && f.elements[nom].checked ? "SI" : "NO";
+            const getRad = (nom) => {
+                const el = f.elements[nom];
+                if (el instanceof RadioNodeList) {
+                    for (const r of el) { if (r.checked) return r.value; }
+                } else if (el && el.checked) {
+                    return el.value;
+                }
+                return "0";
+            };
+            const getValue = (nom) => f.elements[nom] ? f.elements[nom].value.toUpperCase() : "N/A";
+
+            let data = {
+                tipoFormulario: tipo,
+                nombreSolicitante: "EXTERNO",
+                emailSolicitante: "EXTERNO",
+                nombre1: getValue('cont_nombres') + " " + getValue('cont_apellidos'),
+                rut: getValue('cont_rut'),
+                fechaNac: f.elements['cont_fechaNacimiento'] ? f.elements['cont_fechaNacimiento'].value : "N/A",
+                sexo: getRad('cont_sexo'),
+                estadoCivil: getValue('cont_estadoCivil'),
+                direccion: getValue('cont_direccion'),
+                comuna: getValue('cont_comuna'),
+                ciudad: getValue('cont_ciudad'),
+                emailPersonal: getValue('cont_correo'),
+                telefono: getValue('cont_telefono'),
+                nacionalidad: getValue('cont_nacionalidad'),
+                tallaPolera: getValue('cont_tallaPolera'),
+                tallaPantalon: getValue('cont_tallaPantalon'),
+                calzado: getValue('cont_calzado'),
+                estudiosMedios: getValue('cont_estudiosMedios'),
+                estudiosSuperiores: getValue('cont_estudiosSuperiores'),
+                estudiosOtros: getValue('cont_estudiosOtros'),
+                certificaciones: getValue('cont_certificaciones'),
+                banco: getValue('cont_banco'),
+                tipoCuenta: getValue('cont_tipoCuenta'),
+                numCuenta: getValue('cont_numeroCuenta'),
+                salud: getValue('cont_salud'),
+                planSalud: getValue('cont_planSalud'),
+                afp: getValue('cont_afp'),
+                fam_nombre_1: getValue('cont_fam_nombre_1'),
+                fam_rut_1: getValue('cont_fam_rut_1'),
+                fam_parentesco_1: getValue('cont_fam_parentesco_1'),
+                fam_fecha_1: f.elements['cont_fam_fecha_1'] ? f.elements['cont_fam_fecha_1'].value : "N/A",
+                fam_sexo_1: getValue('cont_fam_sexo_1'),
+                fam_nombre_2: getValue('cont_fam_nombre_2'),
+                fam_rut_2: getValue('cont_fam_rut_2'),
+                fam_parentesco_2: getValue('cont_fam_parentesco_2'),
+                fam_fecha_2: f.elements['cont_fam_fecha_2'] ? f.elements['cont_fam_fecha_2'].value : "N/A",
+                fam_sexo_2: getValue('cont_fam_sexo_2'),
+                fam_nombre_3: getValue('cont_fam_nombre_3'),
+                fam_rut_3: getValue('cont_fam_rut_3'),
+                fam_parentesco_3: getValue('cont_fam_parentesco_3'),
+                fam_fecha_3: f.elements['cont_fam_fecha_3'] ? f.elements['cont_fam_fecha_3'].value : "N/A",
+                fam_sexo_3: getValue('cont_fam_sexo_3'),
+                fam_observaciones: getValue('cont_fam_observaciones'),
+                emg_nombre_1: getValue('cont_emg_nombre_1'),
+                emg_parentesco_1: getValue('cont_emg_parentesco_1'),
+                emg_telefono_1: getValue('cont_emg_telefono_1'),
+                emg_nombre_2: getValue('cont_emg_nombre_2'),
+                emg_parentesco_2: getValue('cont_emg_parentesco_2'),
+                emg_telefono_2: getValue('cont_emg_telefono_2'),
+                emgEnfermedades: getValue('cont_emergenciaEnfermedades'),
+                emgAlergias: getValue('cont_emergenciaAlergias'),
+                emgTratamiento: getValue('cont_emergenciaTratamiento'),
+                familiarEmpresa: getRad('cont_familiarEmpresa'),
+                familiarNombre: getRad('cont_familiarEmpresa') === 'NO' ? 'N/A' : (getValue('cont_familiarNombre') || 'N/A')
+            };
+
+            const ventana = window.open('', '_blank');
+
+            google.script.run.withSuccessHandler(r => {
+                b.disabled = false; b.innerText = "Confirmar Envío";
+                if (r.status === "OK") {
+                    alert("ENVIADO CON ÉXITO. FOLIO: " + r.folio);
+                    let contentHtml = `
+                                <div class="st">01. IDENTIFICACIÓN TRABAJADOR</div>
+                                <div class="grid">
+                                    <div class="box" style="grid-column: span 2;"><span class="lbl">NOMBRE</span><span class="val">${data.nombre1}</span></div>
+                                    <div class="box"><span class="lbl">RUT</span><span class="val">${data.rut}</span></div>
+                                    <div class="box"><span class="lbl">ESTADO CIVIL</span><span class="val">${data.estadoCivil}</span></div>
+                                    <div class="box"><span class="lbl">FECHA NACIMIENTO</span><span class="val">${data.fechaNac}</span></div>
+                                    <div class="box"><span class="lbl">SEXO</span><span class="val">${data.sexo}</span></div>
+                                    <div class="box"><span class="lbl">NACIONALIDAD</span><span class="val">${data.nacionalidad}</span></div>
+                                    <div class="box" style="grid-column: span 3;"><span class="lbl">DIRECCIÓN</span><span class="val">${data.direccion}, ${data.comuna}, ${data.ciudad}</span></div>
+                                    <div class="box"><span class="lbl">TELÉFONO</span><span class="val">${data.telefono}</span></div>
+                                    <div class="box" style="grid-column: span 3;"><span class="lbl">EMAIL</span><span class="val">${data.emailPersonal}</span></div>
+                                </div>
+                                <div class="st">02. TALLAS Y CALZADO</div>
+                                <div class="grid">
+                                    <div class="box"><span class="lbl">POLERA</span><span class="val">${data.tallaPolera}</span></div>
+                                    <div class="box"><span class="lbl">PANTALÓN</span><span class="val">${data.tallaPantalon}</span></div>
+                                    <div class="box"><span class="lbl">CALZADO</span><span class="val">${data.calzado}</span></div>
+                                </div>
+                                <div class="st">03. FORMACIÓN EDUCACIONAL</div>
+                                <div class="grid">
+                                    <div class="box" style="grid-column: span 2;"><span class="lbl">ESTUDIOS MEDIOS</span><span class="val">${data.estudiosMedios}</span></div>
+                                    <div class="box" style="grid-column: span 2;"><span class="lbl">ESTUDIOS SUPERIORES</span><span class="val">${data.estudiosSuperiores}</span></div>
+                                    <div class="box" style="grid-column: span 2;"><span class="lbl">OTROS ESTUDIOS</span><span class="val">${data.estudiosOtros}</span></div>
+                                    <div class="box" style="grid-column: span 2;"><span class="lbl">CERTIFICACIONES</span><span class="val">${data.certificaciones}</span></div>
+                                </div>
+                                <div class="st">04. DATOS BANCARIOS</div>
+                                <div class="grid">
+                                    <div class="box"><span class="lbl">BANCO</span><span class="val">${data.banco}</span></div>
+                                    <div class="box"><span class="lbl">TIPO CUENTA</span><span class="val">${data.tipoCuenta}</span></div>
+                                    <div class="box"><span class="lbl">N° CUENTA</span><span class="val">${data.numCuenta}</span></div>
+                                </div>
+                                <div class="st">05. SALUD Y PREVISIÓN</div>
+                                <div class="grid">
+                                    <div class="box"><span class="lbl">SISTEMA SALUD</span><span class="val">${data.salud}</span></div>
+                                    <div class="box"><span class="lbl">PLAN SALUD</span><span class="val">${data.planSalud}</span></div>
+                                    <div class="box"><span class="lbl">AFP</span><span class="val">${data.afp}</span></div>
+                                </div>
+                                <div class="st">06. CARGAS FAMILIARES</div>
+                                <div class="grid">
+                                    ${(data.fam_nombre_1 ? `<div class="box" style="grid-column: span 2;"><span class="lbl">NOMBRE 1</span><span class="val">${data.fam_nombre_1}</span></div><div class="box"><span class="lbl">RUT 1</span><span class="val">${data.fam_rut_1}</span></div><div class="box"><span class="lbl">VÍNCULO 1</span><span class="val">${data.fam_parentesco_1}</span></div>` : '')}
+                                    ${(data.fam_nombre_2 ? `<div class="box" style="grid-column: span 2;"><span class="lbl">NOMBRE 2</span><span class="val">${data.fam_nombre_2}</span></div><div class="box"><span class="lbl">RUT 2</span><span class="val">${data.fam_rut_2}</span></div><div class="box"><span class="lbl">VÍNCULO 2</span><span class="val">${data.fam_parentesco_2}</span></div>` : '')}
+                                    ${(data.fam_nombre_3 ? `<div class="box" style="grid-column: span 2;"><span class="lbl">NOMBRE 3</span><span class="val">${data.fam_nombre_3}</span></div><div class="box"><span class="lbl">RUT 3</span><span class="val">${data.fam_rut_3}</span></div><div class="box"><span class="lbl">VÍNCULO 3</span><span class="val">${data.fam_parentesco_3}</span></div>` : '')}
+                                    <div class="box" style="grid-column: span 4;"><span class="lbl">OBSERVACIONES</span><span class="val">${(data.fam_observaciones || "SIN OBSERVACIONES")}</span></div>
+                                </div>
+                                <div class="st">07. CONTACTO DE EMERGENCIA</div>
+                                <div class="grid">
+                                    <div class="box" style="grid-column: span 2;"><span class="lbl">CONTACTO 1</span><span class="val">${data.emg_nombre_1} (${data.emg_parentesco_1})</span></div>
+                                    <div class="box"><span class="lbl">TELÉFONO</span><span class="val">${data.emg_telefono_1}</span></div>
+                                    ${(data.emg_nombre_2 && data.emg_nombre_2.trim() ? `<div class="box" style="grid-column: span 2;"><span class="lbl">CONTACTO 2</span><span class="val">${data.emg_nombre_2} (${data.emg_parentesco_2})</span></div><div class="box"><span class="lbl">TELÉFONO</span><span class="val">${data.emg_telefono_2}</span></div>` : '')}
+                                    <div class="box" style="grid-column: span 4;"><span class="lbl">DATOS MÉDICOS</span><span class="val">${data.emgEnfermedades} / ${data.emgAlergias} / ${data.emgTratamiento}</span></div>
+                                </div>
+                                <div class="st">08. DECLARACIÓN</div>
+                                <div class="box"><span class="lbl">VÍNCULO CON TRABAJADORES VIGENTES</span><span class="val">${data.familiarEmpresa} ${data.familiarNombre ? '(' + data.familiarNombre + ')' : ''}</span></div>
+                                <div class="cert-text">Al firmar a continuación, certifico que los datos proporcionados han sido completados correctamente y de acuerdo a la realidad, sin hacer omisión a lo solicitado en el presente formulario.</div>
+                                <div class="firma-box">
+                                    <div style="width: 250px;">
+                                        <div class="linea" style="width: 100%;"></div>
+                                        <span class="val">FIRMA DEL TRABAJADOR</span>
+                                    </div>
+                                    <div class="val">FECHA: ${r.fechaHoy}</div>
+                                </div>`;
+
+                        const pdfHtml = `<html><head><title>${r.nombreArchivoPDF}</title><style>@import url("https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap");@page { margin: 0; size: letter; }body { font-family: "Roboto Mono", monospace; padding: 30px 45px; font-size: 8px; color: #1e293b; margin: 0; text-transform: uppercase; }.h { border-bottom: 2px solid #0D7DAF; margin-bottom: 20px; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }.st { background: #0D7DAF; color: white; padding: 4px 10px; font-weight: bold; margin-top: 10px; margin-bottom: 4px; font-size: 9px; }.grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }.box { border: 1px solid #cbd5e1; padding: 5px; background: #f8fafc; }.lbl { color: #64748b; font-size: 7px; font-weight: bold; display: block; }.val { font-weight: bold; font-size: 9px; }.firma-box { margin-top: 120px; display: flex; justify-content: space-between; align-items: flex-end; }.linea { border-top: 1px solid black; width: 180px; margin-bottom: 5px; }.cert-text { margin-top: 40px; text-align: justify; font-size: 8px; line-height: 1.4; text-transform: uppercase; }.btn-container { text-align: center; margin-top: 40px; padding-bottom: 40px; }.no-print-btn { background: #0D7DAF; color: white; padding: 12px 25px; border: none; cursor: pointer; font-weight: bold; font-family: "Roboto Mono"; font-size: 11px; text-transform: uppercase; }@media print { .no-print-btn, .btn-container { display: none !important; } body { padding: 15mm 20mm; } }</style></head><body><div class="h"><div><b style="font-size:12px; color:#0D7DAF;">RELIX WATER S.A.</b><br>Ficha Personal Simplificada v1.0</div><div style="text-align:right"><b>FOLIO N°: ${r.folio}</b><br>TOKEN: <b>${r.token}</b><br>REGISTRO: ${r.fechaHoy}</div></div>${contentHtml}<div class="btn-container"><button class="no-print-btn" onclick="window.print()">IMPRIMIR COMPROBANTE PDF</button></div></body></html>`;
+
+                        if (ventana) { ventana.document.write(pdfHtml); ventana.document.close(); }
+
+                    f.reset(); cerrarModal();
+                } else {
+                    alert("ERROR AL GUARDAR: " + r.msg);
+                }
+            }).guardarSolicitud(data);
+        }
+
+
+
+
+        function updateProgress() {
+            const form = document.getElementById('formContratacion');
+            if (!form) return;
+
+            const fields = form.querySelectorAll('[required]');
+            const progressContainer = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+
+            if (fields.length === 0) {
+                if (progressContainer) progressContainer.style.width = "0%";
+                if (progressText) progressText.innerText = "SIN REQUERIMIENTOS";
+                return;
+            }
+
+            // Agrupamos por nombre para no contar múltiples veces los radios del mismo grupo
+            const groups = new Set();
+            fields.forEach(f => {
+                if (f.type === 'radio' || f.type === 'checkbox') groups.add(f.name);
+                else groups.add(f.name || f.id || f.placeholder);
+            });
+
+            let filled = 0;
+            groups.forEach(name => {
+                const radios = form.querySelectorAll(`input[name="${name}"][type="radio"]`);
+                if (radios.length > 0) {
+                    if (Array.from(radios).some(r => r.checked)) filled++;
+                } else {
+                    const field = form.querySelector(`[name="${name}"], [id="${name}"]`);
+                    if (field && field.value.trim() !== "") filled++;
+                }
+            });
+
+            const porc = Math.round((filled / groups.size) * 100);
+            if (progressContainer) progressContainer.style.width = porc + "%";
+            if (progressText) progressText.innerText = porc + "% COMPLETADO";
+        }
+
+        function toggleFamiliarEmpresa() {
+            const radioNo = document.querySelector('input[name="cont_familiarEmpresa"][value="NO"]');
+            const inputNombre = document.querySelector('input[name="cont_familiarNombre"]');
+            if (radioNo && radioNo.checked) {
+                inputNombre.disabled = true;
+                inputNombre.value = "";
+                inputNombre.classList.add('bg-slate-200', 'cursor-not-allowed', 'opacity-60');
+            } else {
+                inputNombre.disabled = false;
+                inputNombre.classList.remove('bg-slate-200', 'cursor-not-allowed', 'opacity-60');
+                inputNombre.focus();
+            }
+        }
+
+        // Listeners globales para actualización en tiempo real
+        document.addEventListener('DOMContentLoaded', () => {
+            const main = document.querySelector('main');
+            if (main) {
+                main.addEventListener('input', updateProgress);
+                main.addEventListener('change', updateProgress);
+            }
+            toggleFamiliarEmpresa();
+            // Ejecutar inicial una vez cargado
+            setTimeout(updateProgress, 500);
+        });
+    </script>
+</body>
+
+</html>

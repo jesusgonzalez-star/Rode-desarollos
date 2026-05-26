@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <script>var SCRIPT_URL = "<?= scriptUrl ?>";</script>
+    <?!= include('Styles'); ?>
+</head>
+
+<body class="bg-slate-50">
+
+    <div id="progressBar" class="fixed top-0 left-0 h-1 bg-[#f89d31] transition-all z-[100]" style="width:0%"></div>
+
+    <header class="bg-[#0D7DAF] px-6 py-4 flex justify-between items-center shadow-md sticky top-0 z-50">
+        <div class="flex items-center gap-4 text-white">
+            <div class="flex items-center h-[24px] w-auto opacity-90 transition-opacity">
+                <svg id="Capa_2" data-name="Capa 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 309.97 69.68"
+                    class="h-full w-auto">
+                    <g id="ReliX">
+                        <path
+                            d="M309.96,68.51h-70.83l-18.45-35.16c-.01-.21.99-2.09,1.17-2.45,4.89-9.72,9.83-19.45,14.87-29.09.13-.24.83-1.67.91-1.73s.13-.09.22-.08h34.72c19.81.75,36.16,14.48,37.4,34.7v33.8ZM280.45,59.54h-1.7c-.56,0-.52-.61-.49-1.02l.83-5.69h2.87s.45-2.71.45-2.71h-2.64l.6-3.39-3.53.84-.54,2.5c-.1.15-1.41-.08-1.56.12l-.71,2.71,1.81-.07c-.3,1.44-.62,2.89-.82,4.35-.26,1.91-.78,5.33,1.93,5.66.29.04,2.48.06,2.59-.01l.9-3.28ZM267.55,60.14v2.26h3.32c-.07-.69-.06-1.38-.08-2.07-.04-2.43.56-3.78,1.02-6.07.28-1.39.51-2.81.64-4.22-3.58-.65-7.75-.85-10.56,1.84-2.14,2.05-2.78,4.27-2.48,7.23.31,3.14,3.24,4.68,6.03,3.18,1.01-.55,1.33-1.17,1.94-2.05.05-.07-.01-.14.17-.1ZM300.08,52.23v-2.11h-3.02c-.38,4.14-1.25,8.2-1.96,12.28h3.77c.23-2.23.38-4.93,1.35-6.98.42-.9,1.56-2.06,2.62-2.06h1.4l.23-3.69c-1.79-.03-3.23,1.35-4.38,2.56ZM285.96,57.5c1.06.12,2.15.16,3.21.07,2.1-.17,4.45-.73,4.98-3.09.94-4.15-4.06-5.57-7.21-4.33-3.8,1.49-5.24,6.24-3.69,9.86,1.32,3.08,5.66,3.38,8.44,2.35.32-.12,1.01-.34.97-.73-.02-.21-.5-2-.59-2.06-2.21.69-5.58.81-6.12-2.06ZM242.79,62.33h3.66l3.66-8.06.56,8.07,3.58.06,5.6-12.16-.11-.11h-3.35s-3.56,9.19-3.56,9.19v-9.19h-3.43l-3.77,8.21.11-8.22h-3.93s.98,12.21.98,12.21Z"
+                            fill="#ffffff" />
+                    </g>
+                    <g id="RELIX">
+                        <path id="X"
+                            d="M187.89.68l8.87,22.38L205.93.68h20.72l-16.17,32.42-.06.24.06.24,17.53,34.91h-21.85l-9.28-23.96-9.4,23.96h-21.36c-.01-.08.01-.15.03-.23.18-.57.81-1.68,1.11-2.28,5.36-11.05,10.92-22.02,16.22-33.09L166.94.68h20.94Z"
+                            fill="#ffffff" />
+                        <g id="i">
+                            <rect x="138.87" y="21.48" width="17.43" height="47.02" fill="#ffffff" />
+                            <path
+                                d="M147.16.18c6.51-.3,11.42,6.37,8.1,12.31-3.15,5.65-11.62,5.86-15.11.44s.62-12.46,7.01-12.75Z"
+                                fill="#ffffff" />
+                        </g>
+                        <rect id="l" x="111.02" y=".68" width="17.43" height="67.82" fill="#ffffff" />
+                        <g id="e">
+                            <path
+                                d="M80.53,69.64c-12.68-.59-22.58-7.12-23.92-20.38-.93-9.18,1.59-18.81,9.33-24.36,6.67-4.78,17.38-6.3,24.88-2.72,9.31,4.45,13.03,16,11.96,25.71-.04.4-.49,3.06-.86,3.06h-28.64c.11,1.61,1.25,3.07,2.5,4.03,4.51,3.43,13.45,2.85,18.65,1.45,1.34-.36,2.62-.85,3.91-1.34l1.85,11.46c-4.74,1.89-9.85,2.77-14.95,3.01-.1,0-.17.08-.18.08-1.41.06-3.12.07-4.53,0ZM87.17,39.12c-.18-2.4-.94-4.89-2.87-6.44-1.63-1.31-4.16-1.59-6.15-1.11-3.51.85-5.01,4.22-5.24,7.55h14.26Z"
+                                fill="#ffffff" />
+                        </g>
+                        <g id="R">
+                            <path
+                                d="M0,4.9c2.51-.27,5-.66,7.51-.9,10.24-1.01,24.52-2.06,33.65,3.33,6.32,3.73,8.69,9.93,7.82,17.12-.67,5.49-3.25,9.28-7.85,12.21-.59.37-1.73.87-2.18,1.29-.73.68.43,1.04.83,1.27,3.24,1.86,4.11,4.26,5.28,7.61,1.84,5.26,3.09,10.7,4.72,16.01.58,1.88,1.36,3.71,1.77,5.65h-17.59c-1.08-4-2.34-7.95-3.37-11.97-.84-3.26-1.43-8.44-4.06-10.72-2.11-1.83-6.37-1.7-9.02-1.73v24.42H0V4.9ZM17.36,31.88c4.09-.2,8.66.84,12.11-1.89s3.66-9.08.11-11.79c-.87-.66-3.03-1.63-4.11-1.63h-8.11v15.3Z"
+                                fill="#ffffff" />
+                        </g>
+                    </g>
+                </svg>
+            </div>
+            <div class="h-4 w-[1px] bg-white/30"></div>
+            <span class="text-[9px] tracking-widest opacity-80 uppercase font-bold">Encuesta de Salida</span>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto p-6 space-y-6">
+
+        <!-- DATOS GLOBALES DEL EMPLEADO -->
+        <div class="form-card">
+            <h3 class="text-[11px] font-bold text-[#0D7DAF] uppercase mb-4 border-b pb-2">
+                <span class="material-symbols-outlined align-middle mr-1 text-[16px]">person</span> Datos Personales
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="text-[10px] font-bold text-slate-500 uppercase">Nombre Completo</label>
+                    <input type="text" id="global_nombreEmpleado" name="global_nombreEmpleado"
+                        class="input-field upper" placeholder="EJ: JUAN PÉREZ" required>
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-slate-500 uppercase">RUT</label>
+                    <input type="text" id="global_rut" name="global_rut"
+                        class="input-field" placeholder="EJ: 12345678-9" required>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                <div>
+                    <label class="text-[10px] font-bold text-slate-500 uppercase">Edad</label>
+                    <input type="number" id="global_edad" name="global_edad"
+                        class="input-field" placeholder="EJ: 35" min="18" max="120" required>
+                </div>
+                <div></div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                <div>
+                    <label class="text-[10px] font-bold text-slate-500 uppercase">Género</label>
+                    <select id="global_genero" name="global_genero" class="input-field" required>
+                        <option value="">— SELECCIONA —</option>
+                        <option value="MASCULINO">MASCULINO</option>
+                        <option value="FEMENINO">FEMENINO</option>
+                        <option value="OTRO">OTRO</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-slate-500 uppercase">Gerencia</label>
+                    <select id="global_gerencia" name="global_gerencia" class="input-field" required>
+                        <option value="">— CARGANDO —</option>
+                    </select>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                <div>
+                    <label class="text-[10px] font-bold text-slate-500 uppercase">Área</label>
+                    <select id="global_area" name="global_area" class="input-field" required>
+                        <option value="">— CARGANDO —</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-slate-500 uppercase">Jefatura Directa</label>
+                    <input type="text" id="global_jefatura" name="global_jefatura"
+                        class="input-field upper" placeholder="NOMBRE DEL JEFE DIRECTO" required>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                <div>
+                    <label class="text-[10px] font-bold text-slate-500 uppercase">Tiempo Permanencia (Años)</label>
+                    <input type="number" id="global_tiempoPermancia" name="global_tiempoPermancia"
+                        class="input-field" placeholder="EJ: 3" min="0" step="0.5" required>
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-slate-500 uppercase">Fecha de Término</label>
+                    <input type="date" id="global_fechaTermino" name="global_fechaTermino"
+                        class="input-field" required>
+                </div>
+            </div>
+        </div>
+
+        <!-- FORMULARIO DE ENCUESTA -->
+        <form id="formEncuesta" oninput="updateProgress()">
+
+            <section class="form-card">
+                <h3><span class="material-symbols-outlined">exit_to_app</span> 01. Motivo de Salida</h3>
+                <div class="grid grid-cols-1 gap-4">
+                    <div>
+                        <label>¿Cuál es el motivo principal por el cuál estás dejando la empresa?</label>
+                        <div class="flex flex-col gap-2 mt-2">
+                            <label class="flex items-center gap-2 cursor-pointer font-normal"><input type="radio"
+                                    name="motivoSalida" value="Nueva Industria (cambio de área de desarrollo y profesional)" required
+                                    onchange="updateProgress()"> Nueva Industria (cambio de área de desarrollo y profesional)</label>
+                            <label class="flex items-center gap-2 cursor-pointer font-normal"><input type="radio"
+                                    name="motivoSalida" value="RAZONES PERSONALES" required
+                                    onchange="updateProgress()"> RAZONES PERSONALES</label>
+                            <label class="flex items-center gap-2 cursor-pointer font-normal"><input type="radio"
+                                    name="motivoSalida" value="Mejor compensación y beneficios" required
+                                    onchange="updateProgress()"> Mejor compensación y beneficios</label>
+                            <label class="flex items-center gap-2 cursor-pointer font-normal"><input type="radio"
+                                    name="motivoSalida" value="Más oportunidades de aprendizaje y crecimiento" required
+                                    onchange="updateProgress()"> Más oportunidades de aprendizaje y crecimiento</label>
+                            <label class="flex items-center gap-2 cursor-pointer font-normal"><input type="radio"
+                                    name="motivoSalida" value="OTRO" required
+                                    onchange="updateProgress()"> OTRO</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <label>Detalle adicional sobre tu decisión</label>
+                    <textarea name="detalleMotivo" class="input-field" style="height:80px;padding:8px;resize:none;"
+                        placeholder="Comparte información adicional..."></textarea>
+                </div>
+            </section>
+
+            <section class="form-card">
+                <h3><span class="material-symbols-outlined">work</span> 02. Desarrollo Profesional</h3>
+                <div class="grid grid-cols-1 gap-4">
+                    <div>
+                        <label>¿Te sientes satisfecho/a con las oportunidades de crecimiento y desarrollo profesional que te han ofrecido durante tu tiempo en la empresa?</label>
+                        <div class="flex gap-6 mt-2">
+                            <label class="flex items-center gap-2 cursor-pointer font-normal"><input type="radio"
+                                    name="oportunidadesCrecimiento" value="SI" required
+                                    onchange="updateProgress()"> SI</label>
+                            <label class="flex items-center gap-2 cursor-pointer font-normal"><input type="radio"
+                                    name="oportunidadesCrecimiento" value="NO" required
+                                    onchange="updateProgress()"> NO</label>
+                            <label class="flex items-center gap-2 cursor-pointer font-normal"><input type="radio"
+                                    name="oportunidadesCrecimiento" value="NI UNA NI LA OTRA" required
+                                    onchange="updateProgress()"> NI UNA NI LA OTRA</label>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-card">
+                <h3><span class="material-symbols-outlined">verified_user</span> 03. Reconocimiento</h3>
+                <div class="grid grid-cols-1 gap-4">
+                    <div>
+                        <label>¿Consideras que tus habilidades y conocimientos fueron reconocidos y valorados adecuadamente durante tu tiempo en la organización?</label>
+                        <div class="flex gap-6 mt-2">
+                            <label class="flex items-center gap-2 cursor-pointer font-normal"><input type="radio"
+                                    name="reconocimiento" value="SI" required
+                                    onchange="updateProgress()"> SI</label>
+                            <label class="flex items-center gap-2 cursor-pointer font-normal"><input type="radio"
+                                    name="reconocimiento" value="NO" required
+                                    onchange="updateProgress()"> NO</label>
+                            <label class="flex items-center gap-2 cursor-pointer font-normal"><input type="radio"
+                                    name="reconocimiento" value="NI UNA NI LA OTRA" required
+                                    onchange="updateProgress()"> NI UNA NI LA OTRA</label>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-card">
+                <h3><span class="material-symbols-outlined">feedback</span> 04. Evaluación y Retroalimentación</h3>
+                <div class="grid grid-cols-1 gap-4">
+                    <div>
+                        <label>¿Recibiste retroalimentación / evaluaciones adecuadas sobre tu desempeño por parte de tus superiores durante tu período en la empresa?</label>
+                        <div class="flex gap-6 mt-2">
+                            <label class="flex items-center gap-2 cursor-pointer font-normal"><input type="radio"
+                                    name="retroalimentacion" value="SI" required
+                                    onchange="updateProgress()"> SI</label>
+                            <label class="flex items-center gap-2 cursor-pointer font-normal"><input type="radio"
+                                    name="retroalimentacion" value="NO" required
+                                    onchange="updateProgress()"> NO</label>
+                            <label class="flex items-center gap-2 cursor-pointer font-normal"><input type="radio"
+                                    name="retroalimentacion" value="NI UNA NI LA OTRA" required
+                                    onchange="updateProgress()"> NI UNA NI LA OTRA</label>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-card">
+                <h3><span class="material-symbols-outlined">groups</span> 05. Liderazgo</h3>
+                <div class="grid grid-cols-1 gap-4">
+                    <div>
+                        <label>¿Qué podría mejorar tu jefatura directa en su estilo y gestión de liderazgo?</label>
+                        <textarea name="mejorasJefatura" class="input-field" style="height:80px;padding:8px;resize:none;"
+                            placeholder="Comparte tus sugerencias..."></textarea>
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-card">
+                <h3><span class="material-symbols-outlined">people</span> 06. Ambiente Laboral</h3>
+                <div class="grid grid-cols-1 gap-4">
+                    <div>
+                        <label>¿Cómo evaluarías el ambiente laboral en términos de apoyo y colaboración entre colegas?</label>
+                        <textarea name="ambienteLaboral" class="input-field" style="height:80px;padding:8px;resize:none;"
+                            placeholder="Comparte tu evaluación..."></textarea>
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-card">
+                <h3><span class="material-symbols-outlined">scale</span> 07. Equilibrio Vida-Trabajo</h3>
+                <div class="grid grid-cols-1 gap-4">
+                    <div>
+                        <label>¿Te sientes satisfecho/a con tu equilibrio entre el trabajo y la vida personal durante tu tiempo en la empresa?</label>
+                        <div class="flex gap-6 mt-2">
+                            <label class="flex items-center gap-2 cursor-pointer font-normal"><input type="radio"
+                                    name="equilibrioVidaTrabajo" value="SI" required
+                                    onchange="updateProgress()"> SI</label>
+                            <label class="flex items-center gap-2 cursor-pointer font-normal"><input type="radio"
+                                    name="equilibrioVidaTrabajo" value="NO" required
+                                    onchange="updateProgress()"> NO</label>
+                            <label class="flex items-center gap-2 cursor-pointer font-normal"><input type="radio"
+                                    name="equilibrioVidaTrabajo" value="NI UNA NI LA OTRA" required
+                                    onchange="updateProgress()"> NI UNA NI LA OTRA</label>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-card">
+                <h3><span class="material-symbols-outlined">thumb_up</span> 08. Recomendación</h3>
+                <div class="grid grid-cols-1 gap-4">
+                    <div>
+                        <label>¿Recomendarías trabajar en esta organización a otras personas? ¿Por qué?</label>
+                        <textarea name="recomendacion" class="input-field" style="height:80px;padding:8px;resize:none;"
+                            placeholder="Comparte tu respuesta..."></textarea>
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-card">
+                <h3><span class="material-symbols-outlined">home</span> 09. Retorno</h3>
+                <div class="grid grid-cols-1 gap-4">
+                    <div>
+                        <label>¿Volverías a trabajar en nuestra empresa?</label>
+                        <div class="flex gap-6 mt-2">
+                            <label class="flex items-center gap-2 cursor-pointer font-normal"><input type="radio"
+                                    name="volveriaTrabajar" value="SI" required
+                                    onchange="updateProgress()"> SI</label>
+                            <label class="flex items-center gap-2 cursor-pointer font-normal"><input type="radio"
+                                    name="volveriaTrabajar" value="NO" required
+                                    onchange="updateProgress()"> NO</label>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-card bg-blue-50 border-l-4 border-[#0D7DAF]">
+                <h3 class="text-[13px] font-bold text-[#0D7DAF] mb-3">MUCHAS GRACIAS POR TU TIEMPO Y HONESTIDAD</h3>
+                <p class="text-[11px] text-slate-700 leading-relaxed">
+                    Estamos muy felices de haber sido parte de tu experiencia laboral y te deseamos el mayor de los éxitos en en el nuevo camino que emprendes!
+                </p>
+            </section>
+
+            <div class="flex gap-4 mb-20">
+                <button type="button" onclick="document.getElementById('formEncuesta').reset(); updateProgress();"
+                    class="flex-1 bg-slate-200 py-4 text-[11px] font-bold uppercase">Limpiar</button>
+                <button type="button" onclick="abrirModal('formEncuesta','ENCUESTA_SALIDA')"
+                    class="flex-[3] bg-[#f89d31] text-white py-4 text-[11px] font-bold uppercase shadow-lg">Revisar
+                    Encuesta</button>
+            </div>
+
+        </form>
+    </main>
+
+    <footer>
+        <div class="flex flex-col md:flex-row md:gap-6 items-start md:items-center">
+            <span>© 2026 RELIX S.A.</span>
+            <span id="progressText" class="bg-white/20 px-3 py-1 rounded">0% COMPLETADO</span>
+        </div>
+    </footer>
+
+    <!-- MODAL -->
+    <div id="modalConfirm"
+        class="fixed inset-0 bg-black/80 hidden items-center justify-center z-[2000] p-4 backdrop-blur-sm">
+        <div class="bg-white max-w-2xl w-full border-t-8 border-[#f89d31] overflow-hidden" style="border-radius:4px;">
+            <div id="panelResumen" class="p-8">
+                <h2 class="text-[#0D7DAF] font-bold text-[13px] border-b pb-2 mb-4 uppercase">Resumen de Encuesta</h2>
+                <div id="resumen"
+                    class="grid grid-cols-2 gap-x-8 gap-y-2 text-[10px] uppercase overflow-y-auto max-h-[50vh]"></div>
+                <div class="flex gap-4 mt-8">
+                    <button onclick="cerrarModal()"
+                        class="flex-1 bg-slate-100 py-3 text-[10px] font-bold uppercase hover:bg-slate-200">Corregir</button>
+                    <button onclick="" id="btnFinal"
+                        class="flex-1 bg-[#0D7DAF] text-white py-3 text-[10px] font-bold uppercase hover:bg-[#0a6593]">Confirmar
+                        Envío</button>
+                </div>
+            </div>
+            <div id="panelExito" class="hidden p-10 flex flex-col items-center justify-center text-center"
+                style="min-height:320px;">
+                <div
+                    style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#22c55e,#16a34a);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="38" height="38" viewBox="0 0 24 24" fill="none"
+                        stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                </div>
+                <h3
+                    style="color:#15803d;font-size:18px;font-weight:900;letter-spacing:0.5px;margin-bottom:8px;text-transform:uppercase;">
+                    ¡Enviado con Éxito!</h3>
+                <p style="color:#374151;font-size:11px;font-weight:600;margin-bottom:6px;text-transform:uppercase;">Tu encuesta fue registrada correctamente.</p>
+                <div id="folioExito"
+                    style="background:#f0fdf4;border:2px solid #86efac;border-radius:8px;padding:10px 28px;margin:16px 0;display:inline-block;">
+                    <span
+                        style="color:#166534;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;">Folio
+                        N°</span>
+                    <div id="folioNumero" style="color:#15803d;font-size:26px;font-weight:900;line-height:1.2;">—</div>
+                </div>
+                <button onclick="cerrarModal()"
+                    style="background:#0D7DAF;color:white;padding:12px 40px;font-size:10px;font-weight:700;text-transform:uppercase;border:none;border-radius:4px;cursor:pointer;">Cerrar
+                    Ventana</button>
+            </div>
+        </div>
+    </div>
+
+    <?!= include('SharedJS'); ?>
+
+    <script>
+        window.onload = function () {
+            // Inicializar fecha de hoy
+            document.getElementById('global_fechaTermino').valueAsDate = new Date();
+        };
+    </script>
+
+</body>
+
+</html>

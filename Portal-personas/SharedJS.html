@@ -1,0 +1,971 @@
+<script>
+    // ─── UTILIDADES ─────────────────────────────────────────────────────────────
+
+    function formatearPeso(input) {
+        const pos = input.selectionStart;
+        const prevLen = input.value.length;
+        const raw = input.value.replace(/[^\d]/g, '');
+        if (!raw) { input.value = ''; return; }
+        input.value = parseInt(raw, 10).toLocaleString('es-CL');
+        // Mantener posición del cursor
+        const newLen = input.value.length;
+        input.setSelectionRange(pos + (newLen - prevLen), pos + (newLen - prevLen));
+    }
+
+    function parsePeso(input) {
+        return parseInt((input?.value || '0').replace(/[^\d]/g, '') || '0', 10) || 0;
+    }
+
+    function soloRut(e) {
+        const key = e.key;
+        if (key === "Enter" || key === "Backspace" || key === "Tab") return true;
+        if (!/^[0-9kK]$/.test(key)) { e.preventDefault(); return false; }
+        const valorLimpio = e.target.value.replace(/[^0-9kK]/g, '');
+        if (valorLimpio.length >= 9) { e.preventDefault(); return false; }
+    }
+
+    function formatearRut(i) {
+        let v = i.value.replace(/[^0-9kK]/g, '').toUpperCase();
+        if (v.length > 9) v = v.slice(0, 9);
+        if (v.length < 2) { i.value = v; return; }
+        let cuerpo = v.slice(0, -1);
+        let dv = v.slice(-1);
+        i.value = cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g, ".") + "-" + dv;
+    }
+
+    function validarRut(i, feedbackId) {
+        let v = i.value.replace(/\./g, '').replace(/-/g, '');
+        if (v.length < 8) { i.style.borderColor = ''; const f = document.getElementById(feedbackId); if (f) f.innerText = ''; return; }
+        let c = v.slice(0, -1), d = v.slice(-1).toUpperCase(), s = 0, m = 2;
+        for (let j = 1; j <= c.length; j++) { s += m * v.charAt(c.length - j); m = (m < 7) ? m + 1 : 2; }
+        let de = 11 - (s % 11); de = (de == 11) ? 0 : (de == 10) ? "K" : de;
+        const f = document.getElementById(feedbackId);
+        if (f) {
+            if (d != de) { i.style.borderColor = 'red'; f.innerText = "❌ RUT INVÁLIDO"; f.style.color = 'red'; }
+            else { i.style.borderColor = '#10b981'; f.innerText = "✅ RUT VÁLIDO"; f.style.color = '#10b981'; }
+        }
+    }
+
+    function formatearPesos(i) {
+        let v = i.value.replace(/\D/g, "");
+        if (v === "") { i.value = ""; return; }
+        i.value = Number(v).toLocaleString('es-CL');
+    }
+
+    function calcularCostoEmpresa() {
+        const sueldoInput = document.querySelector('input[name="sueldoLiquido"]');
+        const costoInput = document.querySelector('input[name="costoEmpresa"]');
+        if (!sueldoInput || !costoInput) return;
+        let sueldo = parseInt(sueldoInput.value.replace(/\D/g, ''));
+        if (isNaN(sueldo)) { costoInput.value = ""; return; }
+        let costo = 0;
+        if (sueldo >= 500000 && sueldo <= 1500000) costo = Math.round(sueldo * 1.25);
+        else if (sueldo > 1500000 && sueldo <= 4000000) costo = Math.round(sueldo * 1.45);
+        costoInput.value = costo > 0 ? costo.toLocaleString('es-CL') : "";
+    }
+
+    function getBase64(file) {
+        return new Promise((resolve, reject) => {
+            if (!file) return resolve(null);
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result.split(',')[1]);
+            reader.onerror = error => reject(error);
+        });
+    }
+
+    function fill(id, l) {
+        let s = document.getElementById(id); if (!s) return;
+        s.innerHTML = '<option value="">SELECCIONE...</option>';
+        if (l) l.forEach(i => {
+            let text = i.toUpperCase();
+            if (text.length > 100) text = text.substring(0, 100) + '...';
+            s.innerHTML += '<option value="' + i + '" title="' + i.toUpperCase() + '">' + text + '</option>';
+        });
+    }
+
+    function fillR(id, l, n) {
+        let c = document.getElementById(id); if (!c) return;
+        c.innerHTML = "";
+        if (l) l.forEach((item, x) => {
+            const d = document.createElement('div'); d.className = "check-item";
+            d.innerHTML = '<input type="radio" name="' + n + '" id="' + n + '_' + x + '" value="' + item + '" required><label for="' + n + '_' + x + '">' + item.toUpperCase() + '</label>';
+            c.appendChild(d);
+        });
+    }
+
+    // ─── PROGRESS BAR ────────────────────────────────────────────────────────────
+
+    function updateProgress() {
+        const activeForm = document.querySelector('form');
+        if (!activeForm) return;
+        const fields = activeForm.querySelectorAll('[required]');
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
+        if (fields.length === 0) { if (progressBar) progressBar.style.width = "0%"; return; }
+        const groups = new Set();
+        fields.forEach(f => {
+            if (f.type === 'radio' || f.type === 'checkbox') groups.add(f.name);
+            else groups.add(f.id || f.name || f.placeholder);
+        });
+        let filled = 0;
+        groups.forEach(name => {
+            const radios = activeForm.querySelectorAll(`input[name="${name}"][type="radio"]`);
+            if (radios.length > 0) { if (Array.from(radios).some(r => r.checked)) filled++; }
+            else { const field = activeForm.querySelector(`[name="${name}"], [id="${name}"]`); if (field && field.value.trim() !== "") filled++; }
+        });
+        const porc = Math.round((filled / groups.size) * 100);
+        if (progressBar) progressBar.style.width = porc + "%";
+        if (progressText) progressText.innerText = porc + "% COMPLETADO";
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const form = document.querySelector('main');
+        if (form) { form.addEventListener('input', updateProgress); form.addEventListener('change', updateProgress); }
+        updateProgress();
+    });
+
+    // ─── FORM-SPECIFIC TOGGLE FUNCTIONS ──────────────────────────────────────────
+
+    function handleMotivoCargo(v) {
+        const s = document.getElementById('cargoSelect');
+        const i = document.getElementById('cargoInput');
+        const l = document.getElementById('lblCargo');
+        if (!s || !i) return;
+        if (v === 'NUEVO CARGO') {
+            s.classList.add('hidden'); s.required = false;
+            i.classList.remove('hidden'); i.required = true;
+            if (l) l.innerText = "Cargo a cubrir (NUEVO CARGO)";
+        } else {
+            s.classList.remove('hidden'); s.required = true;
+            i.classList.add('hidden'); i.required = false;
+            if (l) l.innerText = "Cargo a cubrir";
+        }
+        updateProgress();
+    }
+
+    function toggleDescriptorFile(v) {
+        const c = document.getElementById('containerDescriptorFile');
+        const f = document.getElementById('fileDescriptor');
+        if (!c || !f) return;
+        if (v === 'SI') { c.classList.remove('hidden'); f.required = true; }
+        else { c.classList.add('hidden'); f.required = false; f.value = ""; }
+        updateProgress();
+    }
+
+    function toggleFechaTermino(v) {
+        const container = document.getElementById('containerFechaTermino');
+        const inputT = document.getElementById('fechaTermino');
+        const inputI = document.getElementById('fechaInicio');
+        if (!container || !inputT) return;
+        if (v === "PLAZO FIJO") {
+            container.classList.remove('hidden');
+            inputT.required = true;
+            if (inputI) inputI.required = true;
+        } else {
+            container.classList.add('hidden');
+            inputT.required = false;
+            inputT.value = "";
+            if (inputI) {
+                inputI.required = false;
+                inputI.value = "";
+            }
+        }
+    }
+
+    function togglePlanSalud(v) {
+        const p = document.getElementById('cont_planSalud');
+        if (!p) return;
+        if (v === 'FONASA') { p.value = 'N/A'; p.style.opacity = '0.5'; p.readOnly = true; }
+        else { p.value = ''; p.style.opacity = '1'; p.readOnly = false; }
+    }
+
+    function toggleTeletrabajo(v, containerId) {
+        const c = document.getElementById(containerId);
+        if (!c) return;
+        if (v && v.toUpperCase().includes('PARCIAL')) { c.classList.remove('hidden'); }
+        else { c.classList.add('hidden'); c.querySelectorAll('input[type="checkbox"]').forEach(chk => chk.checked = false); }
+        if (typeof updateProgress === 'function') updateProgress();
+    }
+
+    function calcularHorasExtras() {
+        const inicio = document.querySelector('input[name="hex_horaInicio"]');
+        const fin = document.querySelector('input[name="hex_horaFin"]');
+        const display = document.getElementById('hex_horasCalculadas');
+        const hidden = document.getElementById('hex_horasExtra');
+
+        if (!inicio || !fin || !display || !hidden) return;
+        if (!inicio.value || !fin.value) { display.innerText = "0.0"; hidden.value = "0.0"; return; }
+
+        const [hI, mI] = inicio.value.split(':').map(Number);
+        const [hF, mF] = fin.value.split(':').map(Number);
+        const minutosInicio = hI * 60 + mI;
+        const minutosFin = hF * 60 + mF;
+        let diferencia = minutosFin - minutosInicio;
+
+        if (diferencia < 0) diferencia += 24 * 60;
+
+        const horas = (diferencia / 60).toFixed(1);
+        display.innerText = horas;
+        hidden.value = horas;
+    }
+
+    let dominiosRespaldo = [];
+    function toggleCorreo(v) {
+        const d = document.getElementById('dominio');
+        if (!d) return;
+        if (v == "NO") { d.innerHTML = '<option>SIN CORREO</option>'; d.disabled = true; d.required = false; }
+        else { d.disabled = false; d.required = true; fill('dominio', dominiosRespaldo); }
+    }
+
+    // ─── EVALUACIÓN PROMEDIOS ────────────────────────────────────────────────────
+
+    function initEvaluacion() {
+        const form = document.getElementById('formEvaluacion');
+        if (!form) return;
+        form.querySelectorAll('input[type="radio"]').forEach(rad => rad.addEventListener('change', updateEvaAverages));
+    }
+
+    function updateEvaAverages() {
+        const calcSection = (prefix, total) => {
+            let sum = 0, count = 0;
+            for (let i = 1; i <= total; i++) {
+                const val = document.querySelector(`input[name="eva_${prefix}${i}"]:checked`);
+                const obs = document.querySelector(`input[name="eva_${prefix}${i}_obs"]`);
+                if (val) {
+                    if (parseInt(val.value) > 0) {
+                        sum += parseInt(val.value);
+                        count++;
+                        if (obs) { obs.disabled = false; obs.style.opacity = '1'; }
+                    } else {
+                        if (obs) { obs.disabled = true; obs.value = ""; obs.style.opacity = '0.5'; }
+                    }
+                }
+            }
+            return count > 0 ? (sum / count).toFixed(1) : "0.0";
+        };
+        const pAsp = calcSection('asp', 14);
+        const pProf = calcSection('prof', 7);
+        const pSeg = calcSection('seg', 6);
+        const pCal = calcSection('cal', 7);
+        const setV = (id1, id2, val) => {
+            const d = document.getElementById(id1); if (d) d.innerText = val;
+            const h = document.getElementById(id2); if (h) h.value = val;
+        };
+        setV('eva_promedio_display', 'eva_promedio', pAsp);
+        setV('res_prom_pers', 'eva_promedio', pAsp);
+        setV('eva_promedio_prof_display', 'eva_promedio_prof', pProf);
+        setV('res_prom_prof', 'eva_promedio_prof', pProf);
+        setV('eva_promedio_seg_display', 'eva_promedio_seg', pSeg);
+        setV('res_prom_seg', 'eva_promedio_seg', pSeg);
+        setV('eva_promedio_cal_display', 'eva_promedio_cal', pCal);
+        setV('res_prom_cal', 'eva_promedio_cal', pCal);
+        const final = ((parseFloat(pAsp) + parseFloat(pProf) + parseFloat(pSeg) + parseFloat(pCal)) / 4).toFixed(1);
+        const fd = document.getElementById('eva_puntuacion_final_display'); if (fd) fd.innerText = final;
+        const fh = document.getElementById('eva_puntuacion_final'); if (fh) fh.value = final;
+    }
+
+    function handleMotivoMod(motivo) {
+        const m = (motivo || "").toUpperCase();
+        const show = (id, visible) => {
+            const el = document.getElementById(id);
+            if (el) {
+                visible ? el.classList.remove('hidden') : el.classList.add('hidden');
+                const inputs = el.querySelectorAll('input, select');
+                inputs.forEach(i => {
+                    if (visible) {
+                        // Solo poner required a lo que no sea checkbox
+                        if (i.type !== 'checkbox') i.required = true;
+                    } else {
+                        i.required = false;
+                        if (i.type === 'checkbox') i.checked = false;
+                        else if (i.tagName === 'SELECT') i.selectedIndex = 0;
+                        else i.value = "";
+                    }
+                });
+            }
+        };
+        const isGeneral = m.includes('GENERAL');
+        const isCargo = isGeneral || m.includes('CARGO') || m.includes('ASCENSO') || m.includes('PROMOCIÓN');
+        const isCc = isGeneral || m.includes('CENTRO') || m.includes('COSTO');
+        const isSueldo = isGeneral || m.includes('SUELDO') || m.includes('RENTA') || m.includes('SALARIO') || m.includes('REMUNERACIÓN');
+        const isJornada = isGeneral || m.includes('JORNADA') || m.includes('HORARIO');
+        show('wrapper_mod_cargo_ant', isCargo);
+        show('wrapper_mod_cargo_nuev', isCargo);
+        show('wrapper_mod_sueldo_ant', isSueldo);
+        show('wrapper_mod_sueldo_nuev', isSueldo);
+        show('wrapper_mod_cc_ant', isCc);
+        show('wrapper_mod_cc_nuev', isCc);
+        show('wrapper_mod_jornada_ant', isJornada);
+        show('wrapper_mod_jornada_nuev', isJornada);
+        
+        // Sincronizar CC Actual con CC Anterior si el motivo involucra CC
+        if (isCc) {
+            const actual = document.getElementById('mod_ccActual');
+            const ant = document.getElementById('mod_ccAnterior');
+            if (actual && ant && actual.value) ant.value = actual.value;
+        }
+        
+        if (typeof updateProgress === 'function') updateProgress();
+    }
+
+    // ─── MODAL ───────────────────────────────────────────────────────────────────
+
+    function abrirModal(formId, tipo) {
+        const globalNombre = document.getElementById('global_nombreSolicitante');
+        const globalEmail = document.getElementById('global_emailSolicitante');
+        if (globalNombre || globalEmail) {
+            if (!globalNombre || !globalNombre.value.trim() || !globalEmail || !globalEmail.value.trim() || !globalEmail.checkValidity()) {
+                if (globalNombre) globalNombre.reportValidity();
+                if (globalEmail) globalEmail.reportValidity();
+                alert("Por favor, complete los Datos del Solicitante correctamente.");
+                return;
+            }
+        }
+        const f = document.getElementById(formId);
+        if (!f || !f.checkValidity()) { if (f) f.reportValidity(); return; }
+
+        const allLabels = {
+            'RECLUTAMIENTO': { cargoSolicitante: "CARGO SOLICITANTE", tipoIngreso: "MOTIVO CONTRATACIÓN", estudiosVacante: "ESTUDIOS/PROFESIÓN", cargo: "CARGO A CUBRIR", descriptorCargo: "DESCRIPTOR CARGO", sueldoLiquido: "SUELDO LÍQUIDO", costoEmpresa: "COSTO EMPRESA", cc: "CENTRO DE COSTO", cartaOferta: "CARTA OFERTA", presupuesto: "PRESUPUESTO", jefeAprobador: "JEFE APROBADOR", necesitaCorreo: "REQUIERE CORREO", tipoContrato: "TIPO CONTRATO", fechaInicio: "FECHA INICIO", fechaTermino: "FECHA TÉRMINO" },
+            'CONTRATACIÓN': { cont_nombreCandidato: "NOMBRE CANDIDATO", cont_rut: "RUT", cont_nacionalidad: "NACIONALIDAD", cont_estadoCivil: "ESTADO CIVIL", cont_direccion: "DIRECCIÓN", cont_telefono: "TELÉFONO", cont_correo: "CORREO", cont_horario: "HORARIO", cont_fechaIngreso: "FECHA INGRESO", cont_afp: "AFP", cont_salud: "SALUD", cont_planSalud: "PLAN SALUD", cont_familiarEmpresa: "FAMILIAR EMPRESA", cont_vbLaboral: "V°B° LABORAL", cont_certDiscapacidad: "CERT. DISCAPACIDAD", cont_doc_observaciones: "OBS. DOCUMENTOS" },
+            'MODIFICACIÓN DE CONDICIONES': { mod_nombre: "NOMBRE TRABAJADOR", mod_motivo: "MOTIVO", mod_nuevoCargo: "NUEVO CARGO", mod_vigencia: "VIGENCIA", mod_sueldoAnterior: "SUELDO ANT.", mod_ccAnterior: "CC ANT.", mod_sueldoNuevo: "SUELDO NUEVO", mod_ccNuevo: "CC NUEVO", mod_jefeDirecto: "JEFE DIRECTO", mod_fechaJefe: "FECHA JEFE", mod_superintendente: "SUPERINTENDENTE", mod_fechaSuper: "FECHA SUPER", mod_gerente: "GERENTE", mod_fechaGerente: "FECHA GERENTE", mod_observaciones: "OBSERVACIONES" },
+            'SOLICITUD DE PERMISO': { perm_nombre: "NOMBRE TRABAJADOR", perm_rut: "RUT", perm_fechaIngreso: "FECHA INGRESO", perm_cc: "CENTRO DE COSTO", perm_cargo: "CARGO", perm_jefe: "JEFE DIRECTO", perm_fechaInicio: "FECHA INICIO", perm_fechaFin: "FECHA FIN", perm_observacion: "OBSERVACIONES" },
+            'REVOCACIÓN CARTA DE AVISO': { rev_nombre: "NOMBRE TRABAJADOR", rev_rut: "RUT", rev_fechaOriginal: "FECHA AVISO ORIGINAL", rev_motivo: "MOTIVO", rev_cargoSolicitante: "CARGO SOLICITANTE", rev_ccSolicitante: "C.C. SOLICITANTE" },
+            'EVALUACIÓN DE PERSONAL A DESVINCULAR': { eva_nombre: "NOMBRE TRABAJADOR", eva_rut: "RUT", eva_correoPersonal: "CORREO PERSONAL", eva_cargo: "CARGO", eva_area: "ÁREA", eva_ccEvaluador: "C.C. EVALUADOR", eva_fTermino: "FECHA TÉRMINO", eva_motivo: "MOTIVO", eva_formularioSalida: "FORMULARIO DE SALIDA", eva_puntuacion_final: "PUNTUACIÓN FINAL", eva_nombreEvaluador: "EVALUADOR", eva_cargoEvaluador: "CARGO EVALUADOR", eva_recomienda: "RECOMIENDA", eva_obs1: "OBSERVACIONES 1", eva_obs2: "OBSERVACIONES 2", eva_implementos: "IMPLEMENTOS" },
+            'PACTO HORAS EXTRAORDINARIAS': { hex_nombre: "NOMBRE TRABAJADOR", hex_rut: "RUT", hex_fechaContrato: "FECHA CONTRATO", hex_area: "ÁREA", hex_jefeDirecto: "JEFE DIRECTO", hex_fecha: "DÍA DEL PACTO", hex_horaInicio: "DESDE LAS", hex_horaFin: "HASTA LAS", hex_horasExtra: "TOTAL HORAS", hex_descripcion: "DESCRIPCIÓN ACTIVIDAD" },
+            'FINIQUITO': { fin_nombre: "NOMBRE TRABAJADOR", fin_rut: "RUT", fin_cargo: "CARGO", fin_centroCosto: "CENTRO DE COSTO", fin_fechaInicio: "FECHA INICIO", fin_fechaTermino: "FECHA TÉRMINO", fin_causal: "CAUSAL" }
+        };
+
+        // Para FINIQUITO, agregar resumen de totales calculados al modal
+        if (tipo === 'FINIQUITO') {
+            const gi = (id) => document.getElementById(id);
+            const docTxt = (id) => gi(id)?.textContent || '—';
+            const docVal = (id) => gi(id)?.value || '—';
+            const labels = allLabels['FINIQUITO'];
+            const formData = new FormData(f);
+            let h = '';
+            formData.forEach((v, k) => { if (v && v !== 'N/A' && labels[k]) h += `<div><span class='text-slate-400 text-[8px]'>${labels[k]}:</span><br><b>${v.toUpperCase()}</b></div>`; });
+            h += `<div style="margin-top:8px;padding-top:8px;border-top:1px solid #e2e8f0;grid-column:span 2"><span class='text-slate-400 text-[8px]'>ANTIGÜEDAD:</span><br><b>${docVal('fin_aniosServicio')}</b></div>`;
+            h += `<div><span class='text-slate-400 text-[8px]'>VACACIONES PROP.:</span><br><b>${docTxt('fin_habVacaciones')}</b></div>`;
+            h += `<div><span class='text-slate-400 text-[8px]'>INDEMNIZACIÓN IAS:</span><br><b>${docTxt('fin_habIndemnizacion')}</b></div>`;
+            h += `<div><span class='text-slate-400 text-[8px]'>ACUERDO MARCO:</span><br><b>${docTxt('fin_habAcuerdo')}</b></div>`;
+            h += `<div><span class='text-slate-400 text-[8px]'>MES DE AVISO:</span><br><b>${docTxt('fin_habMesAviso')}</b></div>`;
+            h += `<div style="background:#0D7DAF;color:white;padding:6px;grid-column:span 2"><span style="font-size:7px;opacity:0.8">TOTAL A PAGAR</span><br><b style="font-size:14px">${docTxt('fin_totalPagar')}</b></div>`;
+            document.getElementById('resumen').innerHTML = h;
+            const m = document.getElementById('modalConfirm');
+            m.classList.remove('hidden'); m.classList.add('flex');
+            document.getElementById('btnFinal').onclick = () => enviarSolicitud(tipo, formId);
+            return;
+        }
+
+        const labels = allLabels[tipo] || {};
+        const formData = new FormData(f);
+        const collected = {};
+        formData.forEach((v, k) => { if (!collected[k]) collected[k] = []; collected[k].push(v); });
+
+        let h = "";
+        for (let k in collected) {
+            const val = collected[k].join(", ");
+            if (val && val !== "N/A") {
+                const label = labels[k] || k.toUpperCase();
+                h += "<div><span class='text-slate-400 text-[8px]'>" + label + ":</span><br><b>" + val + "</b></div>";
+            }
+        }
+
+        document.getElementById('resumen').innerHTML = h;
+        const m = document.getElementById('modalConfirm');
+        m.classList.remove('hidden'); m.classList.add('flex');
+        document.getElementById('btnFinal').onclick = () => enviarSolicitud(tipo, formId);
+    }
+
+    function cerrarModal() {
+        const m = document.getElementById('modalConfirm');
+        if (m) { m.classList.add('hidden'); m.classList.remove('flex'); }
+        const pr = document.getElementById('panelResumen');
+        if (pr) pr.classList.remove('hidden');
+        const pe = document.getElementById('panelExito');
+        if (pe) { pe.classList.add('hidden'); pe.classList.remove('flex'); }
+    }
+
+    // ─── ENVÍO PRINCIPAL ─────────────────────────────────────────────────────────
+
+    async function enviarSolicitud(tipo, formId) {
+        const b = document.getElementById('btnFinal');
+        b.disabled = true; b.innerText = "PROCESANDO...";
+        const f = document.getElementById(formId);
+
+        try {
+            const getRad = (nom) => { const el = f.elements[nom]; return el instanceof RadioNodeList ? el.value : (el ? el.value : "N/A"); };
+            const getChk = (nom) => f.elements[nom] && f.elements[nom].checked ? "SI" : "NO";
+            const getValue = (nom) => f.elements[nom] ? f.elements[nom].value.toUpperCase() : "N/A";
+
+            let data = {
+                tipoFormulario: tipo,
+                nombreSolicitante: (document.getElementById('global_nombreSolicitante') || {}).value?.toUpperCase().trim() || "N/A",
+                emailSolicitante: (document.getElementById('global_emailSolicitante') || {}).value?.toLowerCase().trim() || "N/A"
+            };
+
+            if (tipo === 'RECLUTAMIENTO') {
+                const fileInput = document.getElementById('fileDescriptor');
+                if (fileInput && fileInput.files.length > 0) { data.fileB64 = await getBase64(fileInput.files[0]); data.fileName = fileInput.files[0].name; }
+                Object.assign(data, {
+                    cargoSolicitante: getValue('cargoSolicitante'), ccSolicitante: getValue('ccSolicitante'),
+                    tipoIngreso: getRad('tipoIngreso'), cantidadVacantes: f.cantidadVacantes ? f.cantidadVacantes.value : "1",
+                    estudiosVacante: getValue('estudiosVacante'),
+                    cargo: (getRad('tipoIngreso') === 'NUEVO CARGO') ? getValue('cargo_manual') : getValue('cargo'),
+                    descriptorCargo: getRad('descriptorCargo'), sueldoLiquido: f.sueldoLiquido.value,
+                    costoEmpresa: f.costoEmpresa.value, cc: f.cc.value,
+                    cartaOferta: getRad('cartaOferta'), presupuesto: getRad('presupuesto'),
+                    jefeAprobador: f.jefeAprobador ? f.jefeAprobador.value : "",
+                    necesitaCorreo: getRad('necesitaCorreo'), tipoContrato: getRad('tipoContrato'),
+                    fechaInicio: f.fechaInicio ? f.fechaInicio.value : "N/A",
+                    fechaTermino: f.fechaTermino ? f.fechaTermino.value : "N/A",
+                    responsableRec: f.elements['responsableRec'] ? f.elements['responsableRec'].value : "N/A",
+                    observacionesRec: f.elements['observacionesRec'] ? f.elements['observacionesRec'].value.toUpperCase() : "N/A",
+                    obsSoftware: f.elements['obsSoftware'] ? f.elements['obsSoftware'].value.toUpperCase() : "N/A"
+                });
+                const checksEquip = Array.from(f.querySelectorAll('input[name="equip"]:checked'));
+                const optMon = f.querySelector('input[name="tipoMonitor"]:checked');
+                data.equipamiento = checksEquip.map(c => c.value + (c.value.toUpperCase() === "MONITOR" && optMon ? " (" + optMon.value + ")" : "")).join(", ") || "NINGUNO";
+                data.software = Array.from(f.querySelectorAll('input[name="software"]:checked')).map(c => c.value.includes(':') ? c.value.split(':').pop().trim() : c.value).join(", ") || "N/A";
+            }
+            else if (tipo === 'CONTRATACIÓN') {
+                const fileSalud = document.getElementById('fileCertSalud');
+                const fileDisc  = document.getElementById('fileCertDiscapacidad');
+                if (fileSalud && fileSalud.files.length > 0) { data.fileSaludB64 = await getBase64(fileSalud.files[0]); data.fileSaludName = fileSalud.files[0].name; }
+                if (fileDisc  && fileDisc.files.length  > 0) { data.fileDiscB64  = await getBase64(fileDisc.files[0]);  data.fileDiscName  = fileDisc.files[0].name; }
+                Object.assign(data, {
+                    nombre1: getValue('cont_nombreCandidato'), rut: getValue('cont_rut'),
+                    fechaIngreso: f.elements['cont_fechaIngreso'] ? f.elements['cont_fechaIngreso'].value : "",
+                    telefono: getValue('cont_telefono'), emailPersonal: getValue('cont_correo'),
+                    nacionalidad: getValue('cont_nacionalidad'), estadoCivil: getValue('cont_estadoCivil'),
+                    direccion: getValue('cont_direccion'),
+                    horario: getValue('cont_horario') + (f.querySelector('input[name="cont_diasTele"]:checked') ? " (Teletrabajo: " + Array.from(f.querySelectorAll('input[name="cont_diasTele"]:checked')).map(c => c.value).join('-') + ")" : ""),
+                    afp: getValue('cont_afp'), salud: getValue('cont_salud'), planSalud: getValue('cont_planSalud'),
+                    familiarEmpresa: getRad('cont_familiarEmpresa'), vbLaboral: getRad('cont_vbLaboral'),
+                    certDiscapacidad: getRad('cont_certDiscapacidad'), tipoContrato: getRad('tipoContrato'),
+                    fechaTermino: f.elements['fechaTermino'] ? f.elements['fechaTermino'].value : "N/A",
+                    cont_cc: f.elements['cont_cc'] ? f.elements['cont_cc'].value : "N/A",
+                    cont_jefeDirecto: f.elements['cont_jefeDirecto'] ? f.elements['cont_jefeDirecto'].value : "N/A",
+                    contSueldoLiquido: f.elements['cont_sueldoLiquido'] ? `$${f.elements['cont_sueldoLiquido'].value}` : "N/A",
+                    contSolEquipos: getRad('cont_solEquipos'),
+                    emgNombre: getValue('cont_emergenciaNombre'), emgTelefono: getValue('cont_emergenciaTelefono'),
+                    emgVinculo: getValue('cont_emergenciaVinculo'), emgEnfermedades: getValue('cont_emergenciaEnfermedades'),
+                    emgAlergias: getValue('cont_emergenciaAlergias'), emgTratamiento: getValue('cont_emergenciaTratamiento'),
+                    docCv: getChk('cont_doc_cv'), docCedula: getChk('cont_doc_cedula'), docAfp: getChk('cont_doc_afp'),
+                    docSalud: getChk('cont_doc_salud'), docAntecedentes: getChk('cont_doc_antecedentes'),
+                    docBanco: getChk('cont_doc_banco'), docResidencia: getChk('cont_doc_residencia'),
+                    docEstudios: getChk('cont_doc_estudios'), docFiniquito: getChk('cont_doc_finiquito'),
+                    docFicha: getChk('cont_doc_ficha'), obsDocs: getValue('cont_doc_observaciones'),
+                    contEquipos: Array.from(f.querySelectorAll('input[name="cont_equipos"]:checked')).map(c => c.value).join(', ') || 'N/A',
+                    contEquiposObs: f.elements['cont_equipos_obs'] ? f.elements['cont_equipos_obs'].value.toUpperCase() : 'N/A'
+                });
+            }
+            else if (tipo === 'MODIFICACIÓN DE CONDICIONES') {
+                Object.assign(data, {
+                    nombre1: getValue('mod_nombre'), rut: getValue('mod_rut'),
+                    modCcActual: getValue('mod_ccActual'), modMotivo: getValue('mod_motivo'),
+                    modVigencia: f.elements['mod_vigencia'] ? f.elements['mod_vigencia'].value : "N/A",
+                    modCargoAnt: getValue('mod_cargoAnterior'), modSueldoAnt: getValue('mod_sueldoAnterior'),
+                    modCcAnt: f.elements['mod_ccAnterior'] ? f.elements['mod_ccAnterior'].value : "N/A",
+                    modJornadaAnt: (f.elements['mod_jornadaAnterior'] ? f.elements['mod_jornadaAnterior'].value : "N/A") + (f.querySelector('input[name="mod_diasTeleAnt"]:checked') ? " (Teletrabajo: " + Array.from(f.querySelectorAll('input[name="mod_diasTeleAnt"]:checked')).map(c => c.value).join('-') + ")" : ""),
+                    modNuevoCargo: getValue('mod_nuevoCargo'), modSueldoNuev: getValue('mod_sueldoNuevo'),
+                    modCcNuev: f.elements['mod_ccNuevo'] ? f.elements['mod_ccNuevo'].value : "N/A",
+                    modJornadaNuevo: (f.elements['mod_jornadaNuevo'] ? f.elements['mod_jornadaNuevo'].value : "N/A") + (f.querySelector('input[name="mod_diasTeleNuev"]:checked') ? " (Teletrabajo: " + Array.from(f.querySelectorAll('input[name="mod_diasTeleNuev"]:checked')).map(c => c.value).join('-') + ")" : ""),
+                    modJefe: getValue('mod_jefeDirecto'), modFJefe: "N/A", modSuper: "N/A", modFSuper: "N/A", modGerente: "N/A", modFGerente: "N/A",
+                    modObservaciones: getValue('mod_observaciones') || "N/A"
+                });
+            }
+            else if (tipo === 'SOLICITUD DE PERMISO') {
+                Object.assign(data, {
+                    nombre1: getValue('perm_nombre'), rut: getValue('perm_rut'),
+                    fechaIngresoTrabajador: f.elements['perm_fechaIngreso'] ? f.elements['perm_fechaIngreso'].value : "N/A",
+                    permCc: getValue('perm_cc'), permCargo: getValue('perm_cargo'), permJefe: getValue('perm_jefe'),
+                    permFechaInicio: f.elements['perm_fechaInicio'] ? f.elements['perm_fechaInicio'].value : "N/A",
+                    permFechaFin: f.elements['perm_fechaFin'] ? f.elements['perm_fechaFin'].value : "N/A",
+                    permMotivo: getRad('perm_motivo'), permObservacion: getValue('perm_observacion')
+                });
+            }
+            else if (tipo === 'REVOCACIÓN CARTA DE AVISO') {
+                Object.assign(data, {
+                    nombre1: getValue('rev_nombre'), rut: getValue('rev_rut'),
+                    revocFechaOriginal: getValue('rev_fechaOriginal'),
+                    revMotivo: getValue('rev_motivo') === 'OTROS' ? getValue('rev_motivo_especifico') : getValue('rev_motivo'),
+                    revCargoSol: getValue('rev_cargoSolicitante'),
+                    revCCSol: getValue('rev_ccSolicitante')
+                });
+            }
+            else if (tipo === 'PACTO HORAS EXTRAORDINARIAS') {
+                Object.assign(data, {
+                    nombre1: getValue('hex_nombre'), rut: getValue('hex_rut'),
+                    hexFechaContrato: f.elements['hex_fechaContrato'] ? f.elements['hex_fechaContrato'].value : "N/A",
+                    hexArea: getValue('hex_area'),
+                    hexJefe: getValue('hex_jefeDirecto'),
+                    hexFecha: f.elements['hex_fecha'] ? f.elements['hex_fecha'].value : "N/A",
+                    hexHoraInicio: getValue('hex_horaInicio'),
+                    hexHoraFin: getValue('hex_horaFin'),
+                    hexHorasExtra: f.elements['hex_horasExtra'] ? f.elements['hex_horasExtra'].value : "0.0",
+                    hexDescripcion: getValue('hex_descripcion')
+                });
+            }
+            else if (tipo === 'FINIQUITO') {
+                const gi = (id) => document.getElementById(id)?.value || 'N/A';
+                const gt = (id) => document.getElementById(id)?.textContent?.trim() || '$ 0';
+                const gb = (id) => document.getElementById(id)?.checked ? 'SI' : 'NO';
+                Object.assign(data, {
+                    tipoFormulario: 'FINIQUITO',
+                    nombre1: getValue('fin_nombre'), rut: getValue('fin_rut'),
+                    finCargo: getValue('fin_cargo'), finCentroCosto: getValue('fin_centroCosto'),
+                    finFechaInicio: f.elements['fin_fechaInicio']?.value || 'N/A',
+                    finFechaTermino: f.elements['fin_fechaTermino']?.value || 'N/A',
+                    finCausal: getValue('fin_causal'),
+                    finAntiguedad: gi('fin_aniosServicio'),
+                    finConAvisoPrevio: gb('fin_conAvisoPrevio'),
+                    finSueldoBase: getValue('fin_sueldoBase'),
+                    finBonos: getValue('fin_bonos'),
+                    finGratificacion: getValue('fin_gratificacion'),
+                    finMovilizacion: getValue('fin_movilizacion'),
+                    finTopeImponible: getValue('fin_topeImponible'),
+                    finBaseTotal: gi('fin_baseVacaciones'),
+                    finCalculoDiario: gi('fin_calculoDiario'),
+                    finBaseIASConTope: gi('fin_baseIASConTope'),
+                    finMesesPeriodo: gi('fin_mesesTrabajados'),
+                    finDiasHabilesProp: gi('fin_diasHabilesProp'),
+                    finVacUsadas: gi('fin_vacacionesUsadas'),
+                    finSaldoDias: gi('fin_saldoDiasHabiles'),
+                    finDiasInhabiles: gi('fin_diasInhabiles'),
+                    finTotalVacDias: gi('fin_totalVacaciones'),
+                    finHabVacaciones: gt('fin_habVacaciones'),
+                    finHabIndemnizacion: gt('fin_habIndemnizacion'),
+                    finHabAcuerdo: gt('fin_habAcuerdo'),
+                    finHabMesAviso: gt('fin_habMesAviso'),
+                    finSubTotalHaberes: gt('fin_subTotalHaberes'),
+                    finDescAFC: gt('fin_descAFC'),
+                    finDescPrestamo: gt('fin_descPrestamo'),
+                    finSubTotalDescuentos: gt('fin_subTotalDescuentos'),
+                    finTotalFiniquito: gt('fin_totalFiniquito'),
+                    finSueldoMes: getValue('fin_sueldoMes'),
+                    finTotalPagar: gt('fin_totalPagar'),
+                    finUF: getValue('fin_uf'), finUTM: getValue('fin_utm'),
+                    finTopeIndemnizacion: gi('fin_topeIndemnizacion'),
+                    finBaseTributable: gi('fin_baseTributable'),
+                    finFactor: gi('fin_factor'), finRebaja: gi('fin_rebaja'),
+                    finIUT: gt('fin_iutDisplay'),
+                    finAplicaAcuerdo: gb('fin_aplicaAcuerdo'),
+                    finTipoAcuerdo: document.getElementById('fin_tipoAcuerdo')?.value || 'N/A'
+                });
+            }
+            else if (tipo === 'EVALUACIÓN DE PERSONAL A DESVINCULAR') {
+                const evalData = {};
+                [14, 7, 6, 7].forEach((total, sectionIdx) => {
+                    const prefix = ['asp', 'prof', 'seg', 'cal'][sectionIdx];
+                    for (let i = 1; i <= total; i++) {
+                        const key = prefix + i;
+                        const val = getRad('eva_' + prefix + i);
+                        const obs = getValue('eva_' + prefix + i + '_obs');
+                        evalData[key] = val !== "N/A" ? (val + (obs && obs !== "N/A" && obs.trim() !== "" ? " (" + obs + ")" : "")) : "0";
+                    }
+                });
+                Object.assign(data, evalData, {
+                    nombre1: getValue('eva_nombre'), rut: getValue('eva_rut'),
+                    correoPersonal: getValue('eva_correoPersonal'),
+                    evaCargo: getValue('eva_cargo'), evaArea: getValue('eva_area'),
+                    evaCCEvaluador: getValue('eva_ccEvaluador'),
+                    evaFTermino: f.elements['eva_fTermino'] ? f.elements['eva_fTermino'].value : "N/A",
+                    evaMotivoLista: getValue('eva_motivo_lista'), evaMotivo: getValue('eva_motivo'),
+                    evaFormularioSalida: getValue('eva_formularioSalida'),
+                    evaPuntuacion: getValue('eva_puntuacion_final'),
+                    promPersonal: getValue('eva_promedio'), promProf: getValue('eva_promedio_prof'),
+                    promSeg: getValue('eva_promedio_seg'), promCal: getValue('eva_promedio_cal'),
+                    evaEvaluador: getValue('eva_nombreEvaluador'), evaCargoEvaluador: getValue('eva_cargoEvaluador'),
+                    evaRecomienda: f.eva_recomienda ? f.eva_recomienda.value : "SI",
+                    evaObs1: getValue('eva_obs1'), evaObs2: getValue('eva_obs2'),
+                    evaImplementos: getValue('eva_implementos'),
+                    evaDoc1: (getRad('eva_doc1_rad') || "NO") + " / OBS: " + (getValue('eva_doc1_obs') || "S/O"),
+                    evaDoc2: (getRad('eva_doc2_rad') || "NO") + " / OBS: " + (getValue('eva_doc2_obs') || "S/O"),
+                    evaDoc3: (getRad('eva_doc3_rad') || "NO") + " / OBS: " + (getValue('eva_doc3_obs') || "S/O"),
+                    evaDoc4: (getRad('eva_doc4_rad') || "NO") + " / OBS: " + (getValue('eva_doc4_obs') || "S/O"),
+                    evaDoc5: (getRad('eva_doc5_rad') || "NO") + " / OBS: " + (getValue('eva_doc5_obs') || "S/O"),
+                    evaDoc6: getRad('eva_doc6_rad') || "NO"
+                });
+            }
+
+            let v = null;
+
+            google.script.run
+                .withSuccessHandler(r => {
+                    if (r.status === "OK") {
+                        if (tipo === 'RECLUTAMIENTO') {
+                            try { document.getElementById(formId).reset(); updateProgress(); } catch (e) { }
+                            b.disabled = false; b.innerText = "Confirmar Envío";
+                            document.getElementById('panelResumen').classList.add('hidden');
+                            const pe = document.getElementById('panelExito');
+                            pe.classList.remove('hidden'); pe.classList.add('flex');
+                            const fn = document.getElementById('folioNumero'); if (fn) fn.innerText = r.folio || '—';
+                            
+                            // Imprimir PDF
+                            const vPrint = window.open('', '_blank');
+                            if (vPrint) {
+                                const pdfHtml = generarPDF(tipo, data, r);
+                                vPrint.document.write(pdfHtml); vPrint.document.close(); vPrint.print();
+                            } else {
+                                alert("EL COMPROBANTE PDF FUE BLOQUEADO. PERMITA LOS POPUPS.");
+                            }
+                            return;
+                        }
+                        alert("SOLICITUD ENVIADA CON ÉXITO\nFOLIO N°: " + r.folio);
+                        v = window.open('', '_blank');
+                        if (!v) {
+                            alert("EL COMPROBANTE PDF FUE BLOQUEADO. PERMITA LOS POPUPS.");
+                            document.getElementById(formId).reset(); updateProgress(); cerrarModal();
+                            b.disabled = false; b.innerText = "Confirmar Envío"; return;
+                        }
+                        // PDF generation delegated to generarPDF()
+                        const pdfHtml = generarPDF(tipo, data, r);
+                        v.document.write(pdfHtml); v.document.close(); v.print();
+                        document.getElementById(formId).reset(); updateProgress();
+                        cerrarModal();
+                    } else {
+                        alert("ERROR EN SERVIDOR: " + r.msg);
+                    }
+                    b.disabled = false; b.innerText = "Confirmar Envío";
+                })
+                .withFailureHandler(err => {
+                    alert("ERROR DE CONEXIÓN: " + err.message);
+                    b.disabled = false; b.innerText = "Confirmar Envío";
+                })
+                .guardarSolicitud(data);
+
+        } catch (clientErr) {
+            b.disabled = false; b.innerText = "Confirmar Envío";
+            alert("ERROR INESPERADO: " + clientErr.message);
+        }
+    }
+
+    // ─── GENERADOR PDF ────────────────────────────────────────────────────────────
+
+    function generarPDF(tipo, data, r) {
+        const baseStyle = `@import url("https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap");@page{margin:0;size:letter;}body{font-family:"Roboto Mono",monospace;padding:30px 45px;font-size:8px;color:#1e293b;margin:0;text-transform:uppercase;}.h{border-bottom:2px solid #0D7DAF;margin-bottom:20px;padding-bottom:10px;display:flex;justify-content:space-between;align-items:center;}.st{background:#0D7DAF;color:white;padding:4px 10px;font-weight:bold;margin-top:10px;margin-bottom:4px;font-size:9px;}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;}.box{border:1px solid #cbd5e1;padding:5px;background:#f8fafc;}.lbl{color:#64748b;font-size:7px;font-weight:bold;display:block;}.val{font-weight:bold;font-size:9px;}.firma-box{margin-top:120px;display:flex;justify-content:space-around;text-align:center;}.linea{border-top:1px solid black;width:180px;margin-bottom:5px;}.btn-container{text-align:center;margin-top:40px;padding-bottom:40px;}.no-print-btn{background:#0D7DAF;color:white;padding:12px 25px;border:none;cursor:pointer;font-weight:bold;font-family:"Roboto Mono";font-size:11px;text-transform:uppercase;}@media print{.no-print-btn,.btn-container{display:none!important;}body{padding:15mm 20mm;}}`;
+        const header = `<div class="h"><div><b style="font-size:12px;color:#0D7DAF;">RELIX WATER S.A.</b><br>Formulario RR.HH v2.1</div><div style="text-align:right"><b>FOLIO N°: ${r.folio}</b><br>TOKEN: <b>${r.token}</b><br>REGISTRO: ${r.fechaHoy}</div></div>`;
+        let contentHtml = "";
+
+        if (tipo === 'RECLUTAMIENTO') {
+            contentHtml = `
+            <div class="st">01. INFORMACIÓN DE SOLICITUD</div>
+            <div class="grid">
+                <div class="box" style="grid-column:span 2"><span class="lbl">SOLICITANTE</span><span class="val">${data.nombreSolicitante}</span></div>
+                <div class="box" style="grid-column:span 2"><span class="lbl">EMAIL SOLICITANTE</span><span class="val">${data.emailSolicitante}</span></div>
+                <div class="box"><span class="lbl">C.C. SOLICITANTE</span><span class="val">${data.ccSolicitante}</span></div>
+                <div class="box"><span class="lbl">CARGO SOLICITANTE</span><span class="val">${data.cargoSolicitante}</span></div>
+                <div class="box" style="grid-column:span 2"><span class="lbl">MOTIVO CONTRATACIÓN</span><span class="val">${data.tipoIngreso}</span></div>
+                <div class="box"><span class="lbl">CANT. VACANTES</span><span class="val">${data.cantidadVacantes}</span></div>
+                <div class="box"><span class="lbl">JEFE APROBADOR</span><span class="val">${r.fullData.jefeAprobador}</span></div>
+            </div>
+            
+            <div class="st">02. PERFIL DE VACANTE</div>
+            <div class="grid">
+                <div class="box" style="grid-column:span 2"><span class="lbl">ESTUDIOS/PROFESIÓN</span><span class="val">${data.estudiosVacante}</span></div>
+                <div class="box"><span class="lbl">CARGO A CUBRIR</span><span class="val">${data.cargo}</span></div>
+                <div class="box"><span class="lbl">DESCRIPTOR CARGO</span><span class="val">${r.fullData.descriptorCargo === 'SI' ? 'SI, LINK EN PLANILLA' : 'NO'}</span></div>
+            </div>
+            
+            <div class="st">03. CONDICIONES ECONÓMICAS Y ADMINISTRATIVAS</div>
+            <div class="grid">
+                <div class="box"><span class="lbl">SUELDO LÍQUIDO</span><span class="val">${data.sueldoLiquido}</span></div>
+                <div class="box"><span class="lbl">COSTO EMPRESA</span><span class="val">${data.costoEmpresa}</span></div>
+                <div class="box"><span class="lbl">CENTRO COSTO</span><span class="val">${data.cc}</span></div>
+                <div class="box"><span class="lbl">PRESUPUESTO</span><span class="val">${data.presupuesto}</span></div>
+                <div class="box" style="grid-column:span 2"><span class="lbl">TIPO CONTRATO</span><span class="val">${data.tipoContrato}</span></div>
+                ${data.fechaInicio && data.fechaInicio !== 'N/A' ? `<div class="box"><span class="lbl">FECHA INICIO</span><span class="val">${data.fechaInicio}</span></div>` : ''}
+                ${data.fechaTermino && data.fechaTermino !== 'N/A' ? `<div class="box"><span class="lbl">FECHA TÉRMINO</span><span class="val">${data.fechaTermino}</span></div>` : ''}
+            </div>
+            
+            <div class="firma-box">
+                <div><div class="linea"></div><span class="lbl">V°B° Jefe Directo</span></div>
+                <div><div class="linea"></div><span class="lbl">V°B° Gerencia del Área</span></div>
+                <div><div class="linea"></div><span class="lbl">V°B° Gerencia A&F</span></div>
+                ${data.presupuesto === 'NO' ? `<div><div class="linea"></div><span class="lbl">V°B° Gerencia General</span></div>` : ''}
+            </div>`;
+        } else if (tipo === 'CONTRATACIÓN') {
+            let docs = [];
+            if (data.docCv === "SI") docs.push("CURRICULUM VITAE"); if (data.docCedula === "SI") docs.push("COPIA CÉDULA");
+            if (data.docAfp === "SI") docs.push("CERTIFICADO AFP"); if (data.docSalud === "SI") docs.push("CERTIFICADO SALUD");
+            if (data.docAntecedentes === "SI") docs.push("CERTIFICADO ANTECEDENTES"); if (data.docBanco === "SI") docs.push("CERTIFICADO BANCO");
+            if (data.docResidencia === "SI") docs.push("CERTIFICADO RESIDENCIA"); if (data.docEstudios === "SI") docs.push("CERTIFICADO ESTUDIOS");
+            if (data.docFiniquito === "SI") docs.push("ÚLTIMO FINIQUITO"); if (data.docFicha === "SI") docs.push("FICHA PERSONAL");
+            contentHtml = `
+            <div class="st">01. DATOS DEL SELECCIONADO</div>
+            <div class="grid">
+                <div class="box" style="grid-column:span 2"><span class="lbl">NOMBRE CANDIDATO</span><span class="val">${data.nombre1}</span></div>
+                <div class="box"><span class="lbl">RUT</span><span class="val">${data.rut}</span></div>
+                <div class="box"><span class="lbl">NACIONALIDAD</span><span class="val">${data.nacionalidad}</span></div>
+                <div class="box"><span class="lbl">ESTADO CIVIL</span><span class="val">${data.estadoCivil}</span></div>
+                <div class="box" style="grid-column:span 2"><span class="lbl">DIRECCIÓN</span><span class="val">${data.direccion}</span></div>
+                <div class="box"><span class="lbl">TELÉFONO</span><span class="val">${data.telefono}</span></div>
+                <div class="box" style="grid-column:span 2"><span class="lbl">EMAIL</span><span class="val">${data.emailPersonal}</span></div>
+                <div class="box"><span class="lbl">HORARIO</span><span class="val">${data.horario}</span></div>
+                <div class="box"><span class="lbl">FECHA INGRESO</span><span class="val">${data.fechaIngreso}</span></div>
+            </div>
+            
+            <div class="st">02. CONDICIONES</div>
+            <div class="grid">
+                <div class="box" style="grid-column:span 2"><span class="lbl">TIPO CONTRATO</span><span class="val">${data.tipoContrato}</span></div>
+                <div class="box"><span class="lbl">FECHA TÉRMINO</span><span class="val">${data.fechaTermino}</span></div>
+                <div class="box" style="grid-column:span 2"><span class="lbl">CENTRO DE COSTO</span><span class="val">${data.cont_cc}</span></div>
+                <div class="box" style="grid-column:span 2"><span class="lbl">JEFATURA DIRECTA</span><span class="val">${data.cont_jefeDirecto}</span></div>
+                <div class="box"><span class="lbl">SUELDO LÍQUIDO</span><span class="val">${data.contSueldoLiquido}</span></div>
+                <div class="box"><span class="lbl">AFP</span><span class="val">${data.afp}</span></div>
+                <div class="box"><span class="lbl">SALUD</span><span class="val">${data.salud}</span></div>
+                <div class="box"><span class="lbl">PLAN SALUD</span><span class="val">${data.planSalud}</span></div>
+            </div>
+
+            <div class="st">03. DECLARACIONES Y OTROS</div>
+            <div class="grid">
+                <div class="box"><span class="lbl">FAMILIAR EMPRESA</span><span class="val">${data.familiarEmpresa}</span></div>
+                <div class="box"><span class="lbl">V°B° LABORAL</span><span class="val">${data.vbLaboral}</span></div>
+                <div class="box"><span class="lbl">CERT. DISCAPACIDAD</span><span class="val">${data.certDiscapacidad}</span></div>
+                <div class="box"><span class="lbl">SOLICITUD EQUIPOS</span><span class="val">${data.contSolEquipos}</span></div>
+            </div>
+
+            <div class="st">04. CONTACTO DE EMERGENCIA Y SALUD</div>
+            <div class="grid">
+                <div class="box" style="grid-column:span 2"><span class="lbl">CONTACTO EMERGENCIA</span><span class="val">${data.emgNombre}</span></div>
+                <div class="box"><span class="lbl">TELÉFONO</span><span class="val">${data.emgTelefono}</span></div>
+                <div class="box"><span class="lbl">VÍNCULO</span><span class="val">${data.emgVinculo}</span></div>
+                <div class="box" style="grid-column:span 2"><span class="lbl">ENFERMEDADES/ALERGIAS</span><span class="val">${data.emgEnfermedades} / ${data.emgAlergias}</span></div>
+                <div class="box" style="grid-column:span 2"><span class="lbl">TRATAMIENTO MÉDICO</span><span class="val">${data.emgTratamiento}</span></div>
+            </div>
+            
+            <div class="st">05. DOCUMENTOS</div>
+            <div class="grid">
+                <div class="box" style="grid-column:span 2"><span class="lbl">DOCUMENTOS SOLICITADOS</span><span class="val" style="font-size:7px">${docs.length > 0 ? docs.map(d => `• ${d}`).join('<br>') : '<i>NINGUNO</i>'}</span></div>
+                <div class="box" style="grid-column:span 2"><span class="lbl">OBSERVACIONES</span><span class="val" style="font-size:7px">${data.obsDocs || "SIN OBSERVACIONES"}</span></div>
+            </div>
+            
+            <div class="firma-box">
+                <div><div class="linea"></div><span class="lbl">V°B° Jefe Directo</span></div>
+                <div><div class="linea"></div><span class="lbl">V°B° Gerencia del Área</span></div>
+                <div><div class="linea"></div><span class="lbl">Recibido RR.HH.</span></div>
+            </div>`;
+        } else if (tipo === 'MODIFICACIÓN DE CONDICIONES') {
+            const mb = (lbl, val) => (val && val !== "N/A" && val.trim() !== "" && val.trim() !== "$") ? `<div class="box"><span class="lbl">${lbl}</span><span class="val">${val}</span></div>` : "";
+            let conds = mb("CARGO ANTERIOR", data.modCargoAnt) + mb("SUELDO ANT.", data.modSueldoAnt) + mb("C.C. ANTERIOR", data.modCcAnt) + mb("JORNADA ANTERIOR", data.modJornadaAnt) + mb("CARGO NUEVO", data.modNuevoCargo) + mb("SUELDO NUEVO", data.modSueldoNuev) + mb("C.C. NUEVO", data.modCcNuev) + mb("JORNADA NUEVA", data.modJornadaNuevo);
+            if (!conds) conds = '<div class="box" style="grid-column:span 4"><span class="val">NO SE DETALLARON CONDICIONES</span></div>';
+            contentHtml = `<div class="st">01. DETALLE</div><div class="grid"><div class="box" style="grid-column:span 2"><span class="lbl">TRABAJADOR</span><span class="val">${data.nombre1}</span></div><div class="box"><span class="lbl">RUT</span><span class="val">${data.rut}</span></div><div class="box"><span class="lbl">C.C. ACTUAL</span><span class="val">${data.modCcActual}</span></div><div class="box"><span class="lbl">VIGENCIA DESDE</span><span class="val">${data.modVigencia}</span></div><div class="box" style="grid-column:span 2"><span class="lbl">MOTIVO</span><span class="val">${data.modMotivo}</span></div></div><div class="st">02. CONDICIONES</div><div class="grid">${conds}</div><div class="st">03. OBSERVACIONES</div><div class="box"><span class="val">${data.modObservaciones}</span></div><div class="firma-box"><div><div class="linea"></div><b>${data.modJefe || ""}</b><br><span class="lbl">V°B° Jefe Directo</span></div><div><div class="linea"></div><b>${data.modSuper || ""}</b><br><span class="lbl">V°B° Superintendente</span></div><div><div class="linea"></div><b>${data.modGerente || ""}</b><br><span class="lbl">V°B° Gerencia General</span></div></div>`;
+        } else if (tipo === 'SOLICITUD DE PERMISO') {
+            contentHtml = `
+            <div class="st">01. DATOS DEL TRABAJADOR</div>
+            <div class="grid">
+                <div class="box" style="grid-column:span 2"><span class="lbl">NOMBRE</span><span class="val">${data.nombre1}</span></div>
+                <div class="box"><span class="lbl">RUT</span><span class="val">${data.rut}</span></div>
+                <div class="box"><span class="lbl">FECHA INGRESO</span><span class="val">${data.fechaIngresoTrabajador}</span></div>
+                <div class="box" style="grid-column:span 2"><span class="lbl">CARGO</span><span class="val">${data.permCargo}</span></div>
+                <div class="box" style="grid-column:span 2"><span class="lbl">CENTRO COSTO</span><span class="val">${data.permCc}</span></div>
+                <div class="box" style="grid-column:span 4"><span class="lbl">JEFE DIRECTO</span><span class="val">${data.permJefe}</span></div>
+            </div>
+            <div class="st">02. DETALLE DEL PERMISO</div>
+            <div class="grid">
+                <div class="box"><span class="lbl">DESDE</span><span class="val">${data.permFechaInicio}</span></div>
+                <div class="box"><span class="lbl">HASTA</span><span class="val">${data.permFechaFin}</span></div>
+                <div class="box" style="grid-column:span 2"><span class="lbl">MOTIVO</span><span class="val">${data.permMotivo}</span></div>
+            </div>
+            <div class="box" style="margin-top:5px"><span class="lbl">OBSERVACIONES</span><span class="val">${data.permObservacion}</span></div>
+            <div class="firma-box">
+                <div><div class="linea"></div><b>${data.nombre1}</b><br><span class="lbl">Firma Solicitante</span></div>
+                <div><div class="linea"></div><b>${data.permJefe}</b><br><span class="lbl">Firma Jefe Directo</span></div>
+                <div><div class="linea"></div><span class="lbl">V°B° RR.HH.</span></div>
+            </div>`;
+        } else if (tipo === 'PACTO HORAS EXTRAORDINARIAS') {
+            const meses = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+            const fmtFecha = (f) => { if (!f || f === "N/A") return "—"; const d = new Date(f + "T12:00:00"); return d.getDate() + " de " + meses[d.getMonth()] + " de " + d.getFullYear(); };
+            const fmtHora = (h) => { if (!h || h === "N/A") return "—"; return h; };
+            contentHtml = `
+            <div class="st">01. IDENTIFICACIÓN DEL TRABAJADOR</div>
+            <div class="grid">
+                <div class="box" style="grid-column:span 2"><span class="lbl">NOMBRE</span><span class="val">${data.nombre1}</span></div>
+                <div class="box"><span class="lbl">R.U.T.</span><span class="val">${data.rut}</span></div>
+                <div class="box"><span class="lbl">FECHA CONTRATO</span><span class="val">${fmtFecha(data.hexFechaContrato)}</span></div>
+                <div class="box" style="grid-column:span 2"><span class="lbl">ÁREA</span><span class="val">${data.hexArea}</span></div>
+                <div class="box" style="grid-column:span 2"><span class="lbl">JEFE DIRECTO</span><span class="val">${data.hexJefe}</span></div>
+            </div>
+
+            <div class="st">02. PACTO TRABAJO HORAS EXTRAORDINARIAS</div>
+            <div style="border:1px solid #cbd5e1;padding:12px 16px;background:#f8fafc;font-size:9px;margin-bottom:5px;">
+                <p style="margin-bottom:10px;">Se conviene el siguiente pacto entre las partes para trabajar horas extraordinarias:</p>
+                <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
+                    <span><b style="color:#0D7DAF">EL DÍA:</b> <b>${fmtFecha(data.hexFecha)}</b></span>
+                    <span><b style="color:#0D7DAF">DESDE LAS:</b> <b>${fmtHora(data.hexHoraInicio)}</b></span>
+                    <span><b style="color:#0D7DAF">HASTA LAS:</b> <b>${fmtHora(data.hexHoraFin)}</b></span>
+                    <span style="border-left:1px solid #0D7DAF;padding-left:20px;"><b style="color:#0D7DAF">HORAS:</b> <b style="font-size:11px;color:#10b981">${data.hexHorasExtra}</b></span>
+                </div>
+            </div>
+
+            <div class="st">03. MOTIVOS QUE GENERAN EL PACTO</div>
+            <div style="border:1px solid #cbd5e1;padding:10px 16px;background:#f8fafc;font-size:9px;">
+                <span class="lbl">TRABAJOS EXTRAS POR (DESCRIPCIÓN DE ACTIVIDAD):</span>
+                <p style="margin-top:6px;line-height:1.6;font-weight:bold;">${data.hexDescripcion}</p>
+            </div>
+
+            <div class="firma-box" style="margin-top:80px;display:flex;justify-content:space-around;text-align:center;flex-wrap:wrap;gap:80px;">
+                <div><div class="linea"></div><b>${data.nombre1}</b><br><span class="lbl">Firma del Trabajador</span></div>
+                <div><div class="linea"></div><b>${data.hexJefe}</b><br><span class="lbl">Nombre y Firma del Jefe Directo</span></div>
+            </div>
+            <div style="display:flex;justify-content:space-around;text-align:center;flex-wrap:wrap;gap:80px;margin-top:80px;">
+                <div style="width:220px"><div class="linea" style="width:220px;margin-bottom:5px;border-top:1px solid black;"></div><span class="lbl">Firma Gerente del Área</span></div>
+                <div style="width:220px"><div class="linea" style="width:220px;margin-bottom:5px;border-top:1px solid black;"></div><span class="lbl">Dirección de Recursos Humanos</span></div>
+            </div>`;
+        } else if (tipo === 'REVOCACIÓN CARTA DE AVISO') {
+            const meses = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+            const fmt = (f) => { if (!f || f === "N/A") return "xx de xxxx de xxxx"; const d = new Date(f + "T12:00:00"); return d.getDate() + " de " + meses[d.getMonth()] + " de " + d.getFullYear(); };
+            contentHtml = `<div style="text-align:center;font-weight:bold;font-size:11px;margin-bottom:20px;">REVOCACIÓN CARTA DE AVISO</div><div style="text-align:justify;line-height:1.6;font-size:10px;padding:0 10px;"><p>En Santiago de Chile a, ${fmt(new Date().toISOString().split('T')[0])}, entre RELIX S.A., R.U.T. N° 76.240.120-7, representada por Doña Maricel Bastias Borquez; y don(a) <b>${data.nombre1}</b>, C.I. N° <b>${data.rut}</b>; han convenido lo siguiente:</p><p><b>PRIMERO:</b><br>Relix S.A. envió carta de aviso de término de contrato al trabajador para poner fin al contrato de trabajo con fecha ${fmt(data.revocFechaOriginal)}.</p><p><b>SEGUNDO:</b><br>Por el presente instrumento, las partes acuerdos dejar sin efecto la carta de despido y perdurar en el contrato de trabajo.</p><p><b>TERCERO:</b><br>En todo lo no modificado por el presente Anexo, subsistirá el Contrato Individual de Trabajo.</p><p><b>CUARTO:</b><br>El presente anexo se firma en dos ejemplares de igual tenor.</p></div><div class="firma-box" style="margin-top:100px;"><div style="width:200px"><div class="linea" style="width:200px"></div><b>${data.nombre1}</b><br>C.I. N°: <b>${data.rut}</b><br><span class="lbl">TRABAJADOR</span></div><div style="width:200px"><div class="linea" style="width:200px"></div><b>RELIX S.A.</b><br><b>76.240.120-7</b><br><span class="lbl">EMPLEADOR</span></div></div>`;
+        } else if (tipo === 'EVALUACIÓN DE PERSONAL A DESVINCULAR') {
+            const q = {
+                asp: { label: 'A. ASPECTOS PERSONALES', items: ['PUNTUALIDAD', 'ASISTENCIA', 'INICIATIVA', 'ESPÍRITU DE SUPERACIÓN', 'HONRADEZ Y HONESTIDAD', 'CONDUCTA ÉTICA', 'CONOCIMIENTO DE SU TRABAJO', 'TRABAJO EN EQUIPO', 'RESPETO A SU JEFE DIRECTO', 'RESPETO A SUS COMPAÑEROS', 'PREDISPOSICIÓN OTRAS FUNCIONES', 'SALUD COMPATIBLE', 'COMPORTAMIENTO FUERA JORNADA', 'CAPACIDAD DE LIDERAZGO'] },
+                prof: { label: 'B. ASPECTOS PROFESIONALES', items: ['USA HERRAMIENTAS APROPIADAS', 'APLICA INSTRUMENTOS MEDICIÓN', 'LEE MEDICIONES INSTRUMENTOS', 'MANEJA MANUALES TÉCNICOS', 'ENTIENDE LABORES ENCOMENDADAS', 'SIGUE INSTRUCCIONES', 'PRESENTA CREATIVIDAD'] },
+                seg: { label: 'C. CONDUCTA SEGURIDAD', items: ['USA ADECUADAMENTE LOS EPP', 'COMUNICA CONDICIONES PELIGROSAS', 'CUIDADO Y MANUTENCIÓN DE EPP', 'LIDERAZGO EN SITUACIONES DE PELIGRO', 'RESPETA NORMAS DE SEGURIDAD', 'MANTIENE LUGAR LIMPIO Y ORDENADO'] },
+                cal: { label: 'D. CALIDAD', items: ['EFICACIA (Cant-Cal)', 'CONOCIMIENTOS', 'COLABORACION', 'INICIATIVA', 'RESPONSABILIDAD', 'ASISTENCIA', 'COMPORTAMIENTO'] }
+            };
+            let itemsHtml = `<div class="st" style="margin-top:20px">04. DETALLE DE EVALUACIÓN POR SECCIONES</div>`;
+            ['asp', 'prof', 'seg', 'cal'].forEach(p => {
+                itemsHtml += `<div style="background:#f1f5f9; padding:2px 8px; font-size:7px; font-weight:bold; margin-top:5px; border-left:3px solid #0D7DAF; color:#0D7DAF; text-transform:uppercase">${q[p].label}</div>`;
+                itemsHtml += `<div style="display:grid; grid-template-columns:1fr 1fr; gap:0 15px; font-size:6.5px; margin-bottom:5px; padding:0 5px;">`;
+                q[p].items.forEach((text, i) => {
+                    const idx = i + 1;
+                    const res = data[p + idx] || "0";
+                    itemsHtml += `<div style="border-bottom:0.5px solid #eee; padding:1.5px 0; display:flex; justify-content:space-between; align-items:center;"><span style="color:#0D7DAF; width:18px; font-weight:bold">${p.toUpperCase()}${idx}</span><span style="flex:1; margin-right:5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">${text}</span><b style="color:#111">${res}</b></div>`;
+                });
+                itemsHtml += `</div>`;
+            });
+
+            contentHtml = `<div class="st">01. DATOS DEL TRABAJADOR EVALUADO</div><div class="grid"><div class="box" style="grid-column:span 2"><span class="lbl">NOMBRE</span><span class="val">${data.nombre1}</span></div><div class="box"><span class="lbl">RUT</span><span class="val">${data.rut}</span></div><div class="box"><span class="lbl">CORREO PERSONAL</span><span class="val">${data.correoPersonal}</span></div><div class="box"><span class="lbl">CARGO</span><span class="val">${data.evaCargo}</span></div><div class="box"><span class="lbl">ÁREA</span><span class="val">${data.evaArea}</span></div><div class="box"><span class="lbl">FECHA TÉRMINO</span><span class="val">${data.evaFTermino}</span></div>${data.evaFormularioSalida && data.evaFormularioSalida !== "N/A" && data.evaFormularioSalida.trim() ? `<div class="box" style="grid-column:span 2;background:#fef3c7;"><span class="lbl">FORMULARIO DE SALIDA</span><span class="val" style="font-size:8px;word-break:break-all;">${data.evaFormularioSalida}</span></div>` : ''}</div><div class="st">02. RESUMEN DE CALIFICACIÓN</div><div class="grid"><div class="box"><span class="lbl">personales</span><span class="val">${data.promPersonal}</span></div><div class="box"><span class="lbl">profesionales</span><span class="val">${data.promProf}</span></div><div class="box"><span class="lbl">seguridad</span><span class="val">${data.promSeg}</span></div><div class="box"><span class="lbl">calidad</span><span class="val">${data.promCal}</span></div></div><div class="box" style="margin-top:10px;background:#0D7DAF;color:white;"><span class="lbl" style="color:white;opacity:0.8">PUNTUACIÓN FINAL</span><span class="val" style="font-size:14px">${data.evaPuntuacion}</span></div><div class="st">03. EVALUADOR Y RECOMENDACIÓN</div><div class="grid"><div class="box" style="grid-column:span 3"><span class="lbl">EVALUADOR</span><span class="val">${data.evaEvaluador} — ${data.evaCargoEvaluador}</span></div><div class="box" style="background:#fef08a;text-align:center"><span class="lbl">¿RECOMIENDA?</span><span class="val" style="font-size:16px;color:#c2410c">${data.evaRecomienda}</span></div></div>${itemsHtml}<div class="firma-box"><div><div class="linea"></div><span class="lbl">Firma Evaluador</span></div><div><div class="linea"></div><span class="lbl">Firma Jefe Directo</span></div><div><div class="linea"></div><span class="lbl">V°B° Gerencia</span></div></div>`;
+        }
+
+        else if (tipo === 'FINIQUITO') {
+            const d = data;
+            const fmtFec = (v) => { if (!v || v === 'N/A') return '—'; const p = v.split('-'); return p.length === 3 ? `${p[2]}/${p[1]}/${p[0]}` : v; };
+            contentHtml = `
+            <div class="st">01. DATOS DEL TRABAJADOR</div>
+            <div class="grid">
+                <div class="box" style="grid-column:span 2"><span class="lbl">NOMBRE COMPLETO</span><span class="val">${d.nombre1}</span></div>
+                <div class="box"><span class="lbl">R.U.T.</span><span class="val">${d.rut}</span></div>
+                <div class="box"><span class="lbl">CARGO</span><span class="val">${d.finCargo}</span></div>
+                <div class="box" style="grid-column:span 2"><span class="lbl">CENTRO DE COSTO</span><span class="val">${d.finCentroCosto}</span></div>
+                <div class="box"><span class="lbl">SOLICITANTE</span><span class="val">${d.nombreSolicitante}</span></div>
+                <div class="box"><span class="lbl">EMAIL SOLICITANTE</span><span class="val">${d.emailSolicitante}</span></div>
+            </div>
+
+            <div class="st">02. DATOS DEL CONTRATO</div>
+            <div class="grid">
+                <div class="box"><span class="lbl">FECHA INICIO</span><span class="val">${fmtFec(d.finFechaInicio)}</span></div>
+                <div class="box"><span class="lbl">FECHA TÉRMINO</span><span class="val">${fmtFec(d.finFechaTermino)}</span></div>
+                <div class="box" style="grid-column:span 2"><span class="lbl">ANTIGÜEDAD</span><span class="val">${d.finAntiguedad}</span></div>
+                <div class="box" style="grid-column:span 3"><span class="lbl">CAUSAL DE TÉRMINO</span><span class="val">${d.finCausal}</span></div>
+                <div class="box"><span class="lbl">CON AVISO PREVIO</span><span class="val">${d.finConAvisoPrevio}</span></div>
+            </div>
+
+            <div class="st">03. BASE REMUNERACIONAL</div>
+            <div class="grid">
+                <div class="box"><span class="lbl">SUELDO BASE</span><span class="val">$ ${d.finSueldoBase}</span></div>
+                <div class="box"><span class="lbl">BONOS</span><span class="val">$ ${d.finBonos}</span></div>
+                <div class="box"><span class="lbl">GRATIFICACIÓN</span><span class="val">$ ${d.finGratificacion}</span></div>
+                <div class="box"><span class="lbl">MOVILIZACIÓN</span><span class="val">$ ${d.finMovilizacion}</span></div>
+                <div class="box" style="grid-column:span 2"><span class="lbl">BASE TOTAL (VAC. / IAS)</span><span class="val">$ ${d.finBaseTotal}</span></div>
+                <div class="box"><span class="lbl">CÁLCULO DIARIO</span><span class="val">$ ${d.finCalculoDiario}</span></div>
+                <div class="box"><span class="lbl">BASE IAS C/TOPE</span><span class="val">$ ${d.finBaseIASConTope}</span></div>
+            </div>
+
+            <div class="st">04. VACACIONES PROPORCIONALES</div>
+            <div class="grid">
+                <div class="box"><span class="lbl">MESES DEL PERÍODO</span><span class="val">${d.finMesesPeriodo}</span></div>
+                <div class="box"><span class="lbl">DÍAS HÁB. PROP.</span><span class="val">${d.finDiasHabilesProp}</span></div>
+                <div class="box"><span class="lbl">DÍAS UTILIZADOS</span><span class="val">${d.finVacUsadas}</span></div>
+                <div class="box"><span class="lbl">SALDO DÍAS HÁBL.</span><span class="val">${d.finSaldoDias}</span></div>
+                <div class="box"><span class="lbl">DÍAS INHÁBILES</span><span class="val">${d.finDiasInhabiles}</span></div>
+                <div class="box"><span class="lbl">TOTAL VAC. (CAL.)</span><span class="val">${d.finTotalVacDias}</span></div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:10px;">
+                <div>
+                    <div class="st" style="margin-top:0">05. HABERES</div>
+                    <div style="border:1px solid #cbd5e1;padding:8px;background:#fff8f0;">
+                        <div style="display:flex;justify-content:space-between;padding:2px 0;border-bottom:0.5px solid #f0f0f0"><span class="lbl">VACACIONES PROP.</span><b>${d.finHabVacaciones}</b></div>
+                        <div style="display:flex;justify-content:space-between;padding:2px 0;border-bottom:0.5px solid #f0f0f0"><span class="lbl">INDEM. AÑOS SERV.</span><b>${d.finHabIndemnizacion}</b></div>
+                        <div style="display:flex;justify-content:space-between;padding:2px 0;border-bottom:0.5px solid #f0f0f0"><span class="lbl">ACUERDO MARCO ${d.finAplicaAcuerdo === 'SI' ? '(' + d.finTipoAcuerdo + ')' : ''}</span><b>${d.finHabAcuerdo}</b></div>
+                        <div style="display:flex;justify-content:space-between;padding:2px 0;border-bottom:0.5px solid #f0f0f0"><span class="lbl">MES DE AVISO</span><b>${d.finHabMesAviso}</b></div>
+                        <div style="display:flex;justify-content:space-between;padding:4px 0;background:#f1f5f9;font-weight:900"><span>SUB-TOTAL HABERES</span><b>${d.finSubTotalHaberes}</b></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="st" style="margin-top:0">06. DESCUENTOS</div>
+                    <div style="border:1px solid #cbd5e1;padding:8px;background:#fff5f5;">
+                        <div style="display:flex;justify-content:space-between;padding:2px 0;border-bottom:0.5px solid #f0f0f0"><span class="lbl">AFC SEG. CESANTÍA</span><b>${d.finDescAFC}</b></div>
+                        <div style="display:flex;justify-content:space-between;padding:2px 0;border-bottom:0.5px solid #f0f0f0"><span class="lbl">PRÉSTAMO EMPRESA</span><b>${d.finDescPrestamo}</b></div>
+                        <div style="display:flex;justify-content:space-between;padding:4px 0;background:#f1f5f9;font-weight:900"><span>SUB-TOTAL DESC.</span><b>${d.finSubTotalDescuentos}</b></div>
+                    </div>
+                    <div class="st" style="margin-top:6px">07. BASE TRIBUTARIA</div>
+                    <div style="border:1px solid #cbd5e1;padding:8px;background:#f8fafc;">
+                        <div style="display:flex;justify-content:space-between;padding:2px 0"><span class="lbl">UF MES ANT.</span><b>$ ${d.finUF}</b></div>
+                        <div style="display:flex;justify-content:space-between;padding:2px 0"><span class="lbl">UTM</span><b>$ ${d.finUTM}</b></div>
+                        <div style="display:flex;justify-content:space-between;padding:2px 0"><span class="lbl">TOPE IAS (90UF×AÑ.)</span><b>$ ${d.finTopeIndemnizacion}</b></div>
+                        <div style="display:flex;justify-content:space-between;padding:2px 0"><span class="lbl">BASE TRIBUTABLE</span><b>${d.finBaseTributable}</b></div>
+                        <div style="display:flex;justify-content:space-between;padding:2px 0"><span class="lbl">FACTOR / TRAMO</span><b>${d.finFactor}</b></div>
+                        <div style="display:flex;justify-content:space-between;padding:2px 0"><span class="lbl">REBAJA</span><b>$ ${d.finRebaja}</b></div>
+                        <div style="display:flex;justify-content:space-between;padding:4px 0;font-weight:900"><span>IUT</span><b>${d.finIUT}</b></div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top:10px;border:2px solid #0D7DAF;padding:10px 14px;display:flex;justify-content:space-between;align-items:center">
+                <span style="font-weight:900;font-size:10px">TOTAL A PAGO FINIQUITO</span>
+                <b style="font-size:14px;color:#0D7DAF">${d.finTotalFiniquito}</b>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 14px;border:1px solid #e2e8f0;border-top:none;background:#f8fafc">
+                <span style="font-size:8px;font-weight:700">SUELDO DEL MES</span>
+                <b>$ ${d.finSueldoMes}</b>
+            </div>
+            <div style="background:#0D7DAF;color:white;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+                <span style="font-weight:900;font-size:11px;letter-spacing:1px">TOTAL A PAGAR</span>
+                <b style="font-size:16px">${d.finTotalPagar}</b>
+            </div>
+
+            <div class="firma-box">
+                <div><div class="linea"></div><span class="lbl">Firma Gte. Operaciones</span></div>
+                <div><div class="linea"></div><span class="lbl">Firma Gte. Administración</span></div>
+                <div><div class="linea"></div><span class="lbl">Firma Gte. General</span></div>
+            </div>`;
+        }
+
+        const _titulos = {
+            'RECLUTAMIENTO': 'SOLICITUD DE RECLUTAMIENTO',
+            'CONTRATACIÓN': 'CONTRATACIÓN DE PERSONAL',
+            'MODIFICACIÓN DE CONDICIONES': 'MODIFICACIÓN DE CONDICIONES',
+            'SOLICITUD DE PERMISO': 'SOLICITUD DE PERMISO',
+            'REVOCACIÓN CARTA DE AVISO': 'REVOCACIÓN CARTA DE AVISO',
+            'EVALUACIÓN DE PERSONAL A DESVINCULAR': 'EVALUACIÓN DE PERSONAL A DESVINCULAR',
+            'PACTO HORAS EXTRAORDINARIAS': 'PACTO HORAS EXTRAORDINARIAS',
+            'FINIQUITO': 'CÁLCULO DE FINIQUITO'
+        };
+        const _tituloBanner = tipo === 'REVOCACIÓN CARTA DE AVISO'
+            ? ''
+            : `<div style="background:#0D7DAF;color:white;padding:10px 16px;font-size:13px;font-weight:900;letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;text-align:center;border-bottom:3px solid #f89d31;">${_titulos[tipo] || tipo}</div>`;
+        return `<html><head><title>${r.nombreArchivoPDF}</title><style>${baseStyle}</style></head><body>${header}${_tituloBanner}${contentHtml}<div class="btn-container"><button class="no-print-btn" onclick="window.print()">IMPRIMIR COMPROBANTE PDF</button></div></body></html>`;
+    }
+    // ─── GESTIÓN DE SESIÓN — autenticación vía cuenta Google activa ──
+    // El control de acceso es 100% server-side en doGet (codigo.gs).
+    // Estas funciones son stubs por compatibilidad.
+
+    function crearSesion() {}
+    function verificarSesion() {}
+
+    function cerrarSesion() {
+        const url = (typeof SCRIPT_URL !== 'undefined' && SCRIPT_URL)
+            ? SCRIPT_URL
+            : window.location.href.split('?')[0];
+        window.open(url, '_top');
+    }
+
+    function navegar(p) {
+        const scriptUrl = typeof SCRIPT_URL !== 'undefined' ? SCRIPT_URL : "";
+        window.top.location.href = scriptUrl + (p ? "?page=" + p : "");
+    }
+</script>

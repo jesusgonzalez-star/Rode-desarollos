@@ -1,0 +1,164 @@
+<style>
+    body {
+        font-family: 'Roboto Mono', monospace;
+        font-size: 11px;
+        color: #1e293b;
+        padding-bottom: 80px;
+    }
+
+
+    .form-card {
+        background: white;
+        padding: 25px;
+        border: 1px solid #e2e8f0;
+        margin-bottom: 20px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+
+    h3 {
+        color: #005080;
+        font-weight: 800;
+        text-transform: uppercase;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 11px;
+    }
+
+
+    .input-field {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        height: 32px;
+        padding: 0 10px;
+        border: 1px solid #cbd5e1;
+        font-family: 'Roboto Mono', monospace;
+        font-size: 11px;
+    }
+
+    select.input-field {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+
+    .input-field:focus {
+        border-color: #f89d31;
+        outline: none;
+        background: #fffdfa;
+    }
+
+
+    label {
+        font-size: 10px;
+        font-weight: 700;
+        color: #64748b;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+        display: block;
+    }
+
+
+    .selection-grid {
+        border: 1px solid #cbd5e1;
+        background: #f8fafc;
+        overflow-y: auto;
+    }
+
+
+    .check-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 12px;
+        border-bottom: 1px solid #edf2f7;
+    }
+
+
+    .check-item label {
+        cursor: pointer;
+        color: #005080;
+        font-weight: 600;
+        font-size: 10px;
+        margin: 0;
+    }
+
+
+    footer {
+        background: #f89d31;
+        color: white;
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        padding: 15px 24px;
+        font-size: 10px;
+        font-weight: 700;
+        display: flex;
+        justify-content: space-between;
+        z-index: 1000;
+    }
+
+
+    .upper {
+        text-transform: uppercase;
+    }
+
+
+    .material-symbols-outlined {
+        font-size: 18px;
+    }
+
+    /* --- ESTILO ACORDEÓN SOFTWARE DEFINITIVO 2.9 DEV --- */
+    .sw-group {
+        border: 1px solid #e2e8f0;
+        border-radius: 4px;
+        margin-bottom: 4px;
+        overflow: hidden;
+        background: white;
+    }
+
+    .sw-header {
+        background: #f8fafc;
+        padding: 10px;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 10px;
+        color: #005080;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        list-style: none;
+        text-transform: uppercase;
+    }
+
+    .sw-header:hover {
+        background: #f1f5f9;
+    }
+
+    /* Icono de flecha usando Material Symbols */
+    .sw-header::after {
+        content: 'expand_more';
+        font-family: 'Material Symbols Outlined';
+        font-size: 18px;
+    }
+
+    details[open] .sw-header::after {
+        content: 'expand_less';
+    }
+
+    .sw-grid-interno {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 10px;
+        padding: 15px;
+        background: white;
+        border-top: 1px solid #e2e8f0;
+    }
+</style>

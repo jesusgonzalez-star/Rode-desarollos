@@ -1,0 +1,121 @@
+<script>
+  // Live Clock in Header
+  function updateTime() {
+    const now = new Date();
+    document.getElementById('current-time').textContent = now.toLocaleString('es-CL');
+  }
+  setInterval(updateTime, 1000);
+  updateTime();
+
+  // RUT Validation Client Side
+  function validateRUT(rut) {
+    const cleanRut = rut.replace(/[^0-9kK]/g, '').toUpperCase();
+    if (cleanRut.length < 2) return false;
+    
+    const body = cleanRut.slice(0, -1);
+    const dv = cleanRut.slice(-1);
+    
+    let sum = 0;
+    let multiplier = 2;
+    for (let i = body.length - 1; i >= 0; i--) {
+      sum += parseInt(body[i]) * multiplier;
+      multiplier = multiplier === 7 ? 2 : multiplier + 1;
+    }
+    
+    const expectedDv = 11 - (sum % 11);
+    const finalDv = expectedDv === 11 ? '0' : expectedDv === 10 ? 'K' : expectedDv.toString();
+    
+    return dv === finalDv;
+  }
+
+  function formatRUT(input) {
+    let value = input.value.replace(/[^0-9kK]/g, '').toUpperCase();
+    if (value.length > 1) {
+      value = value.slice(0, -1) + '-' + value.slice(-1);
+    }
+    input.value = value;
+    
+    const errorSpan = document.getElementById('rut-error');
+    if (value.length >= 8) {
+      if (!validateRUT(value)) {
+        errorSpan.textContent = 'RUT Inválido';
+        errorSpan.style.display = 'block';
+        input.setCustomValidity('RUT Inválido');
+      } else {
+        errorSpan.style.display = 'none';
+        input.setCustomValidity('');
+      }
+    } else {
+      errorSpan.style.display = 'none';
+      input.setCustomValidity('RUT Incompleto');
+    }
+  }
+
+  // Modal Handling
+  function showConfirmModal() {
+    const form = document.getElementById('main-form');
+    // Check required fields
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+    document.getElementById('confirm-modal').style.display = 'flex';
+  }
+
+  function closeConfirmModal() {
+    document.getElementById('confirm-modal').style.display = 'none';
+  }
+
+  // Handle Form Submission + Base64
+  async function submitForm() {
+    closeConfirmModal();
+    document.getElementById('loading-overlay').style.display = 'flex';
+    
+    const form = document.getElementById('main-form');
+    const formData = new FormData(form);
+    const dataObject = {};
+    
+    for (const [key, value] of formData.entries()) {
+      dataObject[key] = value;
+    }
+
+    // Process File to Base64
+    const fileInput = document.getElementById('archivo_cv');
+    if (fileInput.files.length > 0) {
+      const file = fileInput.files[0];
+      const base64Str = await getBase64(file);
+      dataObject.fileData = base64Str;
+      dataObject.fileName = file.name;
+      dataObject.mimeType = file.type;
+    }
+
+    google.script.run
+      .withSuccessHandler(onSuccess)
+      .withFailureHandler(onFailure)
+      .processFormSubmit(dataObject);
+  }
+
+  function getBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = error => reject(error);
+    });
+  }
+
+  function onSuccess(response) {
+    document.getElementById('loading-overlay').style.display = 'none';
+    if (response.success) {
+      alert('Formulario enviado correctamente.');
+      document.getElementById('main-form').reset();
+    } else {
+      alert('Error en el servidor: ' + response.error);
+    }
+  }
+
+  function onFailure(error) {
+    document.getElementById('loading-overlay').style.display = 'none';
+    alert('Error de conexión: ' + error.message);
+  }
+</script>

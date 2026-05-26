@@ -1,0 +1,321 @@
+<script>
+    // ─── PROGRESS BAR ────────────────────────────────────────────────────────────
+    function updateProgress() {
+        const activeForm = document.querySelector('form');
+        if (!activeForm) return;
+        const fields = activeForm.querySelectorAll('[required]');
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
+        if (fields.length === 0) { if (progressBar) progressBar.style.width = "0%"; return; }
+        const groups = new Set();
+        fields.forEach(f => {
+            if (f.type === 'radio' || f.type === 'checkbox') groups.add(f.name);
+            else groups.add(f.id || f.name || f.placeholder);
+        });
+        let filled = 0;
+        groups.forEach(name => {
+            const radios = activeForm.querySelectorAll(`input[name="${name}"][type="radio"]`);
+            if (radios.length > 0) { if (Array.from(radios).some(r => r.checked)) filled++; }
+            else { const field = activeForm.querySelector(`[name="${name}"], [id="${name}"]`); if (field && field.value.trim() !== "") filled++; }
+        });
+        const porc = Math.round((filled / groups.size) * 100);
+        if (progressBar) progressBar.style.width = porc + "%";
+        if (progressText) progressText.innerText = porc + "% COMPLETADO";
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const form = document.querySelector('main');
+        if (form) { form.addEventListener('input', updateProgress); form.addEventListener('change', updateProgress); }
+        updateProgress();
+        cargarDatosConfig();
+    });
+
+    // ─── CARGAR DATOS CONFIG ──────────────────────────────────────────────────
+    function cargarDatosConfig() {
+        google.script.run
+            .withSuccessHandler(config => {
+                if (!config || config.error) return;
+                poblarSelectsDesdeConfig(config);
+            })
+            .withFailureHandler(err => console.log("Error cargando CONFIG:", err))
+            .obtenerDatosDesdeDB();
+    }
+
+    function poblarSelectsDesdeConfig(config) {
+        // Llenar gerencias
+        const selectGerencia = document.getElementById('global_gerencia');
+        if (selectGerencia && config.gerencias && config.gerencias.length > 0) {
+            selectGerencia.innerHTML = '<option value="">— SELECCIONA —</option>';
+            config.gerencias.forEach(g => {
+                const opt = document.createElement('option');
+                opt.value = g;
+                opt.textContent = g;
+                selectGerencia.appendChild(opt);
+            });
+        }
+
+        // Llenar áreas
+        const selectArea = document.getElementById('global_area');
+        if (selectArea && config.areas && config.areas.length > 0) {
+            selectArea.innerHTML = '<option value="">— SELECCIONA —</option>';
+            config.areas.forEach(a => {
+                const opt = document.createElement('option');
+                opt.value = a;
+                opt.textContent = a;
+                selectArea.appendChild(opt);
+            });
+        }
+
+        // Llenar jefaturas si existe select
+        const selectJefatura = document.getElementById('global_jefatura');
+        if (selectJefatura && config.jefaturas && config.jefaturas.length > 0) {
+            const datalist = document.getElementById('jefaturasList') || crearDatalist();
+            config.jefaturas.forEach(j => {
+                const opt = document.createElement('option');
+                opt.value = j;
+                datalist.appendChild(opt);
+            });
+        }
+    }
+
+    function crearDatalist() {
+        const list = document.createElement('datalist');
+        list.id = 'jefaturasList';
+        document.body.appendChild(list);
+        const input = document.getElementById('global_jefatura');
+        if (input) input.setAttribute('list', 'jefaturasList');
+        return list;
+    }
+
+    // ─── MODAL ───────────────────────────────────────────────────────────────────
+    function abrirModal(formId, tipo) {
+        const globalNombre = document.getElementById('global_nombreEmpleado');
+        const globalRut = document.getElementById('global_rut');
+
+        if (globalNombre && !globalNombre.value.trim()) {
+            globalNombre.reportValidity();
+            alert("Por favor, completa Nombre del Empleado.");
+            return;
+        }
+        if (globalRut && !globalRut.value.trim()) {
+            globalRut.reportValidity();
+            alert("Por favor, completa el RUT.");
+            return;
+        }
+
+        const f = document.getElementById(formId);
+        if (!f || !f.checkValidity()) { if (f) f.reportValidity(); return; }
+
+        const allLabels = {
+            'ENCUESTA_SALIDA': {
+                nombreEmpleado: "NOMBRE EMPLEADO",
+                rut: "RUT",
+                edad: "EDAD",
+                genero: "GÉNERO",
+                gerencia: "GERENCIA",
+                area: "ÁREA",
+                jefatura: "JEFATURA DIRECTA",
+                tiempoPermancia: "TIEMPO PERMANENCIA",
+                fechaTermino: "FECHA TÉRMINO",
+                motivoSalida: "MOTIVO SALIDA",
+                oportunidadesCrecimiento: "OPORTUNIDADES CRECIMIENTO",
+                reconocimiento: "RECONOCIMIENTO",
+                retroalimentacion: "RETROALIMENTACIÓN",
+                mejorasJefatura: "MEJORAS JEFATURA",
+                ambienteLaboral: "AMBIENTE LABORAL",
+                equilibrioVidaTrabajo: "EQUILIBRIO VIDA-TRABAJO",
+                recomendacion: "RECOMENDACIÓN",
+                volveriaTrabajar: "VOLVERÍA TRABAJAR"
+            }
+        };
+
+        const labels = allLabels[tipo] || {};
+        const formData = new FormData(f);
+        const collected = {};
+        formData.forEach((v, k) => { if (!collected[k]) collected[k] = []; collected[k].push(v); });
+
+        let h = "";
+        for (let k in collected) {
+            const val = collected[k].join(", ");
+            if (val && val !== "N/A") {
+                const label = labels[k] || k.toUpperCase();
+                h += "<div><span class='text-slate-400 text-[8px]'>" + label + ":</span><br><b>" + val + "</b></div>";
+            }
+        }
+
+        document.getElementById('resumen').innerHTML = h;
+        const m = document.getElementById('modalConfirm');
+        m.classList.remove('hidden');
+        m.classList.add('flex');
+        document.getElementById('btnFinal').onclick = () => enviarSolicitud(tipo, formId);
+    }
+
+    function cerrarModal() {
+        const m = document.getElementById('modalConfirm');
+        if (m) { m.classList.add('hidden'); m.classList.remove('flex'); }
+        const pr = document.getElementById('panelResumen');
+        if (pr) pr.classList.remove('hidden');
+        const pe = document.getElementById('panelExito');
+        if (pe) { pe.classList.add('hidden'); pe.classList.remove('flex'); }
+    }
+
+    // ─── ENVÍO PRINCIPAL ─────────────────────────────────────────────────────────
+    async function enviarSolicitud(tipo, formId) {
+        const b = document.getElementById('btnFinal');
+        b.disabled = true;
+        b.innerText = "PROCESANDO...";
+        const f = document.getElementById(formId);
+
+        try {
+            const getRad = (nom) => { const el = f.elements[nom]; return el instanceof RadioNodeList ? el.value : (el ? el.value : "N/A"); };
+            const getValue = (nom) => f.elements[nom] ? f.elements[nom].value.toUpperCase() : "N/A";
+
+            let data = {
+                tipoFormulario: tipo,
+                nombreEmpleado: (document.getElementById('global_nombreEmpleado') || {}).value?.toUpperCase().trim() || "N/A",
+                rut: (document.getElementById('global_rut') || {}).value?.toUpperCase().trim() || "N/A",
+                edad: (document.getElementById('global_edad') || {}).value || "N/A",
+                genero: (document.getElementById('global_genero') || {}).value?.toUpperCase() || "N/A",
+                gerencia: (document.getElementById('global_gerencia') || {}).value?.toUpperCase().trim() || "N/A",
+                area: (document.getElementById('global_area') || {}).value?.toUpperCase().trim() || "N/A",
+                jefatura: (document.getElementById('global_jefatura') || {}).value?.toUpperCase().trim() || "N/A",
+                tiempoPermancia: (document.getElementById('global_tiempoPermancia') || {}).value || "N/A",
+                fechaTermino: (document.getElementById('global_fechaTermino') || {}).value || "N/A"
+            };
+
+            if (tipo === 'ENCUESTA_SALIDA') {
+                Object.assign(data, {
+                    motivoSalida: getRad('motivoSalida'),
+                    oportunidadesCrecimiento: getRad('oportunidadesCrecimiento'),
+                    reconocimiento: getRad('reconocimiento'),
+                    retroalimentacion: getRad('retroalimentacion'),
+                    mejorasJefatura: getValue('mejorasJefatura') || "N/A",
+                    ambienteLaboral: getValue('ambienteLaboral') || "N/A",
+                    equilibrioVidaTrabajo: getRad('equilibrioVidaTrabajo'),
+                    recomendacion: getValue('recomendacion') || "N/A",
+                    volveriaTrabajar: getRad('volveriaTrabajar')
+                });
+            }
+
+            let v = null;
+            google.script.run
+                .withSuccessHandler(r => {
+                    if (r.status === "OK") {
+                        try { document.getElementById(formId).reset(); updateProgress(); } catch (e) { }
+                        b.disabled = false;
+                        b.innerText = "Confirmar Envío";
+                        document.getElementById('panelResumen').classList.add('hidden');
+                        const pe = document.getElementById('panelExito');
+                        pe.classList.remove('hidden');
+                        pe.classList.add('flex');
+                        const fn = document.getElementById('folioNumero');
+                        if (fn) fn.innerText = r.folio || '—';
+
+                        // Imprimir PDF
+                        const vPrint = window.open('', '_blank');
+                        if (vPrint) {
+                            const pdfHtml = generarPDF(tipo, data, r);
+                            vPrint.document.write(pdfHtml);
+                            vPrint.document.close();
+                            vPrint.print();
+                        } else {
+                            alert("EL COMPROBANTE PDF FUE BLOQUEADO. PERMITA LOS POPUPS.");
+                        }
+                        return;
+                    } else {
+                        alert("ERROR EN SERVIDOR: " + r.msg);
+                    }
+                    b.disabled = false;
+                    b.innerText = "Confirmar Envío";
+                })
+                .withFailureHandler(err => {
+                    alert("ERROR DE CONEXIÓN: " + err.message);
+                    b.disabled = false;
+                    b.innerText = "Confirmar Envío";
+                })
+                .guardarSolicitud(data);
+
+        } catch (clientErr) {
+            b.disabled = false;
+            b.innerText = "Confirmar Envío";
+            alert("ERROR INESPERADO: " + clientErr.message);
+        }
+    }
+
+    // ─── GENERADOR PDF ────────────────────────────────────────────────────────────
+    function generarPDF(tipo, data, r) {
+        const baseStyle = `@import url("https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap");@page{margin:0;size:letter;}body{font-family:"Roboto Mono",monospace;padding:30px 45px;font-size:8px;color:#1e293b;margin:0;text-transform:uppercase;}.h{border-bottom:2px solid #0D7DAF;margin-bottom:20px;padding-bottom:10px;display:flex;justify-content:space-between;align-items:center;}.st{background:#0D7DAF;color:white;padding:4px 10px;font-weight:bold;margin-top:10px;margin-bottom:4px;font-size:9px;}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;}.box{border:1px solid #cbd5e1;padding:5px;background:#f8fafc;}.lbl{color:#64748b;font-size:7px;font-weight:bold;display:block;}.val{font-weight:bold;font-size:9px;}.firma-box{margin-top:120px;display:flex;justify-content:space-around;text-align:center;}.linea{border-top:1px solid black;width:180px;margin-bottom:5px;}.btn-container{text-align:center;margin-top:40px;padding-bottom:40px;}.no-print-btn{background:#0D7DAF;color:white;padding:12px 25px;border:none;cursor:pointer;font-weight:bold;font-family:"Roboto Mono";font-size:11px;text-transform:uppercase;}@media print{.no-print-btn,.btn-container{display:none!important;}body{padding:15mm 20mm;}}`;
+        const header = `<div class="h"><div><b style="font-size:12px;color:#0D7DAF;">RELIX WATER S.A.</b><br>Encuesta de Salida v1.0</div><div style="text-align:right"><b>FOLIO N°: ${r.folio}</b><br>TOKEN: <b>${r.token}</b><br>REGISTRO: ${r.fechaHoy}</div></div>`;
+        let contentHtml = "";
+
+        if (tipo === 'ENCUESTA_SALIDA') {
+            contentHtml = `
+            <div class="st">01. DATOS PERSONALES</div>
+            <div class="grid">
+                <div class="box" style="grid-column:span 2"><span class="lbl">NOMBRE</span><span class="val">${data.nombreEmpleado}</span></div>
+                <div class="box" style="grid-column:span 2"><span class="lbl">RUT</span><span class="val">${data.rut}</span></div>
+                <div class="box"><span class="lbl">EDAD</span><span class="val">${data.edad}</span></div>
+                <div class="box"><span class="lbl">GÉNERO</span><span class="val">${data.genero}</span></div>
+                <div class="box" style="grid-column:span 2"><span class="lbl">GERENCIA</span><span class="val">${data.gerencia}</span></div>
+                <div class="box" style="grid-column:span 2"><span class="lbl">ÁREA</span><span class="val">${data.area}</span></div>
+                <div class="box" style="grid-column:span 2"><span class="lbl">JEFATURA DIRECTA</span><span class="val">${data.jefatura}</span></div>
+                <div class="box"><span class="lbl">TIEMPO PERMANENCIA</span><span class="val">${data.tiempoPermancia}</span></div>
+                <div class="box"><span class="lbl">FECHA TÉRMINO</span><span class="val">${data.fechaTermino}</span></div>
+            </div>
+
+            <div class="st">02. MOTIVO DE SALIDA</div>
+            <div class="grid">
+                <div class="box" style="grid-column:span 4"><span class="lbl">MOTIVO PRINCIPAL</span><span class="val">${data.motivoSalida}</span></div>
+            </div>
+
+            <div class="st">03. DESARROLLO PROFESIONAL</div>
+            <div class="grid">
+                <div class="box" style="grid-column:span 4"><span class="lbl">OPORTUNIDADES DE CRECIMIENTO</span><span class="val">${data.oportunidadesCrecimiento}</span></div>
+            </div>
+
+            <div class="st">04. RECONOCIMIENTO</div>
+            <div class="grid">
+                <div class="box" style="grid-column:span 4"><span class="lbl">RECONOCIMIENTO Y VALORACIÓN</span><span class="val">${data.reconocimiento}</span></div>
+            </div>
+
+            <div class="st">05. EVALUACIÓN Y RETROALIMENTACIÓN</div>
+            <div class="grid">
+                <div class="box" style="grid-column:span 4"><span class="lbl">RETROALIMENTACIÓN RECIBIDA</span><span class="val">${data.retroalimentacion}</span></div>
+            </div>
+
+            <div class="st">06. LIDERAZGO</div>
+            <div class="grid">
+                <div class="box" style="grid-column:span 4"><span class="lbl">MEJORAS SUGERIDAS A JEFATURA</span><span class="val" style="font-size:7px">${data.mejorasJefatura}</span></div>
+            </div>
+
+            <div class="st">07. AMBIENTE LABORAL</div>
+            <div class="grid">
+                <div class="box" style="grid-column:span 4"><span class="lbl">EVALUACIÓN DEL AMBIENTE</span><span class="val" style="font-size:7px">${data.ambienteLaboral}</span></div>
+            </div>
+
+            <div class="st">08. EQUILIBRIO VIDA-TRABAJO</div>
+            <div class="grid">
+                <div class="box" style="grid-column:span 4"><span class="lbl">EQUILIBRIO VIDA-TRABAJO</span><span class="val">${data.equilibrioVidaTrabajo}</span></div>
+            </div>
+
+            <div class="st">09. RECOMENDACIÓN</div>
+            <div class="grid">
+                <div class="box" style="grid-column:span 4"><span class="lbl">¿RECOMENDARÍAS LA EMPRESA?</span><span class="val" style="font-size:7px">${data.recomendacion}</span></div>
+            </div>
+
+            <div class="st">10. RETORNO</div>
+            <div class="grid">
+                <div class="box" style="grid-column:span 4"><span class="lbl">¿VOLVERÍAS A TRABAJAR?</span><span class="val">${data.volveriaTrabajar}</span></div>
+            </div>
+
+            <div class="firma-box">
+                <div><div class="linea"></div><span class="lbl">Firma Empleado</span></div>
+                <div><div class="linea"></div><span class="lbl">V°B° RR.HH.</span></div>
+            </div>`;
+        }
+
+        const fullHtml = `<!DOCTYPE html><html><head><style>${baseStyle}</style></head><body>${header}${contentHtml}</body></html>`;
+        return fullHtml;
+    }
+
+</script>

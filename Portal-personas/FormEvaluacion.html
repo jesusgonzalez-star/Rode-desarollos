@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <script>var SCRIPT_URL = "<?= scriptUrl ?>";</script>
+    <?!= include('Styles'); ?>
+</head>
+
+<body class="bg-slate-50">
+    <div id="progressBar" class="fixed top-0 left-0 h-1 bg-[#f89d31] transition-all z-[100]" style="width:0%"></div>
+
+    <header class="bg-[#0D7DAF] px-6 py-4 flex justify-between items-center shadow-md sticky top-0 z-50">
+        <div class="flex items-center gap-4 text-white">
+            <a href="#" onclick="navegar('landing'); return false;" class="flex items-center h-[24px] w-auto opacity-90 hover:opacity-100 transition-opacity">
+                <svg id="Capa_2" data-name="Capa 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 309.97 69.68"
+                    class="h-full w-auto">
+                    <g id="ReliX">
+                        <path
+                            d="M309.96,68.51h-70.83l-18.45-35.16c-.01-.21.99-2.09,1.17-2.45,4.89-9.72,9.83-19.45,14.87-29.09.13-.24.83-1.67.91-1.73s.13-.09.22-.08h34.72c19.81.75,36.16,14.48,37.4,34.7v33.8ZM280.45,59.54h-1.7c-.56,0-.52-.61-.49-1.02l.83-5.69h2.87s.45-2.71.45-2.71h-2.64l.6-3.39-3.53.84-.54,2.5c-.1.15-1.41-.08-1.56.12l-.71,2.71,1.81-.07c-.3,1.44-.62,2.89-.82,4.35-.26,1.91-.78,5.33,1.93,5.66.29.04,2.48.06,2.59-.01l.9-3.28ZM267.55,60.14v2.26h3.32c-.07-.69-.06-1.38-.08-2.07-.04-2.43.56-3.78,1.02-6.07.28-1.39.51-2.81.64-4.22-3.58-.65-7.75-.85-10.56,1.84-2.14,2.05-2.78,4.27-2.48,7.23.31,3.14,3.24,4.68,6.03,3.18,1.01-.55,1.33-1.17,1.94-2.05.05-.07-.01-.14.17-.1ZM300.08,52.23v-2.11h-3.02c-.38,4.14-1.25,8.2-1.96,12.28h3.77c.23-2.23.38-4.93,1.35-6.98.42-.9,1.56-2.06,2.62-2.06h1.4l.23-3.69c-1.79-.03-3.23,1.35-4.38,2.56ZM285.96,57.5c1.06.12,2.15.16,3.21.07,2.1-.17,4.45-.73,4.98-3.09.94-4.15-4.06-5.57-7.21-4.33-3.8,1.49-5.24,6.24-3.69,9.86,1.32,3.08,5.66,3.38,8.44,2.35.32-.12,1.01-.34.97-.73-.02-.21-.5-2-.59-2.06-2.21.69-5.58.81-6.12-2.06ZM242.79,62.33h3.66l3.66-8.06.56,8.07,3.58.06,5.6-12.16-.11-.11h-3.35s-3.56,9.19-3.56,9.19v-9.19h-3.43l-3.77,8.21.11-8.22h-3.93s.98,12.21.98,12.21Z"
+                            fill="#ffffff" />
+                    </g>
+                    <g id="RELIX">
+                        <path id="X"
+                            d="M187.89.68l8.87,22.38L205.93.68h20.72l-16.17,32.42-.06.24.06.24,17.53,34.91h-21.85l-9.28-23.96-9.4,23.96h-21.36c-.01-.08.01-.15.03-.23.18-.57.81-1.68,1.11-2.28,5.36-11.05,10.92-22.02,16.22-33.09L166.94.68h20.94Z"
+                            fill="#ffffff" />
+                        <g id="i">
+                            <rect x="138.87" y="21.48" width="17.43" height="47.02" fill="#ffffff" />
+                            <path
+                                d="M147.16.18c6.51-.3,11.42,6.37,8.1,12.31-3.15,5.65-11.62,5.86-15.11.44s.62-12.46,7.01-12.75Z"
+                                fill="#ffffff" />
+                        </g>
+                        <rect id="l" x="111.02" y=".68" width="17.43" height="67.82" fill="#ffffff" />
+                        <g id="e">
+                            <path
+                                d="M80.53,69.64c-12.68-.59-22.58-7.12-23.92-20.38-.93-9.18,1.59-18.81,9.33-24.36,6.67-4.78,17.38-6.3,24.88-2.72,9.31,4.45,13.03,16,11.96,25.71-.04.4-.49,3.06-.86,3.06h-28.64c.11,1.61,1.25,3.07,2.5,4.03,4.51,3.43,13.45,2.85,18.65,1.45,1.34-.36,2.62-.85,3.91-1.34l1.85,11.46c-4.74,1.89-9.85,2.77-14.95,3.01-.1,0-.17.08-.18.08-1.41.06-3.12.07-4.53,0ZM87.17,39.12c-.18-2.4-.94-4.89-2.87-6.44-1.63-1.31-4.16-1.59-6.15-1.11-3.51.85-5.01,4.22-5.24,7.55h14.26Z"
+                                fill="#ffffff" />
+                        </g>
+                        <g id="R">
+                            <path
+                                d="M0,4.9c2.51-.27,5-.66,7.51-.9,10.24-1.01,24.52-2.06,33.65,3.33,6.32,3.73,8.69,9.93,7.82,17.12-.67,5.49-3.25,9.28-7.85,12.21-.59.37-1.73.87-2.18,1.29-.73.68.43,1.04.83,1.27,3.24,1.86,4.11,4.26,5.28,7.61,1.84,5.26,3.09,10.7,4.72,16.01.58,1.88,1.36,3.71,1.77,5.65h-17.59c-1.08-4-2.34-7.95-3.37-11.97-.84-3.26-1.43-8.44-4.06-10.72-2.11-1.83-6.37-1.7-9.02-1.73v24.42H0V4.9ZM17.36,31.88c4.09-.2,8.66.84,12.11-1.89s3.66-9.08.11-11.79c-.87-.66-3.03-1.63-4.11-1.63h-8.11v15.3Z"
+                                fill="#ffffff" />
+                        </g>
+                    </g>
+                </svg>
+            </a>
+            <div class="h-4 w-[1px] bg-white/30"></div>
+            <span class="text-[9px] tracking-widest opacity-80 uppercase font-bold">Evaluación de Personal a
+                Desvincular</span>
+        </div>
+        <a href="#" onclick="navegar('landing'); return false;"
+            class="flex items-center gap-1 text-white/70 hover:text-white text-[12px] uppercase font-bold tracking-wider transition-colors">
+            <span class="material-symbols-outlined text-[15px]">arrow_back</span> Portal
+        </a>
+    </header>
+
+    <main class="max-w-6xl mx-auto p-6 space-y-6">
+
+        <!-- DATOS GLOBALES DEL SOLICITANTE -->
+        <div class="form-card">
+            <h3 class="text-[11px] font-bold text-[#0D7DAF] uppercase mb-4 border-b pb-2">
+                <span class="material-symbols-outlined align-middle mr-1 text-[16px]">person</span> Datos del
+                Solicitante
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="text-[10px] font-bold text-slate-500 uppercase">Nombre y Apellido del
+                        Solicitante</label>
+                    <input type="text" id="global_nombreSolicitante" name="global_nombreSolicitante"
+                        class="input-field upper" placeholder="EJ: JUAN PÉREZ" required>
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-slate-500 uppercase">Correo Electrónico</label>
+                    <input type="email" id="global_emailSolicitante" name="global_emailSolicitante" class="input-field"
+                        placeholder="correo@mail.com" required>
+                </div>
+            </div>
+        </div>
+
+        <form id="formEvaluacion">
+
+            <!-- 01. EVALUADO -->
+            <section class="form-card">
+                <h3><span class="material-symbols-outlined">assignment_ind</span> 01. Evaluación de personal a
+                    desvincular</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                    <div><label>Nombre Trabajador Evaluado</label><input type="text" name="eva_nombre"
+                            class="input-field upper" placeholder="EJ: JUAN PÉREZ" required></div>
+                    <div><label>R.U.T.</label><input type="text" name="eva_rut"
+                            class="input-field upper" placeholder="12.345.678-9" required
+                            oninput="formatearRut(this)"
+                            onblur="validarRut(this,'eva_rutFeedback')">
+                        <span id="eva_rutFeedback" class="text-[8px] font-bold mt-1 px-2 block"></span>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                    <div><label>Correo Personal</label><input type="email" name="eva_correoPersonal"
+                            class="input-field" placeholder="correo@example.com" required></div>
+                    <div><label>Cargo</label><input type="text" name="eva_cargo" class="input-field upper"
+                            list="cargosList" placeholder="BUSCAR CARGO..." required></div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                    <div>
+                        <label>Proyecto / Faena / Área</label>
+                        <select name="eva_area" id="eva_area" class="input-field" required>
+                            <option value="">SELECCIONE ÁREA...</option>
+                        </select>
+                    </div>
+                    <div><label>F. Término</label><input type="date" name="eva_fTermino" class="input-field" required>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <label>Motivo de desvinculación</label>
+                    <select name="eva_motivo_lista" id="eva_motivo_lista" class="input-field upper" required onchange="verificarRenunciaVoluntaria()">
+                        <option value="">SELECCIONE MOTIVO...</option>
+                    </select>
+                </div>
+                <div class="mt-4" id="containerFormularioSalida" style="display:none; border: 2px solid #f89d31; padding: 16px; border-radius: 8px; background-color: #fef3c7;">
+                    <label class="font-bold text-[#0D7DAF]">Link Formulario de Salida</label>
+                    <input type="text" name="eva_formularioSalida" id="eva_formularioSalida"
+                            class="input-field mt-2" placeholder="https://ejemplo.com/formulario-salida">
+                    <p class="text-[9px] text-slate-600 mt-2 italic">Se enviará a: <span id="evaCorreoMostrado">-</span></p>
+                </div>
+                <div class="mt-4">
+                    <label>Fundamento de desvinculación</label>
+                    <textarea name="eva_motivo" class="input-field h-16 pt-2 upper"
+                        placeholder="INDIQUE EL FUNDAMENTO DE LA DESVINCULACIÓN..." required></textarea>
+                </div>
+            </section>
+
+            <!-- ESCALA -->
+            <section class="form-card mt-6 overflow-hidden">
+                <div
+                    class="bg-yellow-300 p-2 text-center font-bold text-slate-800 uppercase text-[12px] flex items-center justify-center gap-2 shadow-sm">
+                    <span class="material-symbols-outlined text-[18px]">info</span> Escala de Evaluación
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-6 gap-2 p-3 text-center text-[10px]">
+                    <div class="flex flex-col p-3 bg-white rounded border border-slate-200 shadow-sm"><span
+                            class="font-black text-slate-900 text-[18px]">0</span><span
+                            class="text-slate-600 uppercase font-black leading-tight mt-1">No aplica</span></div>
+                    <div class="flex flex-col p-3 bg-white rounded border border-slate-200 shadow-sm"><span
+                            class="font-black text-red-600 text-[18px]">1</span><span
+                            class="text-slate-600 uppercase font-black leading-tight mt-1">Muy Deficiente</span></div>
+                    <div class="flex flex-col p-3 bg-white rounded border border-slate-200 shadow-sm"><span
+                            class="font-black text-orange-500 text-[18px]">2</span><span
+                            class="text-slate-600 uppercase font-black leading-tight mt-1">Deficiente</span></div>
+                    <div class="flex flex-col p-3 bg-white rounded border border-slate-200 shadow-sm"><span
+                            class="font-black text-yellow-600 text-[18px]">3</span><span
+                            class="text-slate-600 uppercase font-black leading-tight mt-1">Puntuación mínima</span>
+                    </div>
+                    <div class="flex flex-col p-3 bg-white rounded border border-slate-200 shadow-sm"><span
+                            class="font-black text-blue-600 text-[18px]">4</span><span
+                            class="text-slate-600 uppercase font-black leading-tight mt-1">Puntuación media</span></div>
+                    <div class="flex flex-col p-3 bg-white rounded border border-slate-200 shadow-sm"><span
+                            class="font-black text-green-600 text-[18px]">5</span><span
+                            class="text-slate-600 uppercase font-black leading-tight mt-1">Puntuación máxima</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- HELPER MACRO para items de evaluación -->
+            <!-- 02. ASPECTOS PERSONALES -->
+            <section class="form-card mt-6 p-0 overflow-hidden">
+                <details class="group">
+                    <summary
+                        class="flex justify-between items-center cursor-pointer p-4 bg-slate-50 hover:bg-slate-100 transition-colors list-none outline-none [&::-webkit-details-marker]:hidden">
+                        <h3 class="m-0 p-0 border-0 flex items-center gap-2 text-[#0D7DAF] text-[14px]"><span
+                                class="material-symbols-outlined text-[18px]">grade</span> 02. Evaluación de Aspectos
+                            Personales</h3>
+                        <span
+                            class="material-symbols-outlined transition-transform duration-300 group-open:rotate-180">expand_more</span>
+                    </summary>
+                    <div class="p-4 border-t border-slate-200">
+                        <p class="text-[10px] text-slate-500 mb-4 uppercase italic">Marque la puntuación del 0 al 5 e
+                            indique observaciones si aplica.</p>
+                        <div class="space-y-4" id="asp-items"></div>
+                        <div
+                            class="mt-6 p-4 bg-[#0D7DAF] text-white rounded shadow-md flex justify-between items-center">
+                            <span class="font-bold uppercase text-[12px]">Promedio Evaluación de Aspectos
+                                Personales:</span>
+                            <span id="eva_promedio_display" class="font-bold text-[18px]">0.0</span>
+                            <input type="hidden" name="eva_promedio" id="eva_promedio" value="0">
+                        </div>
+                    </div>
+                </details>
+            </section>
+
+            <!-- 03. ASPECTOS PROFESIONALES -->
+            <section class="form-card mt-6 p-0 overflow-hidden">
+                <details class="group">
+                    <summary
+                        class="flex justify-between items-center cursor-pointer p-4 bg-slate-50 hover:bg-slate-100 transition-colors list-none outline-none [&::-webkit-details-marker]:hidden">
+                        <h3 class="m-0 p-0 border-0 flex items-center gap-2 text-[#0D7DAF] text-[14px]"><span
+                                class="material-symbols-outlined text-[18px]">work_history</span> 03. Evaluación de
+                            Aspectos Profesionales</h3>
+                        <span
+                            class="material-symbols-outlined transition-transform duration-300 group-open:rotate-180">expand_more</span>
+                    </summary>
+                    <div class="p-4 border-t border-slate-200">
+                        <p class="text-[10px] text-slate-500 mb-4 uppercase italic">Marque la puntuación del 0 al 5 e
+                            indique observaciones si aplica.</p>
+                        <div class="space-y-4" id="prof-items"></div>
+                        <div
+                            class="mt-6 p-4 bg-[#0D7DAF] text-white rounded shadow-md flex justify-between items-center">
+                            <span class="font-bold uppercase text-[12px]">Promedio Evaluación de Aspectos
+                                Profesionales:</span>
+                            <span id="eva_promedio_prof_display" class="font-bold text-[18px]">0.0</span>
+                            <input type="hidden" name="eva_promedio_prof" id="eva_promedio_prof" value="0">
+                        </div>
+                    </div>
+                </details>
+            </section>
+
+            <!-- 04. CONDUCTA SEGURIDAD -->
+            <section class="form-card mt-6 p-0 overflow-hidden">
+                <details class="group">
+                    <summary
+                        class="flex justify-between items-center cursor-pointer p-4 bg-slate-50 hover:bg-slate-100 transition-colors list-none outline-none [&::-webkit-details-marker]:hidden">
+                        <h3 class="m-0 p-0 border-0 flex items-center gap-2 text-[#0D7DAF] text-[14px]"><span
+                                class="material-symbols-outlined text-[18px]">shield</span> 04. Conducta Hacia la
+                            Seguridad</h3>
+                        <span
+                            class="material-symbols-outlined transition-transform duration-300 group-open:rotate-180">expand_more</span>
+                    </summary>
+                    <div class="p-4 border-t border-slate-200">
+                        <p class="text-[10px] text-slate-500 mb-4 uppercase italic">Marque la puntuación del 0 al 5 e
+                            indique observaciones si aplica.</p>
+                        <div class="space-y-4" id="seg-items"></div>
+                        <div
+                            class="mt-6 p-4 bg-[#0D7DAF] text-white rounded shadow-md flex justify-between items-center">
+                            <span class="font-bold uppercase text-[12px]">Promedio Conducta Hacia la Seguridad:</span>
+                            <span id="eva_promedio_seg_display" class="font-bold text-[18px]">0.0</span>
+                            <input type="hidden" name="eva_promedio_seg" id="eva_promedio_seg" value="0">
+                        </div>
+                    </div>
+                </details>
+            </section>
+
+            <!-- 05. CALIDAD -->
+            <section class="form-card mt-6 p-0 overflow-hidden">
+                <details class="group">
+                    <summary
+                        class="flex justify-between items-center cursor-pointer p-4 bg-slate-50 hover:bg-slate-100 transition-colors list-none outline-none [&::-webkit-details-marker]:hidden">
+                        <h3 class="m-0 p-0 border-0 flex items-center gap-2 text-[#0D7DAF] text-[14px]"><span
+                                class="material-symbols-outlined text-[18px]">grade</span> 05. Calidad</h3>
+                        <span
+                            class="material-symbols-outlined transition-transform duration-300 group-open:rotate-180">expand_more</span>
+                    </summary>
+                    <div class="p-4 border-t border-slate-200">
+                        <p class="text-[10px] text-slate-500 mb-4 uppercase italic">Marque la puntuación del 0 al 5 e
+                            indique observaciones si aplica.</p>
+                        <div class="space-y-4" id="cal-items"></div>
+                        <div
+                            class="mt-6 p-4 bg-[#0D7DAF] text-white rounded shadow-md flex justify-between items-center">
+                            <span class="font-bold uppercase text-[12px]">Promedio Evaluación de Calidad:</span>
+                            <span id="eva_promedio_cal_display" class="font-bold text-[18px]">0.0</span>
+                            <input type="hidden" name="eva_promedio_cal" id="eva_promedio_cal" value="0">
+                        </div>
+                    </div>
+                </details>
+            </section>
+
+            <!-- RESUMEN -->
+            <section class="form-card mt-6">
+                <h3><span class="material-symbols-outlined">analytics</span> 05. Resumen de Calificación</h3>
+                <div class="mt-4 border-2 border-slate-200 rounded-lg overflow-hidden font-bold">
+                    <div
+                        class="grid grid-cols-[auto_1fr_60px] bg-slate-100 p-2 border-b border-slate-200 text-[11px] text-[#0D7DAF]">
+                        <span>REF</span><span class="px-3">DESCRIPCIÓN DE EVALUACIÓN</span><span
+                            class="text-center">PROMEDIO</span>
+                    </div>
+                    <div class="grid grid-cols-[auto_1fr_60px] p-2 border-b border-slate-100 text-[10px]"><span
+                            class="bg-slate-50 px-2 rounded">A</span><span class="px-3">EVALUACIÓN DE ASPECTOS
+                            PERSONALES</span><span id="res_prom_pers"
+                            class="text-center bg-yellow-200 rounded">0.0</span></div>
+                    <div class="grid grid-cols-[auto_1fr_60px] p-2 border-b border-slate-100 text-[10px]"><span
+                            class="bg-slate-50 px-2 rounded">B</span><span class="px-3">EVALUACIÓN DE ASPECTOS
+                            PROFESIONALES</span><span id="res_prom_prof"
+                            class="text-center bg-yellow-200 rounded">0.0</span></div>
+                    <div class="grid grid-cols-[auto_1fr_60px] p-2 border-b border-slate-100 text-[10px]"><span
+                            class="bg-slate-50 px-2 rounded">C</span><span class="px-3">CONDUCTA HACIA LA
+                            SEGURIDAD</span><span id="res_prom_seg" class="text-center bg-yellow-200 rounded">0.0</span>
+                    </div>
+                    <div class="grid grid-cols-[auto_1fr_60px] p-2 border-b border-slate-100 text-[10px]"><span
+                            class="bg-slate-50 px-2 rounded">D</span><span class="px-3">CALIDAD</span><span
+                            id="res_prom_cal" class="text-center bg-yellow-200 rounded">0.0</span></div>
+                    <div class="grid grid-cols-[1fr_100px] p-4 bg-slate-800 text-white items-center">
+                        <span class="text-right pr-4 uppercase text-[12px]">Puntuación Obtenida (A+B+C+D)/4:</span>
+                        <div class="text-center">
+                            <span id="eva_puntuacion_final_display"
+                                class="text-[22px] font-black bg-slate-100 text-slate-900 px-3 py-1 rounded shadow-inner">0.0</span>
+                            <input type="hidden" name="eva_puntuacion_final" id="eva_puntuacion_final" value="0">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 06. RECOMENDACIÓN Y EVALUADOR -->
+            <section class="form-card mt-6">
+                <h3><span class="material-symbols-outlined">person_check</span> 06. Recomendación y Evaluador</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div><label>Evaluado por (Nombre y Apellido):</label><input type="text" name="eva_nombreEvaluador"
+                            class="input-field upper" placeholder="EJ: JUAN PÉREZ" required></div>
+                    <div><label>Cargo del Evaluador:</label><input type="text" name="eva_cargoEvaluador"
+                            class="input-field upper" list="cargosList" placeholder="SELECCIONE CARGO..." required>
+                    </div>
+                    <div>
+                        <label>Centro de Costo Evaluador</label>
+                        <select name="eva_ccEvaluador" id="eva_ccEvaluador" class="input-field" required>
+                            <option value="">SELECCIONE C.C. EVALUADOR...</option>
+                        </select>
+                    </div>
+                    <div
+                        class="md:col-span-2 flex items-center gap-4 bg-yellow-50 p-4 border border-yellow-200 rounded-lg">
+                        <span class="flex-grow font-bold text-slate-700 text-[11px] uppercase text-justify">Especificar
+                            si recomendaría su contratación para otra faena</span>
+                        <select name="eva_recomienda"
+                            class="w-32 h-10 bg-yellow-400 text-slate-900 font-black rounded border-2 border-yellow-500 px-3 cursor-pointer outline-none hover:bg-yellow-500 transition-colors">
+                            <option value="SI">SI</option>
+                            <option value="NO">NO</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+                    <div>
+                        <label class="text-blue-700">Obs1:</label>
+                        <textarea name="eva_obs1" class="input-field h-24 pt-2 upper resize-none"
+                            placeholder="PRIMERA OBSERVACIÓN..."></textarea>
+                    </div>
+                    <div>
+                        <label class="text-blue-700">Obs2:</label>
+                        <textarea name="eva_obs2" class="input-field h-24 pt-2 upper resize-none"
+                            placeholder="SEGUNDA OBSERVACIÓN..."></textarea>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 07. IMPLEMENTOS Y DOCUMENTOS -->
+            <section class="form-card mt-6">
+                <h3><span class="material-symbols-outlined">inventory_2</span> 07. Implementos y Documentos Pendientes
+                </h3>
+                <div class="mb-6">
+                    <label class="bg-slate-100 p-2 border border-slate-200 block font-bold text-center mb-2">Implementos
+                        pendientes de entrega</label>
+                    <textarea name="eva_implementos" class="input-field h-16 pt-2 upper resize-none"
+                        placeholder="INDIQUE IMPLEMENTOS PENDIENTES..."></textarea>
+                </div>
+                <div class="border border-slate-200 rounded-lg overflow-hidden mt-2">
+                    <div class="grid grid-cols-[1fr_120px_150px] bg-slate-600 text-white font-bold p-2 text-[10px] uppercase">
+                        <span class="px-2">Documentos a adjuntar</span>
+                        <span class="text-center">SÍ / NO</span>
+                        <span class="text-center">Observaciones</span>
+                    </div>
+
+                    <!-- Item de Documento -->
+                    <div class="grid grid-cols-[1fr_120px_150px] border-b border-slate-100 items-center p-2 text-[10px]">
+                        <span class="px-2">CONTRATO DE TRABAJO</span>
+                        <div class="flex justify-center gap-4">
+                            <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="eva_doc1_rad" value="SI" required> SI</label>
+                            <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="eva_doc1_rad" value="NO"> NO</label>
+                        </div>
+                        <input type="text" name="eva_doc1_obs" class="input-field h-7 py-0 px-2 upper text-[10px]" placeholder="OBS...">
+                    </div>
+
+                    <div class="grid grid-cols-[1fr_120px_150px] border-b border-slate-100 items-center p-2 text-[10px]">
+                        <span class="px-2">DESCRIPTOR DE CARGO</span>
+                        <div class="flex justify-center gap-4">
+                            <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="eva_doc2_rad" value="SI" required> SI</label>
+                            <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="eva_doc2_rad" value="NO"> NO</label>
+                        </div>
+                        <input type="text" name="eva_doc2_obs" class="input-field h-7 py-0 px-2 upper text-[10px]" placeholder="OBS...">
+                    </div>
+
+                    <div class="grid grid-cols-[1fr_120px_150px] border-b border-slate-100 items-center p-2 text-[10px]">
+                        <span class="px-2">REGISTRO DE ASISTENCIA</span>
+                        <div class="flex justify-center gap-4">
+                            <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="eva_doc3_rad" value="SI" required> SI</label>
+                            <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="eva_doc3_rad" value="NO"> NO</label>
+                        </div>
+                        <input type="text" name="eva_doc3_obs" class="input-field h-7 py-0 px-2 upper text-[10px]" placeholder="OBS...">
+                    </div>
+
+                    <div class="grid grid-cols-[1fr_120px_150px] border-b border-slate-100 items-center p-2 text-[10px]">
+                        <span class="px-2">REGISTRO REGLAMENTO INTERNO</span>
+                        <div class="flex justify-center gap-4">
+                            <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="eva_doc4_rad" value="SI" required> SI</label>
+                            <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="eva_doc4_rad" value="NO"> NO</label>
+                        </div>
+                        <input type="text" name="eva_doc4_obs" class="input-field h-7 py-0 px-2 upper text-[10px]" placeholder="OBS...">
+                    </div>
+
+                    <div class="grid grid-cols-[1fr_120px_150px] border-b border-slate-100 items-center p-2 text-[10px]">
+                        <span class="px-2">REGISTRO IRL</span>
+                        <div class="flex justify-center gap-4">
+                            <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="eva_doc5_rad" value="SI" required> SI</label>
+                            <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="eva_doc5_rad" value="NO"> NO</label>
+                        </div>
+                        <input type="text" name="eva_doc5_obs" class="input-field h-7 py-0 px-2 upper text-[10px]" placeholder="OBS...">
+                    </div>
+
+                    <div class="grid grid-cols-[1fr_120px] items-center p-2 text-[10px] bg-slate-50">
+                        <span class="px-2 font-bold italic text-blue-700 uppercase">Indicar si los documentos solicitados están en original firmados</span>
+                        <div class="flex justify-center gap-4">
+                            <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="eva_doc6_rad" value="SI" required> SI</label>
+                            <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="eva_doc6_rad" value="NO"> NO</label>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="flex gap-4 mb-20 mt-6">
+                <button type="button" onclick="document.getElementById('formEvaluacion').reset(); updateEvaAverages();"
+                    class="flex-1 bg-slate-200 py-4 text-[11px] font-bold uppercase hover:bg-slate-300">Limpiar
+                    Formulario</button>
+                <button type="button" onclick="abrirModal('formEvaluacion','EVALUACIÓN DE PERSONAL A DESVINCULAR')"
+                    class="flex-[3] bg-[#f89d31] text-white py-4 text-[11px] font-bold uppercase shadow-lg hover:bg-orange-500">Revisar
+                    Evaluación de Personal</button>
+            </div>
+        </form>
+    </main>
+
+    <footer>
+        <div class="flex flex-col md:flex-row md:gap-6 items-start md:items-center">
+            <span>© 2026 RELIX S.A.</span>
+            <span id="progressText" class="bg-white/20 px-3 py-1 rounded">0% COMPLETADO</span>
+        </div>
+    </footer>
+
+    <!-- MODAL -->
+    <div id="modalConfirm"
+        class="fixed inset-0 bg-black/80 hidden items-center justify-center z-[2000] p-4 backdrop-blur-sm">
+        <div class="bg-white max-w-2xl w-full border-t-8 border-[#f89d31] overflow-hidden" style="border-radius:4px;">
+            <div id="panelResumen" class="p-8">
+                <h2 class="text-[#0D7DAF] font-bold text-[13px] border-b pb-2 mb-4 uppercase">Resumen de Solicitud</h2>
+                <div id="resumen"
+                    class="grid grid-cols-2 gap-x-8 gap-y-2 text-[10px] uppercase overflow-y-auto max-h-[50vh]"></div>
+                <div class="flex gap-4 mt-8">
+                    <button onclick="cerrarModal()"
+                        class="flex-1 bg-slate-100 py-3 text-[10px] font-bold uppercase hover:bg-slate-200">Corregir</button>
+                    <button id="btnFinal"
+                        class="flex-1 bg-[#0D7DAF] text-white py-3 text-[10px] font-bold uppercase">Confirmar
+                        Envío</button>
+                </div>
+            </div>
+            <div id="panelExito" class="hidden p-10 flex flex-col items-center text-center" style="min-height:320px;">
+                <div
+                    style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#22c55e,#16a34a);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="38" height="38" viewBox="0 0 24 24" fill="none"
+                        stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12" />
+                    </svg></div>
+                <h3 style="color:#15803d;font-size:18px;font-weight:900;margin-bottom:8px;text-transform:uppercase;">
+                    ¡Enviado con Éxito!</h3>
+                <div id="folioExito"
+                    style="background:#f0fdf4;border:2px solid #86efac;border-radius:8px;padding:10px 28px;margin:16px 0;display:inline-block;">
+                    <span style="color:#166534;font-size:10px;font-weight:700;text-transform:uppercase;">Folio N°</span>
+                    <div id="folioNumero" style="color:#15803d;font-size:26px;font-weight:900;">—</div>
+                </div>
+                <button onclick="cerrarModal()"
+                    style="background:#0D7DAF;color:white;padding:12px 40px;font-size:10px;font-weight:700;text-transform:uppercase;border:none;border-radius:4px;cursor:pointer;">Cerrar
+                    Ventana</button>
+            </div>
+        </div>
+    </div>
+    <datalist id="cargosList"></datalist>
+
+    <div id="loadingOverlay"
+        style="position:fixed;inset:0;background:#0D7DAF;display:flex;align-items:center;justify-content:center;z-index:9999;">
+        <div style="text-align:center;">
+            <div
+                style="width:48px;height:48px;border:4px solid rgba(255,255,255,0.2);border-top-color:white;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px;">
+            </div>
+            <div
+                style="color:white;font-family:'Roboto Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;">
+                Cargando datos...</div>
+        </div>
+    </div>
+    <style>
+        @keyframes spin {
+            to {
+                transform: rotate(360deg)
+            }
+        }
+    </style>
+
+    <?!= include('SharedJS'); ?>
+    <script>verificarSesion('evaluacion');</script>
+    <script>
+        function verificarRenunciaVoluntaria() {
+            const motivoSelect = document.getElementById('eva_motivo_lista');
+            const container = document.getElementById('containerFormularioSalida');
+            const correoMostrado = document.getElementById('evaCorreoMostrado');
+            const correoInput = document.querySelector('input[name="eva_correoPersonal"]');
+
+            if (motivoSelect.value && motivoSelect.value.toUpperCase().includes('RENUNCIA VOLUNTARIA')) {
+                container.style.display = 'block';
+                if (correoInput && correoInput.value) {
+                    correoMostrado.innerText = correoInput.value;
+                }
+            } else {
+                container.style.display = 'none';
+                document.getElementById('eva_formularioSalida').value = '';
+            }
+        }
+
+        // Actualizar correo mostrado al escribir
+        document.addEventListener('DOMContentLoaded', () => {
+            const correoInput = document.querySelector('input[name="eva_correoPersonal"]');
+            if (correoInput) {
+                correoInput.addEventListener('change', verificarRenunciaVoluntaria);
+            }
+        });
+
+        // ── Generador dinámico de items de evaluación ────────────────────────────
+        function crearItem(prefix, numero, label, placeholder) {
+            const vals = [0, 1, 2, 3, 4, 5];
+            let radios = vals.map(v => `<label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="eva_${prefix}${numero}" value="${v}"${v === 0 ? ' required' : ''}> ${v}</label>`).join('');
+            return `<div class="p-3 border rounded shadow-sm bg-slate-50">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <span class="flex-1 font-bold text-slate-700">${numero}. ${label}</span>
+          <div class="flex items-center gap-3">${radios}</div>
+        </div>
+        <input type="text" name="eva_${prefix}${numero}_obs" class="input-field mt-2 text-[10px] upper" placeholder="${placeholder}">
+      </div>`;
+        }
+
+        // Items Personales (14)
+        const aspItems = [
+            ['PUNTUALIDAD', 'Observaciones Puntualidad...'], ['ASISTENCIA', 'Observaciones Asistencia...'],
+            ['INICIATIVA', 'Observaciones Iniciativa...'], ['ESPÍRITU DE SUPERACIÓN', 'Observaciones Espíritu...'],
+            ['HONRADEZ Y HONESTIDAD', 'Observaciones Honradez...'], ['CONDUCTA ÉTICA', 'Observaciones Conducta Ética...'],
+            ['CONOCIMIENTO DE SU TRABAJO', 'Observaciones Conocimiento...'], ['TRABAJO EN EQUIPO', 'Observaciones Trabajo Equipo...'],
+            ['RESPETO A SU JEFE DIRECTO', 'Observaciones Respeto Jefe...'], ['RESPETO A SUS COMPAÑEROS', 'Observaciones Compañeros...'],
+            ['PREDISPOSICIÓN OTRAS FUNCIONES', 'Observaciones Predisposición...'], ['SALUD COMPATIBLE', 'Observaciones Salud...'],
+            ['COMPORTAMIENTO FUERA JORNADA', 'Observaciones Comportamiento...'], ['CAPACIDAD DE LIDERAZGO', 'Observaciones Liderazgo...']
+        ];
+        document.getElementById('asp-items').innerHTML = aspItems.map((a, i) => crearItem('asp', i + 1, a[0], a[1])).join('');
+
+        // Items Profesionales (7)
+        const profItems = [
+            ['USA HERRAMIENTAS APROPIADAS', 'Observaciones Herramientas...'],
+            ['APLICA INSTRUMENTOS MEDICIÓN', 'Observaciones Instrumentos...'],
+            ['LEE MEDICIONES INSTRUMENTOS', 'Observaciones Mediciones...'],
+            ['MANEJA MANUALES TÉCNICOS', 'Observaciones Manuales...'],
+            ['ENTIENDE LABORES ENCOMENDADAS', 'Observaciones Labores...'],
+            ['SIGUE INSTRUCCIONES', 'Observaciones Instrucciones...'],
+            ['PRESENTA CREATIVIDAD', 'Observaciones Creatividad...']
+        ];
+        document.getElementById('prof-items').innerHTML = profItems.map((a, i) => crearItem('prof', i + 1, a[0], a[1])).join('');
+
+        // Items Seguridad (6)
+        const segItems = [
+            ['USA ADECUADAMENTE LOS EPP', 'Observaciones EPP...'],
+            ['COMUNICA CONDICIONES PELIGROSAS', 'Observaciones Peligrosas...'],
+            ['CUIDADO Y MANUTENCIÓN DE EPP', 'Observaciones EPP Cuidado...'],
+            ['LIDERAZGO EN SITUACIONES DE PELIGRO', 'Observaciones Liderazgo...'],
+            ['RESPETA NORMAS DE SEGURIDAD', 'Observaciones Normas...'],
+            ['MANTIENE LUGAR LIMPIO Y ORDENADO', 'Observaciones Limpieza...']
+        ];
+        document.getElementById('seg-items').innerHTML = segItems.map((a, i) => crearItem('seg', i + 1, a[0], a[1])).join('');
+
+        // Items Calidad (7)
+        const calItems = [
+            ['EFICACIA (Relación Cantidad - Calidad)', 'Observaciones Eficacia...'],
+            ['CONOCIMIENTOS (Necesarios para el trabajo)', 'Observaciones Conocimientos...'],
+            ['COLABORACION (Integración al Equipo)', 'Observaciones Colaboración...'],
+            ['INICIATIVA (Propuestas de mejora)', 'Observaciones Iniciativa...'],
+            ['RESPONSABILIDAD (Intereses empresa)', 'Observaciones Responsabilidad...'],
+            ['ASISTENCIA (Hora Programada)', 'Observaciones Asistencia...'],
+            ['COMPORTAMIENTO (Jefes y Compañeros)', 'Observaciones Comportamiento...']
+        ];
+        document.getElementById('cal-items').innerHTML = calItems.map((a, i) => crearItem('cal', i + 1, a[0], a[1])).join('');
+
+        // Inicializar listeners después de crear los items
+        initEvaluacion();
+
+        // ── Carga de datos ────────────────────────────────────────────────────────
+        window.onload = () => {
+            google.script.run.withSuccessHandler(d => {
+                fill('eva_area', d.ccs);
+                fill('eva_ccEvaluador', d.ccs);
+                const sel = document.getElementById('eva_motivo_lista');
+                if (sel && d.motivosDesv && d.motivosDesv.length > 0) {
+                    d.motivosDesv.forEach(m => { let o = document.createElement('option'); o.value = m; o.text = m.toUpperCase(); sel.appendChild(o); });
+                }
+                const dl = document.getElementById('cargosList');
+                if (dl && d.cargosExistentes) d.cargosExistentes.forEach(c => { let o = document.createElement('option'); o.value = c.toUpperCase(); dl.appendChild(o); });
+                document.getElementById('loadingOverlay').style.display = 'none';
+            }).withFailureHandler(err => {
+                document.getElementById('loadingOverlay').innerHTML = '<div style="background:white;padding:32px;border-radius:12px;text-align:center;"><p style="color:red;font-family:monospace;font-size:12px;">' + err.message + '</p><button onclick="location.reload()" style="margin-top:12px;background:#0D7DAF;color:white;padding:8px 20px;border:none;cursor:pointer;font-family:monospace;">Reintentar</button></div>';
+            }).obtenerDatosDesdeDB();
+        };
+    </script>
+</body>
+
+</html>
