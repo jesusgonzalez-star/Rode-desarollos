@@ -928,7 +928,17 @@
                 <b style="font-size:16px">${d.finTotalPagar}</b>
             </div>
 
-            <div class="firma-box">
+            <div style="margin-top:30px;padding:12px;border:1px dashed #94a3b8;background:#f8fafc;font-size:9px;display:flex;justify-content:space-between;align-items:flex-end;gap:24px;">
+                <div style="flex:1;text-align:center;">
+                    <div style="border-top:1px solid #1e293b;margin-bottom:4px;padding-top:6px;"></div>
+                    <b style="font-size:10px;">${d.nombreSolicitante || '—'}</b><br>
+                    <span style="color:#64748b;text-transform:uppercase;letter-spacing:1px;">Firma Calculista</span><br>
+                    <span style="color:#94a3b8;font-size:8px;">${d.emailSolicitante || ''}</span><br>
+                    <span style="color:#94a3b8;font-size:8px;">Fecha cálculo: ${new Date().toLocaleDateString('es-CL')}</span>
+                </div>
+            </div>
+
+            <div class="firma-box" style="margin-top:20px;">
                 <div><div class="linea"></div><span class="lbl">Firma Gte. Operaciones</span></div>
                 <div><div class="linea"></div><span class="lbl">Firma Gte. Administración</span></div>
                 <div><div class="linea"></div><span class="lbl">Firma Gte. General</span></div>
