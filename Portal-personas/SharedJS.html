@@ -331,7 +331,7 @@
             'MODIFICACIÓN DE CONDICIONES': { mod_nombre: "NOMBRE TRABAJADOR", mod_motivo: "MOTIVO", mod_nuevoCargo: "NUEVO CARGO", mod_vigencia: "VIGENCIA", mod_sueldoAnterior: "SUELDO ANT.", mod_ccAnterior: "CC ANT.", mod_sueldoNuevo: "SUELDO NUEVO", mod_ccNuevo: "CC NUEVO", mod_jefeDirecto: "JEFE DIRECTO", mod_fechaJefe: "FECHA JEFE", mod_superintendente: "SUPERINTENDENTE", mod_fechaSuper: "FECHA SUPER", mod_gerente: "GERENTE", mod_fechaGerente: "FECHA GERENTE", mod_observaciones: "OBSERVACIONES" },
             'SOLICITUD DE PERMISO': { perm_nombre: "NOMBRE TRABAJADOR", perm_rut: "RUT", perm_fechaIngreso: "FECHA INGRESO", perm_cc: "CENTRO DE COSTO", perm_cargo: "CARGO", perm_jefe: "JEFE DIRECTO", perm_fechaInicio: "FECHA INICIO", perm_fechaFin: "FECHA FIN", perm_observacion: "OBSERVACIONES" },
             'REVOCACIÓN CARTA DE AVISO': { rev_nombre: "NOMBRE TRABAJADOR", rev_rut: "RUT", rev_fechaOriginal: "FECHA AVISO ORIGINAL", rev_motivo: "MOTIVO", rev_cargoSolicitante: "CARGO SOLICITANTE", rev_ccSolicitante: "C.C. SOLICITANTE" },
-            'EVALUACIÓN DE PERSONAL A DESVINCULAR': { eva_nombre: "NOMBRE TRABAJADOR", eva_rut: "RUT", eva_correoPersonal: "CORREO PERSONAL", eva_cargo: "CARGO", eva_area: "ÁREA", eva_ccEvaluador: "C.C. EVALUADOR", eva_fTermino: "FECHA TÉRMINO", eva_motivo: "MOTIVO", eva_formularioSalida: "FORMULARIO DE SALIDA", eva_puntuacion_final: "PUNTUACIÓN FINAL", eva_nombreEvaluador: "EVALUADOR", eva_cargoEvaluador: "CARGO EVALUADOR", eva_recomienda: "RECOMIENDA", eva_obs1: "OBSERVACIONES 1", eva_obs2: "OBSERVACIONES 2", eva_implementos: "IMPLEMENTOS" },
+            'EVALUACIÓN DE PERSONAL A DESVINCULAR': { eva_nombre: "NOMBRE TRABAJADOR", eva_rut: "RUT", eva_correoPersonal: "CORREO PERSONAL", eva_cargo: "CARGO/FUNCIÓN", eva_area: "PROYECTO/ÁREA", eva_fechaIngreso: "FECHA INGRESO", eva_fTermino: "FECHA TÉRMINO", eva_motivo_lista: "MOTIVO DESVINCULACIÓN", eva_formularioSalida: "FORMULARIO DE SALIDA", eva_puntuacion_final: "PUNTAJE PROMEDIO", eva_recomienda: "RECOMIENDA RECONTRATAR", eva_nombreEvaluador: "EVALUADOR", eva_cargoEvaluador: "CARGO EVALUADOR", eva_visaGerente: "VISACIÓN GERENTE", eva_visaRRHH: "VISACIÓN RR.HH." },
             'PACTO HORAS EXTRAORDINARIAS': { hex_nombre: "NOMBRE TRABAJADOR", hex_rut: "RUT", hex_fechaContrato: "FECHA CONTRATO", hex_area: "ÁREA", hex_jefeDirecto: "JEFE DIRECTO", hex_fecha: "DÍA DEL PACTO", hex_horaInicio: "DESDE LAS", hex_horaFin: "HASTA LAS", hex_horasExtra: "TOTAL HORAS", hex_descripcion: "DESCRIPCIÓN ACTIVIDAD" },
             'FINIQUITO': { fin_nombre: "NOMBRE TRABAJADOR", fin_rut: "RUT", fin_cargo: "CARGO", fin_centroCosto: "CENTRO DE COSTO", fin_fechaInicio: "FECHA INICIO", fin_fechaTermino: "FECHA TÉRMINO", fin_causal: "CAUSAL" }
         };
@@ -564,36 +564,31 @@
             }
             else if (tipo === 'EVALUACIÓN DE PERSONAL A DESVINCULAR') {
                 const evalData = {};
-                [14, 7, 6, 7].forEach((total, sectionIdx) => {
-                    const prefix = ['asp', 'prof', 'seg', 'cal'][sectionIdx];
-                    for (let i = 1; i <= total; i++) {
-                        const key = prefix + i;
-                        const val = getRad('eva_' + prefix + i);
-                        const obs = getValue('eva_' + prefix + i + '_obs');
-                        evalData[key] = val !== "N/A" ? (val + (obs && obs !== "N/A" && obs.trim() !== "" ? " (" + obs + ")" : "")) : "0";
-                    }
-                });
-                Object.assign(data, evalData, {
+                for (let i = 1; i <= 10; i++) {
+                    const val = getRad('eva_p' + i);
+                    const obs = getValue('eva_p' + i + '_obs');
+                    evalData['evaP' + i] = (val !== "N/A") ? val : "0";
+                    evalData['evaP' + i + 'Obs'] = (obs && obs !== "N/A") ? obs : "";
+                }
+                const devData = {};
+                for (let i = 1; i <= 6; i++) {
+                    devData['evaDev' + i] = getValue('eva_dev' + i + '_estado');
+                    devData['evaDev' + i + 'Obs'] = getValue('eva_dev' + i + '_obs');
+                }
+                Object.assign(data, evalData, devData, {
                     nombre1: getValue('eva_nombre'), rut: getValue('eva_rut'),
                     correoPersonal: getValue('eva_correoPersonal'),
                     evaCargo: getValue('eva_cargo'), evaArea: getValue('eva_area'),
-                    evaCCEvaluador: getValue('eva_ccEvaluador'),
+                    evaFechaIngreso: f.elements['eva_fechaIngreso'] ? f.elements['eva_fechaIngreso'].value : "N/A",
                     evaFTermino: f.elements['eva_fTermino'] ? f.elements['eva_fTermino'].value : "N/A",
-                    evaMotivoLista: getValue('eva_motivo_lista'), evaMotivo: getValue('eva_motivo'),
+                    evaMotivoLista: getValue('eva_motivo_lista'),
                     evaFormularioSalida: getValue('eva_formularioSalida'),
                     evaPuntuacion: getValue('eva_puntuacion_final'),
-                    promPersonal: getValue('eva_promedio'), promProf: getValue('eva_promedio_prof'),
-                    promSeg: getValue('eva_promedio_seg'), promCal: getValue('eva_promedio_cal'),
+                    evaCual1: getValue('eva_cual1'), evaCual2: getValue('eva_cual2'),
+                    evaCual3: getValue('eva_cual3'), evaCual4: getValue('eva_cual4'),
+                    evaRecomienda: f.eva_recomienda ? f.eva_recomienda.value : "",
                     evaEvaluador: getValue('eva_nombreEvaluador'), evaCargoEvaluador: getValue('eva_cargoEvaluador'),
-                    evaRecomienda: f.eva_recomienda ? f.eva_recomienda.value : "SI",
-                    evaObs1: getValue('eva_obs1'), evaObs2: getValue('eva_obs2'),
-                    evaImplementos: getValue('eva_implementos'),
-                    evaDoc1: (getRad('eva_doc1_rad') || "NO") + " / OBS: " + (getValue('eva_doc1_obs') || "S/O"),
-                    evaDoc2: (getRad('eva_doc2_rad') || "NO") + " / OBS: " + (getValue('eva_doc2_obs') || "S/O"),
-                    evaDoc3: (getRad('eva_doc3_rad') || "NO") + " / OBS: " + (getValue('eva_doc3_obs') || "S/O"),
-                    evaDoc4: (getRad('eva_doc4_rad') || "NO") + " / OBS: " + (getValue('eva_doc4_obs') || "S/O"),
-                    evaDoc5: (getRad('eva_doc5_rad') || "NO") + " / OBS: " + (getValue('eva_doc5_obs') || "S/O"),
-                    evaDoc6: getRad('eva_doc6_rad') || "NO"
+                    evaVisaGerente: getValue('eva_visaGerente'), evaVisaRRHH: getValue('eva_visaRRHH')
                 });
             }
 
@@ -837,25 +832,63 @@
                 <div style="width:220px"><div style="border-top:1px solid #000;width:220px;margin-bottom:5px;"></div><b>${data.nombre1 || 'xxxxxxxxxxxxxxxxx'}</b><br>C.I. N° <b>${data.rut || 'xx.xxx.xxx-x'}</b><br><span style="color:#555;font-size:9px;">Trabajador</span></div>
             </div>`;
         } else if (tipo === 'EVALUACIÓN DE PERSONAL A DESVINCULAR') {
-            const q = {
-                asp: { label: 'A. ASPECTOS PERSONALES', items: ['PUNTUALIDAD', 'ASISTENCIA', 'INICIATIVA', 'ESPÍRITU DE SUPERACIÓN', 'HONRADEZ Y HONESTIDAD', 'CONDUCTA ÉTICA', 'CONOCIMIENTO DE SU TRABAJO', 'TRABAJO EN EQUIPO', 'RESPETO A SU JEFE DIRECTO', 'RESPETO A SUS COMPAÑEROS', 'PREDISPOSICIÓN OTRAS FUNCIONES', 'SALUD COMPATIBLE', 'COMPORTAMIENTO FUERA JORNADA', 'CAPACIDAD DE LIDERAZGO'] },
-                prof: { label: 'B. ASPECTOS PROFESIONALES', items: ['USA HERRAMIENTAS APROPIADAS', 'APLICA INSTRUMENTOS MEDICIÓN', 'LEE MEDICIONES INSTRUMENTOS', 'MANEJA MANUALES TÉCNICOS', 'ENTIENDE LABORES ENCOMENDADAS', 'SIGUE INSTRUCCIONES', 'PRESENTA CREATIVIDAD'] },
-                seg: { label: 'C. CONDUCTA SEGURIDAD', items: ['USA ADECUADAMENTE LOS EPP', 'COMUNICA CONDICIONES PELIGROSAS', 'CUIDADO Y MANUTENCIÓN DE EPP', 'LIDERAZGO EN SITUACIONES DE PELIGRO', 'RESPETA NORMAS DE SEGURIDAD', 'MANTIENE LUGAR LIMPIO Y ORDENADO'] },
-                cal: { label: 'D. CALIDAD', items: ['EFICACIA (Cant-Cal)', 'CONOCIMIENTOS', 'COLABORACION', 'INICIATIVA', 'RESPONSABILIDAD', 'ASISTENCIA', 'COMPORTAMIENTO'] }
-            };
-            let itemsHtml = `<div class="st" style="margin-top:20px">04. DETALLE DE EVALUACIÓN POR SECCIONES</div>`;
-            ['asp', 'prof', 'seg', 'cal'].forEach(p => {
-                itemsHtml += `<div style="background:#f1f5f9; padding:2px 8px; font-size:7px; font-weight:bold; margin-top:5px; border-left:3px solid #0D7DAF; color:#0D7DAF; text-transform:uppercase">${q[p].label}</div>`;
-                itemsHtml += `<div style="display:grid; grid-template-columns:1fr 1fr; gap:0 15px; font-size:6.5px; margin-bottom:5px; padding:0 5px;">`;
-                q[p].items.forEach((text, i) => {
-                    const idx = i + 1;
-                    const res = data[p + idx] || "0";
-                    itemsHtml += `<div style="border-bottom:0.5px solid #eee; padding:1.5px 0; display:flex; justify-content:space-between; align-items:center;"><span style="color:#0D7DAF; width:18px; font-weight:bold">${p.toUpperCase()}${idx}</span><span style="flex:1; margin-right:5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">${text}</span><b style="color:#111">${res}</b></div>`;
+            const fmtFecE = (v) => { if (!v || v === 'N/A') return '—'; const p = v.split('-'); return p.length === 3 ? `${p[2]}/${p[1]}/${p[0]}` : v; };
+            const criterios = [
+                { grupo: 'COMPORTAMIENTO Y ACTITUD', items: [[1,'Puntualidad y asistencia al trabajo'],[2,'Respeto hacia jefaturas y compañeros'],[3,'Conducta ética y honestidad'],[4,'Trabajo en equipo y colaboración']] },
+                { grupo: 'DESEMPEÑO PROFESIONAL', items: [[5,'Conocimiento técnico del puesto'],[6,'Cumplimiento de instrucciones y tareas'],[7,'Iniciativa y propuesta de mejoras']] },
+                { grupo: 'SEGURIDAD Y CALIDAD', items: [[8,'Uso correcto de EPP y normas de seguridad'],[9,'Orden, limpieza y cuidado de herramientas'],[10,'Calidad y eficacia en la ejecución de tareas']] }
+            ];
+            let itemsHtml = `<div class="st">02. EVALUACIÓN DE DESEMPEÑO (Escala 1-5)</div>`;
+            criterios.forEach(c => {
+                itemsHtml += `<div style="background:#f1f5f9;padding:2px 8px;font-weight:bold;margin-top:4px;border-left:3px solid #0D7DAF;color:#0D7DAF;">${c.grupo}</div>`;
+                c.items.forEach(it => {
+                    const p = data['evaP' + it[0]] || '0';
+                    const obs = data['evaP' + it[0] + 'Obs'] || '';
+                    itemsHtml += `<div style="display:flex;justify-content:space-between;align-items:center;border-bottom:0.5px solid #eee;padding:2px 5px;"><span style="width:14px;color:#0D7DAF;font-weight:bold">${it[0]}</span><span style="flex:1;margin-right:5px">${it[1]}</span><b style="color:#111;width:16px;text-align:center">${p}</b><span style="flex:0 0 35%;color:#64748b;font-style:italic;text-align:left;padding-left:6px;border-left:0.5px solid #ddd;">${obs}</span></div>`;
                 });
-                itemsHtml += `</div>`;
             });
 
-            contentHtml = `<div class="st">01. DATOS DEL TRABAJADOR EVALUADO</div><div class="grid"><div class="box" style="grid-column:span 2"><span class="lbl">NOMBRE</span><span class="val">${data.nombre1}</span></div><div class="box"><span class="lbl">RUT</span><span class="val">${data.rut}</span></div><div class="box"><span class="lbl">CORREO PERSONAL</span><span class="val">${data.correoPersonal}</span></div><div class="box"><span class="lbl">CARGO</span><span class="val">${data.evaCargo}</span></div><div class="box"><span class="lbl">ÁREA</span><span class="val">${data.evaArea}</span></div><div class="box"><span class="lbl">FECHA TÉRMINO</span><span class="val">${data.evaFTermino}</span></div>${data.evaFormularioSalida && data.evaFormularioSalida !== "N/A" && data.evaFormularioSalida.trim() ? `<div class="box" style="grid-column:span 2;background:#fef3c7;"><span class="lbl">FORMULARIO DE SALIDA</span><span class="val" style="font-size:8px;word-break:break-all;">${data.evaFormularioSalida}</span></div>` : ''}</div><div class="st">02. RESUMEN DE CALIFICACIÓN</div><div class="grid"><div class="box"><span class="lbl">personales</span><span class="val">${data.promPersonal}</span></div><div class="box"><span class="lbl">profesionales</span><span class="val">${data.promProf}</span></div><div class="box"><span class="lbl">seguridad</span><span class="val">${data.promSeg}</span></div><div class="box"><span class="lbl">calidad</span><span class="val">${data.promCal}</span></div></div><div class="box" style="margin-top:10px;background:#0D7DAF;color:white;"><span class="lbl" style="color:white;opacity:0.8">PUNTUACIÓN FINAL</span><span class="val" style="font-size:14px">${data.evaPuntuacion}</span></div><div class="st">03. EVALUADOR Y RECOMENDACIÓN</div><div class="grid"><div class="box" style="grid-column:span 3"><span class="lbl">EVALUADOR</span><span class="val">${data.evaEvaluador} — ${data.evaCargoEvaluador}</span></div><div class="box" style="background:#fef08a;text-align:center"><span class="lbl">¿RECOMIENDA?</span><span class="val" style="font-size:16px;color:#c2410c">${data.evaRecomienda}</span></div></div>${itemsHtml}<div class="firma-box"><div><div class="linea"></div><span class="lbl">Firma Evaluador</span></div><div><div class="linea"></div><span class="lbl">Firma Jefe Directo</span></div><div><div class="linea"></div><span class="lbl">V°B° Gerencia</span></div></div>`;
+            const cualHtml = `<div class="st">03. PREGUNTAS CUALITATIVAS</div>
+                <div style="padding:0 4px;text-transform:none;">
+                    <p style="margin:3px 0;"><b>3.1 Evaluación general del desempeño:</b><br>${data.evaCual1 || '—'}</p>
+                    <p style="margin:3px 0;"><b>3.2 ¿Recomendaría su recontratación? Fundamento:</b><br>${data.evaCual2 || '—'}</p>
+                    <p style="margin:3px 0;"><b>3.3 Aspectos de mejora:</b><br>${data.evaCual3 || '—'}</p>
+                    <p style="margin:3px 0;"><b>3.4 Situaciones críticas registradas:</b><br>${data.evaCual4 || '—'}</p>
+                </div>`;
+
+            const devItems = [[1,'Equipos de protección personal (EPP)'],[2,'Herramientas y equipos asignados'],[3,'Credenciales / tarjetas de acceso'],[4,'Documentación del proyecto a cargo'],[5,'Dispositivos electrónicos asignados'],[6,'Ropa de trabajo / uniformes']];
+            let devHtml = `<div class="st">05. DEVOLUCIÓN DE IMPLEMENTOS Y DOCUMENTOS</div>
+                <div style="display:grid;grid-template-columns:1fr 90px 1fr;background:#475569;color:white;font-weight:bold;padding:2px 6px;"><span>ÍTEM</span><span style="text-align:center">ESTADO</span><span>OBSERVACIONES</span></div>`;
+            devItems.forEach(it => {
+                const est = data['evaDev' + it[0]] || '—';
+                const obs = data['evaDev' + it[0] + 'Obs'] || '';
+                devHtml += `<div style="display:grid;grid-template-columns:1fr 90px 1fr;border-bottom:0.5px solid #eee;padding:2px 6px;"><span>${it[1]}</span><b style="text-align:center">${est}</b><span style="color:#64748b">${obs}</span></div>`;
+            });
+
+            contentHtml = `<div class="st">01. DATOS DEL TRABAJADOR</div>
+                <div class="grid">
+                    <div class="box" style="grid-column:span 2"><span class="lbl">NOMBRE COMPLETO</span><span class="val">${data.nombre1}</span></div>
+                    <div class="box"><span class="lbl">R.U.T.</span><span class="val">${data.rut}</span></div>
+                    <div class="box"><span class="lbl">CARGO / FUNCIÓN</span><span class="val">${data.evaCargo}</span></div>
+                    <div class="box"><span class="lbl">PROYECTO / ÁREA</span><span class="val">${data.evaArea}</span></div>
+                    <div class="box"><span class="lbl">FECHA INGRESO</span><span class="val">${fmtFecE(data.evaFechaIngreso)}</span></div>
+                    <div class="box"><span class="lbl">FECHA TÉRMINO</span><span class="val">${fmtFecE(data.evaFTermino)}</span></div>
+                    <div class="box" style="grid-column:span 2"><span class="lbl">MOTIVO DESVINCULACIÓN</span><span class="val">${data.evaMotivoLista}</span></div>
+                    <div class="box" style="grid-column:span 2"><span class="lbl">EVALUADOR</span><span class="val">${data.evaEvaluador} — ${data.evaCargoEvaluador}</span></div>
+                    ${data.evaFormularioSalida && data.evaFormularioSalida !== "N/A" && data.evaFormularioSalida.trim() ? `<div class="box" style="grid-column:span 4;background:#fef3c7;"><span class="lbl">FORMULARIO DE SALIDA</span><span class="val" style="font-size:8px;word-break:break-all;">${data.evaFormularioSalida}</span></div>` : ''}
+                </div>
+                ${itemsHtml}
+                <div class="box" style="margin-top:6px;background:#0D7DAF;color:white;display:flex;justify-content:space-between;align-items:center;"><span class="lbl" style="color:white;opacity:0.85">PUNTAJE PROMEDIO TOTAL</span><span class="val" style="font-size:14px">${data.evaPuntuacion}</span></div>
+                ${cualHtml}
+                <div class="st">04. RECOMENDACIÓN FINAL</div>
+                <div class="box" style="background:#fef08a;text-align:center"><span class="lbl">¿SE RECOMIENDA LA RECONTRATACIÓN DEL TRABAJADOR?</span><span class="val" style="font-size:16px;color:#c2410c">${data.evaRecomienda || '—'}</span></div>
+                ${devHtml}
+                <div class="st">06. FIRMAS Y VISACIONES</div>
+                <div style="display:flex;justify-content:space-around;text-align:center;margin-top:30px;page-break-inside:avoid;">
+                    <div style="width:30%"><div class="linea" style="width:100%"></div><b style="font-size:8px">${data.evaEvaluador || ''}</b><br><span class="lbl">Jefe Directo / Evaluador</span></div>
+                    <div style="width:30%"><div class="linea" style="width:100%"></div><b style="font-size:8px">${data.evaVisaGerente || ''}</b><br><span class="lbl">Admin. Contrato / Gerente Área</span></div>
+                    <div style="width:30%"><div class="linea" style="width:100%"></div><b style="font-size:8px">${data.evaVisaRRHH || ''}</b><br><span class="lbl">Recursos Humanos</span></div>
+                </div>`;
         }
 
         else if (tipo === 'FINIQUITO') {

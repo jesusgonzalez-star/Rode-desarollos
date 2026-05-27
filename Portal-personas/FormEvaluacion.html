@@ -83,12 +83,11 @@
 
         <form id="formEvaluacion">
 
-            <!-- 01. EVALUADO -->
+            <!-- 01. DATOS DEL TRABAJADOR -->
             <section class="form-card">
-                <h3><span class="material-symbols-outlined">assignment_ind</span> 01. Evaluación de personal a
-                    desvincular</h3>
+                <h3><span class="material-symbols-outlined">assignment_ind</span> 01. Datos del Trabajador</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-                    <div><label>Nombre Trabajador Evaluado</label><input type="text" name="eva_nombre"
+                    <div><label>Nombre Completo</label><input type="text" name="eva_nombre"
                             class="input-field upper" placeholder="EJ: JUAN PÉREZ" required></div>
                     <div><label>R.U.T.</label><input type="text" name="eva_rut"
                             class="input-field upper" placeholder="12.345.678-9" required
@@ -98,26 +97,28 @@
                     </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-                    <div><label>Correo Personal</label><input type="email" name="eva_correoPersonal"
-                            class="input-field" placeholder="correo@example.com" required></div>
-                    <div><label>Cargo</label><input type="text" name="eva_cargo" class="input-field upper"
+                    <div><label>Cargo / Función</label><input type="text" name="eva_cargo" class="input-field upper"
                             list="cargosList" placeholder="BUSCAR CARGO..." required></div>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
                     <div>
-                        <label>Proyecto / Faena / Área</label>
+                        <label>Proyecto / Área</label>
                         <select name="eva_area" id="eva_area" class="input-field" required>
                             <option value="">SELECCIONE ÁREA...</option>
                         </select>
                     </div>
-                    <div><label>F. Término</label><input type="date" name="eva_fTermino" class="input-field" required>
-                    </div>
                 </div>
-                <div class="mt-4">
-                    <label>Motivo de desvinculación</label>
-                    <select name="eva_motivo_lista" id="eva_motivo_lista" class="input-field upper" required onchange="verificarRenunciaVoluntaria()">
-                        <option value="">SELECCIONE MOTIVO...</option>
-                    </select>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                    <div><label>Fecha de Ingreso</label><input type="date" name="eva_fechaIngreso" class="input-field" required></div>
+                    <div><label>Fecha de Término</label><input type="date" name="eva_fTermino" class="input-field" required></div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                    <div>
+                        <label>Motivo de Desvinculación</label>
+                        <select name="eva_motivo_lista" id="eva_motivo_lista" class="input-field upper" required onchange="verificarRenunciaVoluntaria()">
+                            <option value="">SELECCIONE MOTIVO...</option>
+                        </select>
+                    </div>
+                    <div><label>Correo Personal del Trabajador</label><input type="email" name="eva_correoPersonal"
+                            class="input-field" placeholder="correo@example.com" required></div>
                 </div>
                 <div class="mt-4" id="containerFormularioSalida" style="display:none; border: 2px solid #f89d31; padding: 16px; border-radius: 8px; background-color: #fef3c7;">
                     <label class="font-bold text-[#0D7DAF]">Link Formulario de Salida</label>
@@ -125,23 +126,15 @@
                             class="input-field mt-2" placeholder="https://ejemplo.com/formulario-salida">
                     <p class="text-[9px] text-slate-600 mt-2 italic">Se enviará a: <span id="evaCorreoMostrado">-</span></p>
                 </div>
-                <div class="mt-4">
-                    <label>Fundamento de desvinculación</label>
-                    <textarea name="eva_motivo" class="input-field h-16 pt-2 upper"
-                        placeholder="INDIQUE EL FUNDAMENTO DE LA DESVINCULACIÓN..." required></textarea>
-                </div>
             </section>
 
             <!-- ESCALA -->
             <section class="form-card mt-6 overflow-hidden">
                 <div
                     class="bg-yellow-300 p-2 text-center font-bold text-slate-800 uppercase text-[12px] flex items-center justify-center gap-2 shadow-sm">
-                    <span class="material-symbols-outlined text-[18px]">info</span> Escala de Evaluación
+                    <span class="material-symbols-outlined text-[18px]">info</span> Escala de Evaluación (1 a 5)
                 </div>
-                <div class="grid grid-cols-2 md:grid-cols-6 gap-2 p-3 text-center text-[10px]">
-                    <div class="flex flex-col p-3 bg-white rounded border border-slate-200 shadow-sm"><span
-                            class="font-black text-slate-900 text-[18px]">0</span><span
-                            class="text-slate-600 uppercase font-black leading-tight mt-1">No aplica</span></div>
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-2 p-3 text-center text-[10px]">
                     <div class="flex flex-col p-3 bg-white rounded border border-slate-200 shadow-sm"><span
                             class="font-black text-red-600 text-[18px]">1</span><span
                             class="text-slate-600 uppercase font-black leading-tight mt-1">Muy Deficiente</span></div>
@@ -150,270 +143,117 @@
                             class="text-slate-600 uppercase font-black leading-tight mt-1">Deficiente</span></div>
                     <div class="flex flex-col p-3 bg-white rounded border border-slate-200 shadow-sm"><span
                             class="font-black text-yellow-600 text-[18px]">3</span><span
-                            class="text-slate-600 uppercase font-black leading-tight mt-1">Puntuación mínima</span>
-                    </div>
+                            class="text-slate-600 uppercase font-black leading-tight mt-1">Aceptable</span></div>
                     <div class="flex flex-col p-3 bg-white rounded border border-slate-200 shadow-sm"><span
                             class="font-black text-blue-600 text-[18px]">4</span><span
-                            class="text-slate-600 uppercase font-black leading-tight mt-1">Puntuación media</span></div>
+                            class="text-slate-600 uppercase font-black leading-tight mt-1">Bueno</span></div>
                     <div class="flex flex-col p-3 bg-white rounded border border-slate-200 shadow-sm"><span
                             class="font-black text-green-600 text-[18px]">5</span><span
-                            class="text-slate-600 uppercase font-black leading-tight mt-1">Puntuación máxima</span>
-                    </div>
+                            class="text-slate-600 uppercase font-black leading-tight mt-1">Excelente</span></div>
                 </div>
             </section>
 
-            <!-- HELPER MACRO para items de evaluación -->
-            <!-- 02. ASPECTOS PERSONALES -->
-            <section class="form-card mt-6 p-0 overflow-hidden">
-                <details class="group">
-                    <summary
-                        class="flex justify-between items-center cursor-pointer p-4 bg-slate-50 hover:bg-slate-100 transition-colors list-none outline-none [&::-webkit-details-marker]:hidden">
-                        <h3 class="m-0 p-0 border-0 flex items-center gap-2 text-[#0D7DAF] text-[14px]"><span
-                                class="material-symbols-outlined text-[18px]">grade</span> 02. Evaluación de Aspectos
-                            Personales</h3>
-                        <span
-                            class="material-symbols-outlined transition-transform duration-300 group-open:rotate-180">expand_more</span>
-                    </summary>
-                    <div class="p-4 border-t border-slate-200">
-                        <p class="text-[10px] text-slate-500 mb-4 uppercase italic">Marque la puntuación del 0 al 5 e
-                            indique observaciones si aplica.</p>
-                        <div class="space-y-4" id="asp-items"></div>
-                        <div
-                            class="mt-6 p-4 bg-[#0D7DAF] text-white rounded shadow-md flex justify-between items-center">
-                            <span class="font-bold uppercase text-[12px]">Promedio Evaluación de Aspectos
-                                Personales:</span>
-                            <span id="eva_promedio_display" class="font-bold text-[18px]">0.0</span>
-                            <input type="hidden" name="eva_promedio" id="eva_promedio" value="0">
-                        </div>
-                    </div>
-                </details>
-            </section>
-
-            <!-- 03. ASPECTOS PROFESIONALES -->
-            <section class="form-card mt-6 p-0 overflow-hidden">
-                <details class="group">
-                    <summary
-                        class="flex justify-between items-center cursor-pointer p-4 bg-slate-50 hover:bg-slate-100 transition-colors list-none outline-none [&::-webkit-details-marker]:hidden">
-                        <h3 class="m-0 p-0 border-0 flex items-center gap-2 text-[#0D7DAF] text-[14px]"><span
-                                class="material-symbols-outlined text-[18px]">work_history</span> 03. Evaluación de
-                            Aspectos Profesionales</h3>
-                        <span
-                            class="material-symbols-outlined transition-transform duration-300 group-open:rotate-180">expand_more</span>
-                    </summary>
-                    <div class="p-4 border-t border-slate-200">
-                        <p class="text-[10px] text-slate-500 mb-4 uppercase italic">Marque la puntuación del 0 al 5 e
-                            indique observaciones si aplica.</p>
-                        <div class="space-y-4" id="prof-items"></div>
-                        <div
-                            class="mt-6 p-4 bg-[#0D7DAF] text-white rounded shadow-md flex justify-between items-center">
-                            <span class="font-bold uppercase text-[12px]">Promedio Evaluación de Aspectos
-                                Profesionales:</span>
-                            <span id="eva_promedio_prof_display" class="font-bold text-[18px]">0.0</span>
-                            <input type="hidden" name="eva_promedio_prof" id="eva_promedio_prof" value="0">
-                        </div>
-                    </div>
-                </details>
-            </section>
-
-            <!-- 04. CONDUCTA SEGURIDAD -->
-            <section class="form-card mt-6 p-0 overflow-hidden">
-                <details class="group">
-                    <summary
-                        class="flex justify-between items-center cursor-pointer p-4 bg-slate-50 hover:bg-slate-100 transition-colors list-none outline-none [&::-webkit-details-marker]:hidden">
-                        <h3 class="m-0 p-0 border-0 flex items-center gap-2 text-[#0D7DAF] text-[14px]"><span
-                                class="material-symbols-outlined text-[18px]">shield</span> 04. Conducta Hacia la
-                            Seguridad</h3>
-                        <span
-                            class="material-symbols-outlined transition-transform duration-300 group-open:rotate-180">expand_more</span>
-                    </summary>
-                    <div class="p-4 border-t border-slate-200">
-                        <p class="text-[10px] text-slate-500 mb-4 uppercase italic">Marque la puntuación del 0 al 5 e
-                            indique observaciones si aplica.</p>
-                        <div class="space-y-4" id="seg-items"></div>
-                        <div
-                            class="mt-6 p-4 bg-[#0D7DAF] text-white rounded shadow-md flex justify-between items-center">
-                            <span class="font-bold uppercase text-[12px]">Promedio Conducta Hacia la Seguridad:</span>
-                            <span id="eva_promedio_seg_display" class="font-bold text-[18px]">0.0</span>
-                            <input type="hidden" name="eva_promedio_seg" id="eva_promedio_seg" value="0">
-                        </div>
-                    </div>
-                </details>
-            </section>
-
-            <!-- 05. CALIDAD -->
-            <section class="form-card mt-6 p-0 overflow-hidden">
-                <details class="group">
-                    <summary
-                        class="flex justify-between items-center cursor-pointer p-4 bg-slate-50 hover:bg-slate-100 transition-colors list-none outline-none [&::-webkit-details-marker]:hidden">
-                        <h3 class="m-0 p-0 border-0 flex items-center gap-2 text-[#0D7DAF] text-[14px]"><span
-                                class="material-symbols-outlined text-[18px]">grade</span> 05. Calidad</h3>
-                        <span
-                            class="material-symbols-outlined transition-transform duration-300 group-open:rotate-180">expand_more</span>
-                    </summary>
-                    <div class="p-4 border-t border-slate-200">
-                        <p class="text-[10px] text-slate-500 mb-4 uppercase italic">Marque la puntuación del 0 al 5 e
-                            indique observaciones si aplica.</p>
-                        <div class="space-y-4" id="cal-items"></div>
-                        <div
-                            class="mt-6 p-4 bg-[#0D7DAF] text-white rounded shadow-md flex justify-between items-center">
-                            <span class="font-bold uppercase text-[12px]">Promedio Evaluación de Calidad:</span>
-                            <span id="eva_promedio_cal_display" class="font-bold text-[18px]">0.0</span>
-                            <input type="hidden" name="eva_promedio_cal" id="eva_promedio_cal" value="0">
-                        </div>
-                    </div>
-                </details>
-            </section>
-
-            <!-- RESUMEN -->
+            <!-- 02. EVALUACIÓN DE DESEMPEÑO -->
             <section class="form-card mt-6">
-                <h3><span class="material-symbols-outlined">analytics</span> 05. Resumen de Calificación</h3>
-                <div class="mt-4 border-2 border-slate-200 rounded-lg overflow-hidden font-bold">
-                    <div
-                        class="grid grid-cols-[auto_1fr_60px] bg-slate-100 p-2 border-b border-slate-200 text-[11px] text-[#0D7DAF]">
-                        <span>REF</span><span class="px-3">DESCRIPCIÓN DE EVALUACIÓN</span><span
-                            class="text-center">PROMEDIO</span>
-                    </div>
-                    <div class="grid grid-cols-[auto_1fr_60px] p-2 border-b border-slate-100 text-[10px]"><span
-                            class="bg-slate-50 px-2 rounded">A</span><span class="px-3">EVALUACIÓN DE ASPECTOS
-                            PERSONALES</span><span id="res_prom_pers"
-                            class="text-center bg-yellow-200 rounded">0.0</span></div>
-                    <div class="grid grid-cols-[auto_1fr_60px] p-2 border-b border-slate-100 text-[10px]"><span
-                            class="bg-slate-50 px-2 rounded">B</span><span class="px-3">EVALUACIÓN DE ASPECTOS
-                            PROFESIONALES</span><span id="res_prom_prof"
-                            class="text-center bg-yellow-200 rounded">0.0</span></div>
-                    <div class="grid grid-cols-[auto_1fr_60px] p-2 border-b border-slate-100 text-[10px]"><span
-                            class="bg-slate-50 px-2 rounded">C</span><span class="px-3">CONDUCTA HACIA LA
-                            SEGURIDAD</span><span id="res_prom_seg" class="text-center bg-yellow-200 rounded">0.0</span>
-                    </div>
-                    <div class="grid grid-cols-[auto_1fr_60px] p-2 border-b border-slate-100 text-[10px]"><span
-                            class="bg-slate-50 px-2 rounded">D</span><span class="px-3">CALIDAD</span><span
-                            id="res_prom_cal" class="text-center bg-yellow-200 rounded">0.0</span></div>
-                    <div class="grid grid-cols-[1fr_100px] p-4 bg-slate-800 text-white items-center">
-                        <span class="text-right pr-4 uppercase text-[12px]">Puntuación Obtenida (A+B+C+D)/4:</span>
-                        <div class="text-center">
-                            <span id="eva_puntuacion_final_display"
-                                class="text-[22px] font-black bg-slate-100 text-slate-900 px-3 py-1 rounded shadow-inner">0.0</span>
-                            <input type="hidden" name="eva_puntuacion_final" id="eva_puntuacion_final" value="0">
-                        </div>
-                    </div>
+                <h3><span class="material-symbols-outlined">grade</span> 02. Evaluación de Desempeño</h3>
+                <p class="text-[10px] text-slate-500 mb-4 uppercase italic">Marque la puntuación de 1 a 5 e indique observaciones si aplica.</p>
+
+                <div class="bg-slate-100 px-3 py-2 text-[11px] font-bold text-[#0D7DAF] uppercase border-l-4 border-[#0D7DAF] mt-2">Comportamiento y Actitud</div>
+                <div class="space-y-4 mt-3" id="grupo-comportamiento"></div>
+
+                <div class="bg-slate-100 px-3 py-2 text-[11px] font-bold text-[#0D7DAF] uppercase border-l-4 border-[#0D7DAF] mt-6">Desempeño Profesional</div>
+                <div class="space-y-4 mt-3" id="grupo-profesional"></div>
+
+                <div class="bg-slate-100 px-3 py-2 text-[11px] font-bold text-[#0D7DAF] uppercase border-l-4 border-[#0D7DAF] mt-6">Seguridad y Calidad</div>
+                <div class="space-y-4 mt-3" id="grupo-seguridad"></div>
+
+                <div class="mt-6 p-4 bg-[#0D7DAF] text-white rounded shadow-md flex justify-between items-center">
+                    <span class="font-bold uppercase text-[12px]">Puntaje Promedio Total:</span>
+                    <span id="eva_puntuacion_final_display" class="font-bold text-[22px]">0.0</span>
+                    <input type="hidden" name="eva_puntuacion_final" id="eva_puntuacion_final" value="0">
                 </div>
             </section>
 
-            <!-- 06. RECOMENDACIÓN Y EVALUADOR -->
+            <!-- 03. PREGUNTAS CUALITATIVAS -->
             <section class="form-card mt-6">
-                <h3><span class="material-symbols-outlined">person_check</span> 06. Recomendación y Evaluador</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div><label>Evaluado por (Nombre y Apellido):</label><input type="text" name="eva_nombreEvaluador"
-                            class="input-field upper" placeholder="EJ: JUAN PÉREZ" required></div>
-                    <div><label>Cargo del Evaluador:</label><input type="text" name="eva_cargoEvaluador"
-                            class="input-field upper" list="cargosList" placeholder="SELECCIONE CARGO..." required>
+                <h3><span class="material-symbols-outlined">quiz</span> 03. Preguntas Cualitativas</h3>
+                <div class="space-y-4 mt-4">
+                    <div>
+                        <label>3.1 ¿Cuál es su evaluación general del desempeño del trabajador durante su permanencia?</label>
+                        <textarea name="eva_cual1" class="input-field h-20 pt-2 upper resize-none" required placeholder="RESPUESTA..."></textarea>
                     </div>
                     <div>
-                        <label>Centro de Costo Evaluador</label>
-                        <select name="eva_ccEvaluador" id="eva_ccEvaluador" class="input-field" required>
-                            <option value="">SELECCIONE C.C. EVALUADOR...</option>
-                        </select>
-                    </div>
-                    <div
-                        class="md:col-span-2 flex items-center gap-4 bg-yellow-50 p-4 border border-yellow-200 rounded-lg">
-                        <span class="flex-grow font-bold text-slate-700 text-[11px] uppercase text-justify">Especificar
-                            si recomendaría su contratación para otra faena</span>
-                        <select name="eva_recomienda"
-                            class="w-32 h-10 bg-yellow-400 text-slate-900 font-black rounded border-2 border-yellow-500 px-3 cursor-pointer outline-none hover:bg-yellow-500 transition-colors">
-                            <option value="SI">SI</option>
-                            <option value="NO">NO</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-                    <div>
-                        <label class="text-blue-700">Obs1:</label>
-                        <textarea name="eva_obs1" class="input-field h-24 pt-2 upper resize-none"
-                            placeholder="PRIMERA OBSERVACIÓN..."></textarea>
+                        <label>3.2 ¿Recomendaría su recontratación para otro proyecto o faena? Fundamente brevemente.</label>
+                        <textarea name="eva_cual2" class="input-field h-20 pt-2 upper resize-none" required placeholder="RESPUESTA..."></textarea>
                     </div>
                     <div>
-                        <label class="text-blue-700">Obs2:</label>
-                        <textarea name="eva_obs2" class="input-field h-24 pt-2 upper resize-none"
-                            placeholder="SEGUNDA OBSERVACIÓN..."></textarea>
+                        <label>3.3 ¿Existen aspectos de mejora que el trabajador debería considerar para futuras experiencias?</label>
+                        <textarea name="eva_cual3" class="input-field h-20 pt-2 upper resize-none" placeholder="RESPUESTA..."></textarea>
+                    </div>
+                    <div>
+                        <label>3.4 ¿Hubo situaciones críticas (disciplinarias, de seguridad u otras) que deban quedar registradas?</label>
+                        <textarea name="eva_cual4" class="input-field h-20 pt-2 upper resize-none" placeholder="RESPUESTA..."></textarea>
                     </div>
                 </div>
             </section>
 
-            <!-- 07. IMPLEMENTOS Y DOCUMENTOS -->
+            <!-- 04. RECOMENDACIÓN FINAL -->
             <section class="form-card mt-6">
-                <h3><span class="material-symbols-outlined">inventory_2</span> 07. Implementos y Documentos Pendientes
-                </h3>
-                <div class="mb-6">
-                    <label class="bg-slate-100 p-2 border border-slate-200 block font-bold text-center mb-2">Implementos
-                        pendientes de entrega</label>
-                    <textarea name="eva_implementos" class="input-field h-16 pt-2 upper resize-none"
-                        placeholder="INDIQUE IMPLEMENTOS PENDIENTES..."></textarea>
+                <h3><span class="material-symbols-outlined">person_check</span> 04. Recomendación Final</h3>
+                <div class="flex items-center gap-4 bg-yellow-50 p-4 border border-yellow-200 rounded-lg mt-4">
+                    <span class="flex-grow font-bold text-slate-700 text-[11px] uppercase text-justify">¿Se recomienda la recontratación del trabajador?</span>
+                    <select name="eva_recomienda" required
+                        class="w-32 h-10 bg-yellow-400 text-slate-900 font-black rounded border-2 border-yellow-500 px-3 cursor-pointer outline-none hover:bg-yellow-500 transition-colors">
+                        <option value="">—</option>
+                        <option value="SI">SI</option>
+                        <option value="NO">NO</option>
+                    </select>
                 </div>
-                <div class="border border-slate-200 rounded-lg overflow-hidden mt-2">
-                    <div class="grid grid-cols-[1fr_120px_150px] bg-slate-600 text-white font-bold p-2 text-[10px] uppercase">
-                        <span class="px-2">Documentos a adjuntar</span>
-                        <span class="text-center">SÍ / NO</span>
+            </section>
+
+            <!-- 05. DEVOLUCIÓN DE IMPLEMENTOS Y DOCUMENTOS -->
+            <section class="form-card mt-6">
+                <h3><span class="material-symbols-outlined">inventory_2</span> 05. Devolución de Implementos y Documentos</h3>
+                <div class="border border-slate-200 rounded-lg overflow-hidden mt-4">
+                    <div class="grid grid-cols-[1fr_140px_150px] bg-slate-600 text-white font-bold p-2 text-[10px] uppercase">
+                        <span class="px-2">Ítem</span>
+                        <span class="text-center">Estado</span>
                         <span class="text-center">Observaciones</span>
                     </div>
+                    <div class="space-y-0" id="grupo-devolucion"></div>
+                </div>
+            </section>
 
-                    <!-- Item de Documento -->
-                    <div class="grid grid-cols-[1fr_120px_150px] border-b border-slate-100 items-center p-2 text-[10px]">
-                        <span class="px-2">CONTRATO DE TRABAJO</span>
-                        <div class="flex justify-center gap-4">
-                            <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="eva_doc1_rad" value="SI" required> SI</label>
-                            <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="eva_doc1_rad" value="NO"> NO</label>
-                        </div>
-                        <input type="text" name="eva_doc1_obs" class="input-field h-7 py-0 px-2 upper text-[10px]" placeholder="OBS...">
+            <!-- 06. FIRMAS Y VISACIONES -->
+            <section class="form-card mt-6">
+                <h3><span class="material-symbols-outlined">draw</span> 06. Firmas y Visaciones</h3>
+                <p class="text-[10px] text-slate-500 mb-4 uppercase italic">Los nombres se imprimen en el documento para su firma física.</p>
+
+                <div class="bg-slate-50 p-4 border border-slate-200 rounded mt-2">
+                    <span class="text-[10px] font-bold text-[#0D7DAF] uppercase">Jefe Directo / Evaluador</span>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                        <div><label>Nombre del Evaluador</label><input type="text" name="eva_nombreEvaluador" class="input-field upper" placeholder="EJ: JUAN PÉREZ" required></div>
+                        <div><label>Cargo del Evaluador</label><input type="text" name="eva_cargoEvaluador" class="input-field upper" list="cargosList" placeholder="SELECCIONE CARGO..." required></div>
                     </div>
+                </div>
 
-                    <div class="grid grid-cols-[1fr_120px_150px] border-b border-slate-100 items-center p-2 text-[10px]">
-                        <span class="px-2">DESCRIPTOR DE CARGO</span>
-                        <div class="flex justify-center gap-4">
-                            <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="eva_doc2_rad" value="SI" required> SI</label>
-                            <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="eva_doc2_rad" value="NO"> NO</label>
-                        </div>
-                        <input type="text" name="eva_doc2_obs" class="input-field h-7 py-0 px-2 upper text-[10px]" placeholder="OBS...">
+                <div class="bg-slate-50 p-4 border border-slate-200 rounded mt-4">
+                    <span class="text-[10px] font-bold text-[#0D7DAF] uppercase">Administrador de Contrato / Superintendente / Gerente de Área</span>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                        <div><label>Nombre y Cargo</label><input type="text" name="eva_visaGerente" class="input-field upper" placeholder="NOMBRE Y CARGO"></div>
                     </div>
+                </div>
 
-                    <div class="grid grid-cols-[1fr_120px_150px] border-b border-slate-100 items-center p-2 text-[10px]">
-                        <span class="px-2">REGISTRO DE ASISTENCIA</span>
-                        <div class="flex justify-center gap-4">
-                            <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="eva_doc3_rad" value="SI" required> SI</label>
-                            <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="eva_doc3_rad" value="NO"> NO</label>
-                        </div>
-                        <input type="text" name="eva_doc3_obs" class="input-field h-7 py-0 px-2 upper text-[10px]" placeholder="OBS...">
-                    </div>
-
-                    <div class="grid grid-cols-[1fr_120px_150px] border-b border-slate-100 items-center p-2 text-[10px]">
-                        <span class="px-2">REGISTRO REGLAMENTO INTERNO</span>
-                        <div class="flex justify-center gap-4">
-                            <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="eva_doc4_rad" value="SI" required> SI</label>
-                            <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="eva_doc4_rad" value="NO"> NO</label>
-                        </div>
-                        <input type="text" name="eva_doc4_obs" class="input-field h-7 py-0 px-2 upper text-[10px]" placeholder="OBS...">
-                    </div>
-
-                    <div class="grid grid-cols-[1fr_120px_150px] border-b border-slate-100 items-center p-2 text-[10px]">
-                        <span class="px-2">REGISTRO IRL</span>
-                        <div class="flex justify-center gap-4">
-                            <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="eva_doc5_rad" value="SI" required> SI</label>
-                            <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="eva_doc5_rad" value="NO"> NO</label>
-                        </div>
-                        <input type="text" name="eva_doc5_obs" class="input-field h-7 py-0 px-2 upper text-[10px]" placeholder="OBS...">
-                    </div>
-
-                    <div class="grid grid-cols-[1fr_120px] items-center p-2 text-[10px] bg-slate-50">
-                        <span class="px-2 font-bold italic text-blue-700 uppercase">Indicar si los documentos solicitados están en original firmados</span>
-                        <div class="flex justify-center gap-4">
-                            <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="eva_doc6_rad" value="SI" required> SI</label>
-                            <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="eva_doc6_rad" value="NO"> NO</label>
-                        </div>
+                <div class="bg-slate-50 p-4 border border-slate-200 rounded mt-4">
+                    <span class="text-[10px] font-bold text-[#0D7DAF] uppercase">Recursos Humanos</span>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                        <div><label>Nombre y Cargo</label><input type="text" name="eva_visaRRHH" class="input-field upper" placeholder="NOMBRE Y CARGO"></div>
                     </div>
                 </div>
             </section>
 
             <div class="flex gap-4 mb-20 mt-6">
-                <button type="button" onclick="document.getElementById('formEvaluacion').reset(); updateEvaAverages();"
+                <button type="button" onclick="document.getElementById('formEvaluacion').reset(); calcularPromedioEval();"
                     class="flex-1 bg-slate-200 py-4 text-[11px] font-bold uppercase hover:bg-slate-300">Limpiar
                     Formulario</button>
                 <button type="button" onclick="abrirModal('formEvaluacion','EVALUACIÓN DE PERSONAL A DESVINCULAR')"
@@ -496,7 +336,7 @@
             const correoMostrado = document.getElementById('evaCorreoMostrado');
             const correoInput = document.querySelector('input[name="eva_correoPersonal"]');
 
-            if (motivoSelect.value && motivoSelect.value.toUpperCase().includes('RENUNCIA VOLUNTARIA')) {
+            if (motivoSelect.value && motivoSelect.value.toUpperCase().includes('RENUNCIA')) {
                 container.style.display = 'block';
                 if (correoInput && correoInput.value) {
                     correoMostrado.innerText = correoInput.value;
@@ -507,7 +347,6 @@
             }
         }
 
-        // Actualizar correo mostrado al escribir
         document.addEventListener('DOMContentLoaded', () => {
             const correoInput = document.querySelector('input[name="eva_correoPersonal"]');
             if (correoInput) {
@@ -515,74 +354,81 @@
             }
         });
 
-        // ── Generador dinámico de items de evaluación ────────────────────────────
-        function crearItem(prefix, numero, label, placeholder) {
-            const vals = [0, 1, 2, 3, 4, 5];
-            let radios = vals.map(v => `<label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="eva_${prefix}${numero}" value="${v}"${v === 0 ? ' required' : ''}> ${v}</label>`).join('');
+        // ── Generador de ítems de evaluación (escala 1-5) ──────────────────────────
+        function crearItemEval(numero, label) {
+            const vals = [1, 2, 3, 4, 5];
+            let radios = vals.map(v => `<label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="eva_p${numero}" value="${v}"${v === 1 ? ' required' : ''} onchange="calcularPromedioEval()"> ${v}</label>`).join('');
             return `<div class="p-3 border rounded shadow-sm bg-slate-50">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <span class="flex-1 font-bold text-slate-700">${numero}. ${label}</span>
+          <span class="flex-1 font-bold text-slate-700 text-[11px]">${numero}. ${label}</span>
           <div class="flex items-center gap-3">${radios}</div>
         </div>
-        <input type="text" name="eva_${prefix}${numero}_obs" class="input-field mt-2 text-[10px] upper" placeholder="${placeholder}">
+        <input type="text" name="eva_p${numero}_obs" class="input-field mt-2 text-[10px] upper" placeholder="OBSERVACIONES...">
       </div>`;
         }
 
-        // Items Personales (14)
-        const aspItems = [
-            ['PUNTUALIDAD', 'Observaciones Puntualidad...'], ['ASISTENCIA', 'Observaciones Asistencia...'],
-            ['INICIATIVA', 'Observaciones Iniciativa...'], ['ESPÍRITU DE SUPERACIÓN', 'Observaciones Espíritu...'],
-            ['HONRADEZ Y HONESTIDAD', 'Observaciones Honradez...'], ['CONDUCTA ÉTICA', 'Observaciones Conducta Ética...'],
-            ['CONOCIMIENTO DE SU TRABAJO', 'Observaciones Conocimiento...'], ['TRABAJO EN EQUIPO', 'Observaciones Trabajo Equipo...'],
-            ['RESPETO A SU JEFE DIRECTO', 'Observaciones Respeto Jefe...'], ['RESPETO A SUS COMPAÑEROS', 'Observaciones Compañeros...'],
-            ['PREDISPOSICIÓN OTRAS FUNCIONES', 'Observaciones Predisposición...'], ['SALUD COMPATIBLE', 'Observaciones Salud...'],
-            ['COMPORTAMIENTO FUERA JORNADA', 'Observaciones Comportamiento...'], ['CAPACIDAD DE LIDERAZGO', 'Observaciones Liderazgo...']
+        // Los 10 criterios segun formato nuevo
+        const itemsComportamiento = [
+            [1, 'Puntualidad y asistencia al trabajo'],
+            [2, 'Respeto hacia jefaturas y compañeros'],
+            [3, 'Conducta ética y honestidad'],
+            [4, 'Trabajo en equipo y colaboración']
         ];
-        document.getElementById('asp-items').innerHTML = aspItems.map((a, i) => crearItem('asp', i + 1, a[0], a[1])).join('');
-
-        // Items Profesionales (7)
-        const profItems = [
-            ['USA HERRAMIENTAS APROPIADAS', 'Observaciones Herramientas...'],
-            ['APLICA INSTRUMENTOS MEDICIÓN', 'Observaciones Instrumentos...'],
-            ['LEE MEDICIONES INSTRUMENTOS', 'Observaciones Mediciones...'],
-            ['MANEJA MANUALES TÉCNICOS', 'Observaciones Manuales...'],
-            ['ENTIENDE LABORES ENCOMENDADAS', 'Observaciones Labores...'],
-            ['SIGUE INSTRUCCIONES', 'Observaciones Instrucciones...'],
-            ['PRESENTA CREATIVIDAD', 'Observaciones Creatividad...']
+        const itemsProfesional = [
+            [5, 'Conocimiento técnico del puesto'],
+            [6, 'Cumplimiento de instrucciones y tareas'],
+            [7, 'Iniciativa y propuesta de mejoras']
         ];
-        document.getElementById('prof-items').innerHTML = profItems.map((a, i) => crearItem('prof', i + 1, a[0], a[1])).join('');
-
-        // Items Seguridad (6)
-        const segItems = [
-            ['USA ADECUADAMENTE LOS EPP', 'Observaciones EPP...'],
-            ['COMUNICA CONDICIONES PELIGROSAS', 'Observaciones Peligrosas...'],
-            ['CUIDADO Y MANUTENCIÓN DE EPP', 'Observaciones EPP Cuidado...'],
-            ['LIDERAZGO EN SITUACIONES DE PELIGRO', 'Observaciones Liderazgo...'],
-            ['RESPETA NORMAS DE SEGURIDAD', 'Observaciones Normas...'],
-            ['MANTIENE LUGAR LIMPIO Y ORDENADO', 'Observaciones Limpieza...']
+        const itemsSeguridad = [
+            [8, 'Uso correcto de EPP y cumplimiento de normas de seguridad'],
+            [9, 'Orden, limpieza y cuidado de herramientas'],
+            [10, 'Calidad y eficacia en la ejecución de tareas']
         ];
-        document.getElementById('seg-items').innerHTML = segItems.map((a, i) => crearItem('seg', i + 1, a[0], a[1])).join('');
+        document.getElementById('grupo-comportamiento').innerHTML = itemsComportamiento.map(it => crearItemEval(it[0], it[1])).join('');
+        document.getElementById('grupo-profesional').innerHTML = itemsProfesional.map(it => crearItemEval(it[0], it[1])).join('');
+        document.getElementById('grupo-seguridad').innerHTML = itemsSeguridad.map(it => crearItemEval(it[0], it[1])).join('');
 
-        // Items Calidad (7)
-        const calItems = [
-            ['EFICACIA (Relación Cantidad - Calidad)', 'Observaciones Eficacia...'],
-            ['CONOCIMIENTOS (Necesarios para el trabajo)', 'Observaciones Conocimientos...'],
-            ['COLABORACION (Integración al Equipo)', 'Observaciones Colaboración...'],
-            ['INICIATIVA (Propuestas de mejora)', 'Observaciones Iniciativa...'],
-            ['RESPONSABILIDAD (Intereses empresa)', 'Observaciones Responsabilidad...'],
-            ['ASISTENCIA (Hora Programada)', 'Observaciones Asistencia...'],
-            ['COMPORTAMIENTO (Jefes y Compañeros)', 'Observaciones Comportamiento...']
+        // ── Devolución de implementos (6 ítems) ────────────────────────────────────
+        function crearItemDevolucion(numero, label) {
+            return `<div class="grid grid-cols-[1fr_140px_150px] border-b border-slate-100 items-center p-2 text-[10px]">
+        <span class="px-2 font-bold text-slate-700">${label}</span>
+        <select name="eva_dev${numero}_estado" class="input-field h-8 py-0 px-2 text-[10px] mx-2" required>
+          <option value="">—</option>
+          <option value="DEVUELTO">DEVUELTO</option>
+          <option value="PENDIENTE">PENDIENTE</option>
+          <option value="NO APLICA">NO APLICA</option>
+        </select>
+        <input type="text" name="eva_dev${numero}_obs" class="input-field h-8 py-0 px-2 upper text-[10px]" placeholder="OBS...">
+      </div>`;
+        }
+        const itemsDevolucion = [
+            [1, 'Equipos de protección personal (EPP)'],
+            [2, 'Herramientas y equipos asignados'],
+            [3, 'Credenciales / tarjetas de acceso'],
+            [4, 'Documentación del proyecto a cargo'],
+            [5, 'Dispositivos electrónicos asignados'],
+            [6, 'Ropa de trabajo / uniformes']
         ];
-        document.getElementById('cal-items').innerHTML = calItems.map((a, i) => crearItem('cal', i + 1, a[0], a[1])).join('');
+        document.getElementById('grupo-devolucion').innerHTML = itemsDevolucion.map(it => crearItemDevolucion(it[0], it[1])).join('');
 
-        // Inicializar listeners después de crear los items
-        initEvaluacion();
+        // ── Cálculo del puntaje promedio total (10 ítems) ──────────────────────────
+        function calcularPromedioEval() {
+            let suma = 0, contados = 0;
+            for (let i = 1; i <= 10; i++) {
+                const sel = document.querySelector(`input[name="eva_p${i}"]:checked`);
+                if (sel) { suma += parseInt(sel.value, 10); contados++; }
+            }
+            const prom = contados > 0 ? (suma / contados) : 0;
+            const txt = prom.toFixed(1);
+            document.getElementById('eva_puntuacion_final_display').innerText = txt;
+            document.getElementById('eva_puntuacion_final').value = txt;
+            if (typeof updateProgress === 'function') updateProgress();
+        }
 
         // ── Carga de datos ────────────────────────────────────────────────────────
         window.onload = () => {
             google.script.run.withSuccessHandler(d => {
                 fill('eva_area', d.ccs);
-                fill('eva_ccEvaluador', d.ccs);
                 const sel = document.getElementById('eva_motivo_lista');
                 if (sel && d.motivosDesv && d.motivosDesv.length > 0) {
                     d.motivosDesv.forEach(m => { let o = document.createElement('option'); o.value = m; o.text = m.toUpperCase(); sel.appendChild(o); });
