@@ -422,7 +422,8 @@
                     fechaTermino: f.fechaTermino ? f.fechaTermino.value : "N/A",
                     responsableRec: f.elements['responsableRec'] ? f.elements['responsableRec'].value : "N/A",
                     observacionesRec: f.elements['observacionesRec'] ? f.elements['observacionesRec'].value.toUpperCase() : "N/A",
-                    obsSoftware: f.elements['obsSoftware'] ? f.elements['obsSoftware'].value.toUpperCase() : "N/A"
+                    obsSoftware: f.elements['obsSoftware'] ? f.elements['obsSoftware'].value.toUpperCase() : "N/A",
+                    reqEquiposTicket: f.elements['reqEquiposTicket'] ? f.elements['reqEquiposTicket'].value.toUpperCase() : "N/A"
                 });
                 const checksEquip = Array.from(f.querySelectorAll('input[name="equip"]:checked'));
                 const optMon = f.querySelector('input[name="tipoMonitor"]:checked');

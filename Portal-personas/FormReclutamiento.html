@@ -216,6 +216,29 @@
                 </div>
             </section>
 
+            <!-- 04. REQUERIMIENTO DE EQUIPOS TI -->
+            <section class="form-card">
+                <h3><span class="material-symbols-outlined">devices</span> 04. Requerimiento de Equipos TI</h3>
+                <div class="p-4 bg-blue-50 border border-blue-200 rounded mt-2">
+                    <p class="text-[10px] text-slate-700 mb-3 uppercase">
+                        Genera el requerimiento de equipos (notebook, celular, accesos, etc.) en la plataforma TI
+                        <b>antes</b> de que la persona llegue al cargo. Al crearlo, la plataforma te entrega un
+                        <b>N° de ticket</b>. Pégalo abajo para continuar.
+                    </p>
+                    <a id="btnAbrirTicketTI" href="#" target="_blank" rel="noopener"
+                        class="inline-flex items-center gap-2 bg-[#0D7DAF] text-white px-4 py-2 text-[10px] font-bold uppercase rounded hover:bg-[#0a6593] transition-colors">
+                        <span class="material-symbols-outlined text-[16px]">open_in_new</span>
+                        Generar requerimiento de equipos
+                    </a>
+                    <div class="mt-4">
+                        <label>N° de Ticket TI generado</label>
+                        <input type="text" name="reqEquiposTicket" id="reqEquiposTicket" class="input-field upper"
+                            placeholder="EJ: TI-26-001" onchange="updateProgress()">
+                        <p class="text-[8px] text-slate-400 mt-1 uppercase italic">Ingresa el número que te entregó la plataforma TI. Déjalo en blanco si aún no aplica.</p>
+                    </div>
+                </div>
+            </section>
+
             <div class="flex gap-4 mb-20">
                 <button type="button" onclick="document.getElementById('formTI').reset(); updateProgress();"
                     class="flex-1 bg-slate-200 py-4 text-[11px] font-bold uppercase">Limpiar</button>
@@ -285,6 +308,14 @@
     <?!= include('SharedJS'); ?>
     <script>verificarSesion('reclutamiento');</script>
     <script>
+        // ── URL de la plataforma TI (Software TI e IA) para generar el ticket de equipos ──
+        // Reemplazar por la URL real del despliegue (tunel/produccion) + /solicitudes/nueva
+        var TICKET_TI_URL = "https://REEMPLAZAR_CON_URL_DE_TU_APP_TI/solicitudes/nueva";
+        (function () {
+            var btn = document.getElementById('btnAbrirTicketTI');
+            if (btn) btn.href = TICKET_TI_URL;
+        })();
+
         function handleDescriptorCargo(v) {
             toggleDescriptorFile(v);
             const w = document.getElementById('warnDescriptor');
